@@ -1,139 +1,81 @@
 import 'package:flutter/material.dart';
+import 'package:balink_mobile/Product/Models/product_model.dart'; // Import your product model
+import 'package:balink_mobile/left_drawer.dart';
+import 'package:pbp_django_auth/pbp_django_auth.dart';
+import 'package:provider/provider.dart'; // Import LeftDrawer
 
-class ProductPage extends StatelessWidget {
+class ProductPage extends StatefulWidget {
   const ProductPage({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          'Our Vehicles',
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
-        ),
-        centerTitle: true,
-        backgroundColor: Colors.blue[800],
-      ),
-      body: Container(
-        padding: const EdgeInsets.all(16.0),
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Color(0xFF0D47A1), Color(0xFF1976D2)],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-          ),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'Available Vehicles',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
-            ),
-            const SizedBox(height: 10),
-            Expanded(
-              child: GridView.builder(
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  crossAxisSpacing: 10,
-                  mainAxisSpacing: 10,
-                  childAspectRatio: 0.8,
-                ),
-                itemCount: 6, // Replace with actual product count
-                itemBuilder: (context, index) {
-                  return _buildProductCard(
-                    title: 'Vehicle ${index + 1}',
-                    imageUrl: 'https://via.placeholder.com/150', // Replace with actual image URLs
-                    price: '\$50/day', // Replace with actual prices
-                    onTap: () {
-                      // Add product detail navigation here
-                    },
-                  );
-                },
-              ),
-            ),
-          ],
-        ),
-      ),
-      drawer: const LeftDrawer(),
-    );
+  State<ProductPage> createState() => _ProductPageState();
+}
+
+class _ProductPageState extends State<ProductPage> {
+  // Function to fetch the products (similar to fetchMood)
+  Future<List<Product>> fetchProducts(CookieRequest request) async {
+    final response = await request.get('http://127.0.0.1:8000/products/'); // Replace with your API URL
+
+    var data = response;
+
+    List<Product> productList = [];
+    for (var d in data) {
+      if (d != null) {
+        productList.add(Product.fromJson(d)); // Assuming you have a fromJson method in your Product model
+      }
+    }
+    return productList;
   }
 
-  Widget _buildProductCard({
-    required String title,
-    required String imageUrl,
-    required String price,
-    required VoidCallback onTap,
-  }) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Card(
-        elevation: 8,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            ClipRRect(
-              borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(16),
-                topRight: Radius.circular(16),
+  @override
+  Widget build(BuildContext context) {
+    final request = context.watch<CookieRequest>(); // Assuming you're using some kind of request wrapper
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Our Products'),
+      ),
+      drawer: const LeftDrawer(),
+      body: FutureBuilder(
+        future: fetchProducts(request),
+        builder: (context, AsyncSnapshot<List<Product>> snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return const Center(
+              child: Text(
+                'No products available at the moment.',
+                style: TextStyle(fontSize: 20, color: Color(0xff59A5D8)),
               ),
-              child: Image.network(
-                imageUrl,
-                height: 100,
-                width: double.infinity,
-                fit: BoxFit.cover,
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                children: [
-                  Text(
-                    title,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                      color: Colors.black87,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 5),
-                  Text(
-                    price,
-                    style: const TextStyle(
-                      fontSize: 14,
-                      color: Colors.blueAccent,
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  ElevatedButton(
-                    onPressed: onTap,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue[800],
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20),
+            );
+          } else {
+            return ListView.builder(
+              itemCount: snapshot.data!.length,
+              itemBuilder: (_, index) {
+                final product = snapshot.data![index].fields; // Assuming your Product model has a fields property
+                return Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  padding: const EdgeInsets.all(20.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "${product.name}",
+                        style: const TextStyle(
+                          fontSize: 18.0,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                      elevation: 4,
-                    ),
-                    child: const Text(
-                      'Rent Now',
-                      style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
-                    ),
+                      const SizedBox(height: 10),
+                      Text("Price: ${product.price}"),
+                      const SizedBox(height: 10),
+                      Text("Year: ${product.year} | ${product.kmDriven} km"),
+                    ],
                   ),
-                ],
-              ),
-            ),
-          ],
-        ),
+                );
+              },
+            );
+          }
+        },
       ),
     );
   }
