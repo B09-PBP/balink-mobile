@@ -1,3 +1,4 @@
+import 'package:balink_mobile/authentication/login.dart';
 import 'package:balink_mobile/landing.dart';
 import 'package:flutter/material.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
@@ -25,7 +26,7 @@ class MyApp extends StatelessWidget {
             primarySwatch: Colors.deepPurple,
           ).copyWith(secondary: Colors.deepPurple[400]),
         ),
-        home: MyHomePage(),
+        home: LoginPage(),
       ),
     );
   }

@@ -14,7 +14,7 @@ class ProductPage extends StatefulWidget {
 class _ProductPageState extends State<ProductPage> {
   // Function to fetch the products (similar to fetchMood)
   Future<List<Product>> fetchProducts(CookieRequest request) async {
-    final response = await request.get('http://127.0.0.1:8000/products/'); // Replace with your API URL
+    final response = await request.get('http://127.0.0.1:8000/product/'); // Replace with your API URL
 
     var data = response;
 
