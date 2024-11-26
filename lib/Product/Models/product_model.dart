@@ -30,8 +30,8 @@ class Product {
 
 class Fields {
   String name;
-  int year;
-  String price;
+  int year; // Year should be an int
+  double price; // Price should be a double
   int kmDriven;
   String imageUrl;
   Dealer dealer;
@@ -47,8 +47,8 @@ class Fields {
 
   factory Fields.fromJson(Map<String, dynamic> json) => Fields(
     name: json["name"],
-    year: json["year"],
-    price: json["price"],
+    year: json["year"], // The year is already an int, so no need to parse it
+    price: double.tryParse(json["price"]) ?? 0.0, // Ensure price is parsed as a double
     kmDriven: json["km_driven"],
     imageUrl: json["image_url"],
     dealer: dealerValues.map[json["dealer"]]!,
@@ -57,7 +57,7 @@ class Fields {
   Map<String, dynamic> toJson() => {
     "name": name,
     "year": year,
-    "price": price,
+    "price": price.toString(), // Convert price back to string when encoding
     "km_driven": kmDriven,
     "image_url": imageUrl,
     "dealer": dealerValues.reverse[dealer],
