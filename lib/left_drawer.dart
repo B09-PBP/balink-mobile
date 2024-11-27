@@ -50,7 +50,7 @@ class LeftDrawer extends StatelessWidget {
             _buildDrawerItem(
               context,
               icon: Icons.directions_car,
-              title: 'ProductPage',
+              title: 'Product Page',
               onTap: () => Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => const ProductPage()),

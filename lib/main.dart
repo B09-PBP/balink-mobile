@@ -1,5 +1,5 @@
 import 'package:balink_mobile/authentication/login.dart';
-import 'package:balink_mobile/landing.dart';
+import 'package:balink_mobile/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
 import 'package:provider/provider.dart';
@@ -20,12 +20,7 @@ class MyApp extends StatelessWidget {
       },
       child: MaterialApp(
         title: 'Balink',
-        theme: ThemeData(
-          useMaterial3: true,
-          colorScheme: ColorScheme.fromSwatch(
-            primarySwatch: Colors.deepPurple,
-          ).copyWith(secondary: Colors.deepPurple[400]),
-        ),
+        theme: djangoTheme,
         home: LoginPage(),
       ),
     );
