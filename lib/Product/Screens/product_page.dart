@@ -18,7 +18,6 @@ class _ProductPageState extends State<ProductPage> {
   // Function to fetch the products
   Future<List<Product>> fetchProducts(CookieRequest request) async {
     final response = await request.get('http://127.0.0.1:8000/product/json/'); // Replace with your API URL
-
     var data = response;
 
     List<Product> productList = [];
@@ -30,14 +29,14 @@ class _ProductPageState extends State<ProductPage> {
     return productList;
   }
 
-  // Filter logic (just an example, implement your own filter criteria)
+  // Filter logic
   String searchQuery = '';
   double minPrice = 0;
   double maxPrice = 1000000;
 
   @override
   Widget build(BuildContext context) {
-    final request = context.watch<CookieRequest>(); // Assuming you're using some kind of request wrapper
+    final request = context.watch<CookieRequest>();
     return Scaffold(
       appBar: AppBar(
         title: const Text('Our Products'),
@@ -45,19 +44,19 @@ class _ProductPageState extends State<ProductPage> {
       ),
       drawer: const LeftDrawer(),
       body: SingleChildScrollView(
+        physics: const BouncingScrollPhysics(),
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0), // Add padding around the body
+          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch, // Make children take up full width
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               // Carousel widget for showcasing featured products
               CarouselWidget(),
-              const SizedBox(height: 16), // Spacing between Carousel and Filter
+              const SizedBox(height: 16),
               // Filter widget
               FilterWidget(
                 onApply: () {
                   setState(() {
-                    // Logic to apply the filter (e.g., searchQuery)
                     searchQuery = ''; // Set actual search query based on input
                   });
                 },
@@ -70,7 +69,7 @@ class _ProductPageState extends State<ProductPage> {
                   });
                 },
               ),
-              const SizedBox(height: 16), // Spacing between Filter and Product List
+              const SizedBox(height: 16),
               // Product list
               FutureBuilder(
                 future: fetchProducts(request),
@@ -96,86 +95,76 @@ class _ProductPageState extends State<ProductPage> {
                       return matchesQuery && matchesPrice;
                     }).toList();
 
-                    return ListView.builder(
+                    return GridView.builder(
                       physics: const NeverScrollableScrollPhysics(),
-                      shrinkWrap: true, // Prevents ListView from taking infinite height
+                      shrinkWrap: true,
+                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2, // Two items per row for better spacing
+                        crossAxisSpacing: 12, // Increased spacing
+                        mainAxisSpacing: 12,
+                        childAspectRatio: 0.8,
+                      ),
                       itemCount: filteredProducts.length,
                       itemBuilder: (_, index) {
                         final product = filteredProducts[index];
                         return Card(
-                          elevation: 3, // Subtle elevation for a clean look
-                          margin: const EdgeInsets.only(bottom: 16), // Margin between product cards
+                          elevation: 4, // Slightly higher elevation for depth
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12), // Rounded corners
+                            borderRadius: BorderRadius.circular(16),
                           ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(16.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                if (product.fields.imageUrl != null)
-                                  Center(
-                                    child: ClipRRect(
-                                      borderRadius: BorderRadius.circular(8), // Rounded image corners
+                          child: InkWell(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      ProductDetailPage(product: product),
+                                ),
+                              );
+                            },
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  if (product.fields.imageUrl != null)
+                                    ClipRRect(
+                                      borderRadius: BorderRadius.circular(12),
                                       child: Image.network(
                                         product.fields.imageUrl!,
-                                        height: 180,
-                                        width: double.infinity, // Make image take full width
+                                        height: 120,
+                                        width: double.infinity,
                                         fit: BoxFit.cover,
                                         errorBuilder: (context, error, stackTrace) {
                                           return const Icon(
                                             Icons.image_not_supported,
-                                            size: 100,
+                                            size: 50,
                                             color: Colors.grey,
                                           );
                                         },
                                       ),
                                     ),
-                                  ),
-                                const SizedBox(height: 12),
-                                Text(
-                                  product.fields.name,
-                                  style: const TextStyle(
-                                    fontSize: 18.0,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis, // Handles long names
-                                ),
-                                const SizedBox(height: 6),
-                                Text(
-                                  "Price: \$${product.fields.price.toStringAsFixed(2)}", // Format price
-                                  style: const TextStyle(
-                                    fontSize: 16,
-                                    color: Colors.green,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                                const SizedBox(height: 6),
-                                Text(
-                                  "Year: ${product.fields.year} | ${product.fields.kmDriven} km",
-                                  style: const TextStyle(fontSize: 14, color: Colors.grey),
-                                ),
-                                const SizedBox(height: 12),
-                                ElevatedButton(
-                                  onPressed: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => ProductDetailPage(product: product), // Pass entire Product
-                                      ),
-                                    );
-                                  },
-                                  child: const Text('View Detail'),
-                                  style: ElevatedButton.styleFrom(
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(8), // Rounded button
+                                  const SizedBox(height: 8),
+                                  Text(
+                                    product.fields.name,
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
                                     ),
-                                    padding: const EdgeInsets.symmetric(vertical: 12),
-                                    backgroundColor: Theme.of(context).colorScheme.primary,
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
                                   ),
-                                ),
-                              ],
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    "Price: \$${product.fields.price.toStringAsFixed(2)}",
+                                    style: const TextStyle(
+                                      fontSize: 14,
+                                      color: Colors.green,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                         );
@@ -191,3 +180,5 @@ class _ProductPageState extends State<ProductPage> {
     );
   }
 }
+
+
