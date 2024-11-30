@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
 import 'package:provider/provider.dart';
@@ -11,9 +13,11 @@ class RegisterPage extends StatefulWidget {
 
 class _RegisterPageState extends State<RegisterPage> {
   final TextEditingController _usernameController = TextEditingController();
-  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _nameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController = TextEditingController();
+
+  String _selectedPrivilege = "customer"; // Default privilege value
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +26,6 @@ class _RegisterPageState extends State<RegisterPage> {
     return Scaffold(
       body: Stack(
         children: [
-          // Background with blue shade
           Container(
             color: Colors.blue.shade800,
           ),
@@ -56,7 +59,6 @@ class _RegisterPageState extends State<RegisterPage> {
                         style: TextStyle(fontSize: 16.0, color: Colors.grey),
                       ),
                       const SizedBox(height: 24.0),
-                      // Username input
                       TextField(
                         controller: _usernameController,
                         decoration: InputDecoration(
@@ -68,19 +70,37 @@ class _RegisterPageState extends State<RegisterPage> {
                         ),
                       ),
                       const SizedBox(height: 16.0),
-                      // Email input
                       TextField(
-                        controller: _emailController,
+                        controller: _nameController,
                         decoration: InputDecoration(
-                          labelText: 'Email',
-                          prefixIcon: const Icon(Icons.email, color: Colors.blue),
+                          labelText: 'Name',
+                          prefixIcon: const Icon(Icons.badge, color: Colors.blue),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12.0),
                           ),
                         ),
                       ),
                       const SizedBox(height: 16.0),
-                      // Password input
+                      DropdownButtonFormField<String>(
+                        value: _selectedPrivilege,
+                        onChanged: (String? newValue) {
+                          setState(() {
+                            _selectedPrivilege = newValue!;
+                          });
+                        },
+                        decoration: InputDecoration(
+                          labelText: 'Privilege',
+                          prefixIcon: const Icon(Icons.star, color: Colors.blue),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12.0),
+                          ),
+                        ),
+                        items: const [
+                          DropdownMenuItem(value: "customer", child: Text("Customer")),
+                          DropdownMenuItem(value: "admin", child: Text("Admin")),
+                        ],
+                      ),
+                      const SizedBox(height: 16.0),
                       TextField(
                         controller: _passwordController,
                         obscureText: true,
@@ -93,7 +113,6 @@ class _RegisterPageState extends State<RegisterPage> {
                         ),
                       ),
                       const SizedBox(height: 16.0),
-                      // Confirm Password input
                       TextField(
                         controller: _confirmPasswordController,
                         obscureText: true,
@@ -106,11 +125,11 @@ class _RegisterPageState extends State<RegisterPage> {
                         ),
                       ),
                       const SizedBox(height: 24.0),
-                      // Register button
                       ElevatedButton(
                         onPressed: () async {
                           String username = _usernameController.text;
-                          String email = _emailController.text;
+                          String name = _nameController.text;
+                          String privilege = _selectedPrivilege;
                           String password = _passwordController.text;
                           String confirmPassword = _confirmPasswordController.text;
 
@@ -135,17 +154,21 @@ class _RegisterPageState extends State<RegisterPage> {
                             return;
                           }
 
-                          // Perform registration
-                          final response = await request
-                              .post("http://127.0.0.1:8000/auth/register-mobile/", {
-                            'username': username,
-                            'email': email,
-                            'password': password,
-                          });
+                          final response = await request.post(
+                            "http://127.0.0.1:8000/auth/register-mobile/",
+                            jsonEncode({
+                              'username': username,
+                              'name': name,
+                              'privilege': privilege,
+                              'password1': password,
+                              'password2': confirmPassword,
+                            }),
+                          );
+
 
                           if (response['status'] == 'success') {
                             if (context.mounted) {
-                              Navigator.pop(context); // Return to login
+                              Navigator.pop(context);
                               ScaffoldMessenger.of(context)
                                 ..hideCurrentSnackBar()
                                 ..showSnackBar(
@@ -189,7 +212,6 @@ class _RegisterPageState extends State<RegisterPage> {
                         ),
                       ),
                       const SizedBox(height: 16.0),
-                      // Redirect to login
                       GestureDetector(
                         onTap: () {
                           Navigator.pop(context);
