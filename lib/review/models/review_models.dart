@@ -1,21 +1,21 @@
 // // To parse this JSON data, do
 // //
-// //     final reviewProductEntry = reviewProductEntryFromJson(jsonString);
+// //     final ReviewModels = ReviewModelsFromJson(jsonString);
 
 import 'dart:convert';
 
-List<ReviewProductEntry> reviewProductEntryFromJson(String str) => List<ReviewProductEntry>.from(json.decode(str).map((x) => ReviewProductEntry.fromJson(x)));
+List<ReviewModels> reviewModelsFromJson(String str) => List<ReviewModels>.from(json.decode(str).map((x) => ReviewModels.fromJson(x)));
 
-String reviewProductEntryToJson(List<ReviewProductEntry> data) => json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
+String reviewModelsToJson(List<ReviewModels> data) => json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
 
-class ReviewProductEntry {
+class ReviewModels {
     String image;
     String username;
     String rideName;
     int rating;
     String reviewMessage;
 
-    ReviewProductEntry({
+    ReviewModels({
         required this.image,
         required this.username,
         required this.rideName,
@@ -23,7 +23,7 @@ class ReviewProductEntry {
         required this.reviewMessage,
     });
 
-    factory ReviewProductEntry.fromJson(Map<String, dynamic> json) => ReviewProductEntry(
+    factory ReviewModels.fromJson(Map<String, dynamic> json) => ReviewModels(
         image: json["image"],
         username: json["username"],
         rideName: json["rideName"],

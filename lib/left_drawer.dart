@@ -1,3 +1,4 @@
+import 'package:balink_mobile/review/screens/review_page.dart';
 import 'package:flutter/material.dart';
 import 'package:balink_mobile/Product/Screens/product_page.dart';
 
@@ -73,6 +74,15 @@ class LeftDrawer extends StatelessWidget {
               icon: Icons.article,
               title: 'Article',
               onTap: () => _showSnackBar(context, 'Article'),
+            ),
+            _buildDrawerItem(
+              context,
+              icon: Icons.reviews,
+              title: 'Review',
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const ReviewProductPage()),
+              ),
             ),
             const Divider(color: Colors.white54, thickness: 1),
             _buildDrawerItem(
