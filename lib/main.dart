@@ -3,6 +3,7 @@ import 'package:balink_mobile/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
 import 'package:provider/provider.dart';
+import 'Product/Screens/product_page.dart';
 
 void main() {
   runApp(const MyApp());
