@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:balink_mobile/Product/Screens/product_page.dart';
+import 'package:balink_mobile/article/screen/article_page.dart';
 
 class LeftDrawer extends StatelessWidget {
   const LeftDrawer({super.key});
@@ -72,7 +73,12 @@ class LeftDrawer extends StatelessWidget {
               context,
               icon: Icons.article,
               title: 'Article',
-              onTap: () => _showSnackBar(context, 'Article'),
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) =>
+                        ArticlePage()), // Navigasi ke ArticlePage
+              ),
             ),
             const Divider(color: Colors.white54, thickness: 1),
             _buildDrawerItem(
@@ -101,8 +107,8 @@ class LeftDrawer extends StatelessWidget {
 
   Widget _buildDrawerItem(BuildContext context,
       {required IconData icon,
-        required String title,
-        required VoidCallback onTap}) {
+      required String title,
+      required VoidCallback onTap}) {
     return ListTile(
       leading: Icon(icon, color: Colors.white),
       title: Text(
