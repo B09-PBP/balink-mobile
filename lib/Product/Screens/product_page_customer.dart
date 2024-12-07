@@ -1,3 +1,5 @@
+import 'package:balink_mobile/Product/Screens/add_product_page.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:balink_mobile/Product/Models/product_model.dart';
 import 'package:balink_mobile/left_drawer.dart';
@@ -6,14 +8,14 @@ import 'package:provider/provider.dart';
 import 'product_detail_page.dart';
 import 'package:balink_mobile/Product/Widgets/filter.dart';
 
-class ProductPage extends StatefulWidget {
-  const ProductPage({super.key});
+class ProductPageCustomer extends StatefulWidget {
+  const ProductPageCustomer({super.key});
 
   @override
-  State<ProductPage> createState() => _ProductPageState();
+  State<ProductPageCustomer> createState() => _ProductPageState();
 }
 
-class _ProductPageState extends State<ProductPage> with SingleTickerProviderStateMixin {
+class _ProductPageState extends State<ProductPageCustomer> with SingleTickerProviderStateMixin {
   String _searchQuery = '';
   double _minPrice = 0;
   double _maxPrice = 1000000;
@@ -48,7 +50,9 @@ class _ProductPageState extends State<ProductPage> with SingleTickerProviderStat
 
       return (response as List).map((d) => Product.fromJson(d)).toList();
     } catch (e) {
-      print('Error fetching products: $e');
+      if (kDebugMode) {
+        print('Error fetching products: $e');
+      }
       return [];
     }
   }
@@ -86,6 +90,14 @@ class _ProductPageState extends State<ProductPage> with SingleTickerProviderStat
     });
   }
 
+  Future<void> _refreshProducts(CookieRequest request) async {
+    final products = await fetchProducts(request);
+    setState(() {
+      _allProducts = products;
+      _filteredProducts = products;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final request = context.watch<CookieRequest>();
@@ -104,16 +116,28 @@ class _ProductPageState extends State<ProductPage> with SingleTickerProviderStat
         backgroundColor: colorScheme.primary,
         elevation: 0,
         centerTitle: true,
+        actions: [
+          // Add Product Button in the AppBar
+          IconButton(
+            icon: const Icon(Icons.add),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const AddProductPage(),
+                ),
+              ).then((_) {
+                // Refresh products after returning from AddProductPage
+                _refreshProducts(request);
+              });
+            },
+            tooltip: 'Add New Product',
+          ),
+        ],
       ),
       drawer: const LeftDrawer(),
       body: RefreshIndicator(
-        onRefresh: () async {
-          final products = await fetchProducts(request);
-          setState(() {
-            _allProducts = products;
-            _filteredProducts = products;
-          });
-        },
+        onRefresh: () => _refreshProducts(request),
         child: CustomScrollView(
           physics: const BouncingScrollPhysics(),
           slivers: [
@@ -132,6 +156,7 @@ class _ProductPageState extends State<ProductPage> with SingleTickerProviderStat
                 ],
               ),
             ),
+
             FutureBuilder<List<Product>>(
               future: fetchProducts(request),
               builder: (context, snapshot) {
@@ -219,6 +244,22 @@ class _ProductPageState extends State<ProductPage> with SingleTickerProviderStat
             ),
           ],
         ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const AddProductPage(),
+            ),
+          ).then((_) {
+            // Refresh products after returning from AddProductPage
+            _refreshProducts(request);
+          });
+        },
+        backgroundColor: colorScheme.primary,
+        tooltip: 'Add New Product',
+        child: const Icon(Icons.add, color: Colors.white),
       ),
     );
   }

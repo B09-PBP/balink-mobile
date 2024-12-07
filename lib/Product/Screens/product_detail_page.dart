@@ -90,7 +90,7 @@ class ProductDetailPage extends StatelessWidget {
                   // Product Name
                   Text(
                     product.fields.name,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w600,
                       color: Colors.black87,
