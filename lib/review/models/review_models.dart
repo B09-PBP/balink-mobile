@@ -9,6 +9,7 @@ List<ReviewModels> reviewModelsFromJson(String str) => List<ReviewModels>.from(j
 String reviewModelsToJson(List<ReviewModels> data) => json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
 
 class ReviewModels {
+    String id;
     String image;
     String username;
     String rideName;
@@ -16,6 +17,7 @@ class ReviewModels {
     String reviewMessage;
 
     ReviewModels({
+        required this.id,
         required this.image,
         required this.username,
         required this.rideName,
@@ -24,6 +26,7 @@ class ReviewModels {
     });
 
     factory ReviewModels.fromJson(Map<String, dynamic> json) => ReviewModels(
+        id: json["id"],
         image: json["image"],
         username: json["username"],
         rideName: json["rideName"],
@@ -32,6 +35,7 @@ class ReviewModels {
     );
 
     Map<String, dynamic> toJson() => {
+        "id": id,
         "image": image,
         "username": username,
         "rideName": rideName,

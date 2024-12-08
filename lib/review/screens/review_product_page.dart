@@ -54,7 +54,7 @@ class _ReviewRidePageState extends State<ReviewRidePage> {
                 crossAxisCount: 2, // 2 kolom
                 crossAxisSpacing: 16,
                 mainAxisSpacing: 16,
-                childAspectRatio: 1.2,
+                childAspectRatio: 1.1,
               ),
               itemCount: products.length,
               itemBuilder: (context, index) {
@@ -96,7 +96,7 @@ class _ReviewRidePageState extends State<ReviewRidePage> {
                             product.rideName,
                             style: const TextStyle(
                               color: Colors.black,
-                              fontSize: 16.0,
+                              fontSize: 14.0,
                               fontWeight: FontWeight.bold,
                             ),
                             maxLines: 2,

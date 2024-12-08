@@ -141,7 +141,7 @@ class _ReviewProductPageState extends State<ReviewProductPage> {
                         crossAxisCount: 2, // 2 Kolom
                         crossAxisSpacing: 16,
                         mainAxisSpacing: 16,
-                        childAspectRatio: 0.9,
+                        childAspectRatio: 0.8,
                       ),
                       itemCount: snapshot.data!.length,
                       itemBuilder: (_, index) {
@@ -178,7 +178,7 @@ class _ReviewProductPageState extends State<ReviewProductPage> {
                                 review.rideName,
                                 style: const TextStyle(
                                   color: Colors.black,
-                                  fontSize: 16.0,
+                                  fontSize: 14.0,
                                   fontWeight: FontWeight.bold,
                                 ),
                                 maxLines: 2,
@@ -188,13 +188,16 @@ class _ReviewProductPageState extends State<ReviewProductPage> {
                               Text(
                                 "⭐ ${review.rating}",
                                 style: const TextStyle(
-                                  color: Colors.yellow,
-                                  fontWeight: FontWeight.bold,
+                                  color: Color.fromRGBO(251, 192, 45, 1),
+                                  fontSize: 14.0,
+                                  fontWeight: FontWeight.w900,
                                 ),
                               ),
                               const SizedBox(height: 6),
                               Text(
-                                review.reviewMessage,
+                                review.reviewMessage.length > 85
+                                  ? "${review.reviewMessage.substring(0, 85)}..."
+                                  : review.reviewMessage,
                                 maxLines: 3,
                                 overflow: TextOverflow.ellipsis,
                                 style: const TextStyle(
@@ -204,14 +207,14 @@ class _ReviewProductPageState extends State<ReviewProductPage> {
                               const Spacer(),
                               Text(
                                 "Reviewed by ${review.username}",
-                                style: const TextStyle(fontSize: 12.0, color: Colors.grey),
+                                style: const TextStyle(fontSize: 10.0, color: Colors.grey),
                               ),
                             ],
                           ),
                         );
                       },
                     );
-                  }
+                }
                 }
               },
             ),
