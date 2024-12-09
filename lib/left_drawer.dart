@@ -1,5 +1,7 @@
+import 'package:balink_mobile/cart/screens/cart_page.dart';
 import 'package:flutter/material.dart';
 import 'package:balink_mobile/Product/Screens/product_page.dart';
+import 'package:balink_mobile/cart/screens/cart_page.dart';
 
 class LeftDrawer extends StatelessWidget {
   const LeftDrawer({super.key});
@@ -66,7 +68,10 @@ class LeftDrawer extends StatelessWidget {
               context,
               icon: Icons.shopping_cart,
               title: 'Cart',
-              onTap: () => _showSnackBar(context, 'Cart'),
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => CartPage(cartItems: [],)),
+              ),
             ),
             _buildDrawerItem(
               context,
