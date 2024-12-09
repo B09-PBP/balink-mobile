@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
 import 'package:balink_mobile/authentication/login.dart'; // Create this screen
-import 'package:balink_mobile/authentication/register.dart';// Create this screen
+import 'package:balink_mobile/authentication/register.dart'; // Create this screen
 
 class LeftDrawer extends StatelessWidget {
   const LeftDrawer({super.key});
@@ -86,8 +86,8 @@ class LeftDrawer extends StatelessWidget {
 
   Widget _buildDrawerItem(BuildContext context,
       {required IconData icon,
-        required String title,
-        required VoidCallback onTap}) {
+      required String title,
+      required VoidCallback onTap}) {
     return ListTile(
       leading: Icon(icon, color: Colors.blue[700]),
       title: Text(
@@ -134,7 +134,8 @@ class LeftDrawer extends StatelessWidget {
 
     try {
       // Assuming your Django logout endpoint is at '/logout-mobile/'
-      final response = await request.logout('http://127.0.0.1:8000/auth/logout-mobile/');
+      final response =
+          await request.logout('http://127.0.0.1:8000/auth/logout-mobile/');
 
       if (response['status'] == true) {
         // Show success message
@@ -147,7 +148,8 @@ class LeftDrawer extends StatelessWidget {
 
         // Navigate to login screen or home screen
         Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => MainNavigationScaffold(isLoggedIn: false)),
+          MaterialPageRoute(
+              builder: (context) => MainNavigationScaffold(isLoggedIn: false)),
         );
       } else {
         // Show error message
