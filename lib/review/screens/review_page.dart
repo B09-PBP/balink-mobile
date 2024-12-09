@@ -1,6 +1,6 @@
 import 'package:balink_mobile/left_drawer.dart';
 import 'package:balink_mobile/review/models/review_models.dart';
-import 'package:balink_mobile/review/screens/review_product_page.dart';
+import 'package:balink_mobile/review/screens/review_ride_page.dart';
 import 'package:flutter/material.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
 import 'package:provider/provider.dart';
