@@ -4,8 +4,8 @@ import 'package:google_fonts/google_fonts.dart';
 final ThemeData djangoTheme = ThemeData(
   // Updated primary and secondary colors using colorScheme
   colorScheme: ColorScheme.fromSwatch(
-    primarySwatch: Colors.blue,
   ).copyWith(
+    primary: const Color.fromRGBO(32, 73, 255, 1),
     secondary: Colors.yellow.shade500, // Replacing accentColor with secondary
     surface: Colors.grey.shade100, // Replacing background with surface (updated for newer Flutter versions)
   ),

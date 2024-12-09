@@ -22,14 +22,14 @@ class LeftDrawer extends StatelessWidget {
               ),
               accountName: Text(
                 request.loggedIn ? 'Logged In User' : 'Guest',
-                style: TextStyle(
+                style: const TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
                 ),
               ),
               accountEmail: Text(
                 request.loggedIn ? 'user@example.com' : 'Not Logged In',
-                style: TextStyle(
+                style: const TextStyle(
                   color: Colors.white70,
                 ),
               ),
@@ -85,10 +85,10 @@ class LeftDrawer extends StatelessWidget {
         required String title,
         required VoidCallback onTap}) {
     return ListTile(
-      leading: Icon(icon, color: Colors.blue[700]),
+      leading: Icon(icon, color: const Color.fromRGBO(32, 73, 255, 1)),
       title: Text(
         title,
-        style: TextStyle(color: Colors.blue[700]),
+        style: const TextStyle(color:  Color.fromRGBO(32, 73, 255, 1)),
       ),
       onTap: onTap,
     );
