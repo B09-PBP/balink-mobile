@@ -1,3 +1,4 @@
+import 'package:balink_mobile/authentication/profile.dart';
 import 'package:balink_mobile/main_navbar.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -51,7 +52,7 @@ class LeftDrawer extends StatelessWidget {
               context,
               icon: Icons.person,
               title: 'Profile',
-              onTap: () => _showSnackBar(context, 'Profile'),
+              onTap: () => _navigateToProfile(context),
             ),
 
             // Login/Logout/Register Sections Based on Authentication
@@ -101,6 +102,14 @@ class LeftDrawer extends StatelessWidget {
     Navigator.pop(context); // Close the drawer
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text('Navigating to $route...')),
+    );
+  }
+
+  void _navigateToProfile(BuildContext context) {
+    Navigator.pop(context); // Close the drawer
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => ProfilePage()),
     );
   }
 
