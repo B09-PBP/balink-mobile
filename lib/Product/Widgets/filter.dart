@@ -6,10 +6,10 @@ class FilterWidget extends StatefulWidget {
   final VoidCallback onReset;
 
   const FilterWidget({
-    Key? key,
+    super.key,
     required this.onApply,
     required this.onReset
-  }) : super(key: key);
+  });
 
   @override
   _FilterWidgetState createState() => _FilterWidgetState();
