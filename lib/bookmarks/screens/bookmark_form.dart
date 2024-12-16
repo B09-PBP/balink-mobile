@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
 import 'package:provider/provider.dart';
-import 'package:balink_mobile/bookmarks/models/bookmark_product_models.dart';
 import 'package:balink_mobile/Product/Models/product_model.dart';
 
 class BookmarkFormPage extends StatefulWidget {
@@ -59,8 +58,15 @@ class _BookmarkFormPageState extends State<BookmarkFormPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Add Bookmark'),
-        backgroundColor: Colors.blue,
+        title: const Text(
+          'Add Bookmark',
+          style: TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
+        backgroundColor:const Color.fromRGBO(32, 73, 255, 1),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),

@@ -10,8 +10,12 @@ class MyHomePage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          'Balink',
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+          'BaLink',
+          style: TextStyle(
+            fontWeight: FontWeight.bold, 
+            fontSize: 20,
+            color: Colors.white,
+          ),
         ),
         centerTitle: true,
         backgroundColor: const Color.fromRGBO(32, 73, 255, 1),
@@ -110,7 +114,7 @@ class MyHomePage extends StatelessWidget {
               // Popular Section
               Container(
                 padding: const EdgeInsets.symmetric(vertical: 20.0),
-                color: Color.fromRGBO(32, 73, 255, 1),
+                color: const Color.fromRGBO(32, 73, 255, 1),
                 child: Column(
                   children: [
                     const Text(
