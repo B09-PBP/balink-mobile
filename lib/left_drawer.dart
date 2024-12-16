@@ -1,6 +1,10 @@
+import 'package:balink_mobile/authentication/profile.dart';
+import 'package:balink_mobile/main_navbar.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
+import 'package:balink_mobile/authentication/login.dart'; // Create this screen
+import 'package:balink_mobile/authentication/register.dart'; // Create this screen
 
 class LeftDrawer extends StatelessWidget {
   const LeftDrawer({super.key});
@@ -28,8 +32,8 @@ class LeftDrawer extends StatelessWidget {
                 ),
               ),
               accountEmail: Text(
-                request.loggedIn ? 'user@example.com' : 'Not Logged In',
-                style: const TextStyle(
+                request.loggedIn ? 'Logged in' : 'Not Logged In',
+                style: TextStyle(
                   color: Colors.white70,
                 ),
               ),
@@ -48,7 +52,7 @@ class LeftDrawer extends StatelessWidget {
               context,
               icon: Icons.person,
               title: 'Profile',
-              onTap: () => _showSnackBar(context, 'Profile'),
+              onTap: () => _navigateToProfile(context),
             ),
 
             // Login/Logout/Register Sections Based on Authentication
@@ -57,13 +61,13 @@ class LeftDrawer extends StatelessWidget {
                 context,
                 icon: Icons.login,
                 title: 'Login',
-                onTap: () => _showSnackBar(context, 'Login'),
+                onTap: () => _navigateToLogin(context),
               ),
               _buildDrawerItem(
                 context,
                 icon: Icons.person_add,
                 title: 'Register',
-                onTap: () => _showSnackBar(context, 'Register'),
+                onTap: () => _navigateToRegister(context),
               ),
             ],
 
@@ -72,7 +76,7 @@ class LeftDrawer extends StatelessWidget {
                 context,
                 icon: Icons.logout,
                 title: 'Logout',
-                onTap: () => _showSnackBar(context, 'Logout'),
+                onTap: () => _performLogout(context),
               ),
           ],
         ),
@@ -82,8 +86,8 @@ class LeftDrawer extends StatelessWidget {
 
   Widget _buildDrawerItem(BuildContext context,
       {required IconData icon,
-        required String title,
-        required VoidCallback onTap}) {
+      required String title,
+      required VoidCallback onTap}) {
     return ListTile(
       leading: Icon(icon, color: const Color.fromRGBO(32, 73, 255, 1)),
       title: Text(
@@ -99,5 +103,71 @@ class LeftDrawer extends StatelessWidget {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text('Navigating to $route...')),
     );
+  }
+
+  void _navigateToProfile(BuildContext context) {
+    Navigator.pop(context); // Close the drawer
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => ProfilePage()),
+    );
+  }
+
+  void _navigateToLogin(BuildContext context) {
+    Navigator.pop(context); // Close the drawer
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => LoginPage()),
+    );
+  }
+
+  void _navigateToRegister(BuildContext context) {
+    Navigator.pop(context); // Close the drawer
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => RegisterPage()),
+    );
+  }
+
+  void _performLogout(BuildContext context) async {
+    final request = context.read<CookieRequest>();
+
+    try {
+      // Assuming your Django logout endpoint is at '/logout-mobile/'
+      final response =
+          await request.logout('http://127.0.0.1:8000/auth/logout-mobile/');
+
+      if (response['status'] == true) {
+        // Show success message
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(response['message'] ?? 'Logout successful'),
+            backgroundColor: Colors.green,
+          ),
+        );
+
+        // Navigate to login screen or home screen
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(
+              builder: (context) => MainNavigationScaffold(isLoggedIn: false)),
+        );
+      } else {
+        // Show error message
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(response['message'] ?? 'Logout failed'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } catch (e) {
+      // Handle any network or other errors
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('An error occurred: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
 }
