@@ -237,7 +237,7 @@ class _RegisterPageState extends State<RegisterPage> {
     );
 
     // Handle Registration Response
-    if (response['status'] == 'success') {
+    if (response['status']) {
       _handleSuccessfulRegistration();
     } else {
       _showErrorDialog(response['message']);
