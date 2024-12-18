@@ -144,7 +144,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         borderRadius: BorderRadius.circular(12),
                       ),
                     ),
-                    child: Text(
+                    child: const Text(
                       'Create Account',
                       style: TextStyle(
                         fontSize: 18.0,
@@ -267,8 +267,8 @@ class _RegisterPageState extends State<RegisterPage> {
     ScaffoldMessenger.of(context)
       ..hideCurrentSnackBar()
       ..showSnackBar(
-        SnackBar(
-          content: const Text('Registration successful!'),
+        const SnackBar(
+          content: Text('Registration successful!'),
           backgroundColor: Colors.green,
         ),
       );

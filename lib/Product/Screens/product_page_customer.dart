@@ -1,4 +1,5 @@
 import 'package:balink_mobile/Product/Screens/add_product_page.dart';
+import 'package:balink_mobile/Product/Widgets/vehicle_carousel.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:balink_mobile/Product/Models/product_model.dart';
@@ -8,17 +9,22 @@ import 'package:provider/provider.dart';
 import 'product_detail_page.dart';
 import 'package:balink_mobile/Product/Widgets/filter.dart';
 
-class ProductPageCustomer extends StatefulWidget {
-  const ProductPageCustomer({super.key});
+class ProductPageAdmin extends StatefulWidget {
+  const ProductPageAdmin({super.key});
 
   @override
-  State<ProductPageCustomer> createState() => _ProductPageState();
+  State<ProductPageAdmin> createState() => _ProductPageState();
 }
 
-class _ProductPageState extends State<ProductPageCustomer> with SingleTickerProviderStateMixin {
+class _ProductPageState extends State<ProductPageAdmin> with SingleTickerProviderStateMixin {
   String _searchQuery = '';
   double _minPrice = 0;
   double _maxPrice = 1000000;
+  int _minKm = 0;
+  int _maxKm = 1000000;
+  int _minYear = 2000;
+  int _maxYear = DateTime.now().year;
+
   late AnimationController _animationController;
   late Animation<double> _animation;
   List<Product> _allProducts = [];
@@ -28,12 +34,12 @@ class _ProductPageState extends State<ProductPageCustomer> with SingleTickerProv
   void initState() {
     super.initState();
     _animationController = AnimationController(
-      duration: const Duration(milliseconds: 500),
+      duration: const Duration(milliseconds: 800),
       vsync: this,
     );
     _animation = CurvedAnimation(
       parent: _animationController,
-      curve: Curves.easeInOut,
+      curve: Curves.elasticOut,
     );
   }
 
@@ -67,16 +73,26 @@ class _ProductPageState extends State<ProductPageCustomer> with SingleTickerProv
         final matchesPrice = product.fields.price >= _minPrice &&
             product.fields.price <= _maxPrice;
 
-        return matchesQuery && matchesPrice;
+        final matchesKm = product.fields.kmDriven >= _minKm &&
+            product.fields.kmDriven <= _maxKm;
+
+        final matchesYear = product.fields.year >= _minYear &&
+            product.fields.year <= _maxYear;
+
+        return matchesQuery && matchesPrice && matchesKm && matchesYear;
       }).toList();
     });
   }
 
-  void _updateFilter(String query, double minPrice, double maxPrice) {
+  void _updateFilter(String query, double minPrice, double maxPrice, int minKm, int maxKm, int minYear, int maxYear) {
     setState(() {
       _searchQuery = query;
       _minPrice = minPrice;
       _maxPrice = maxPrice;
+      _minKm =  minKm;
+      _maxKm = maxKm;
+      _minYear = minYear;
+      _maxYear= maxYear;
       _filterProducts();
     });
   }
@@ -86,6 +102,10 @@ class _ProductPageState extends State<ProductPageCustomer> with SingleTickerProv
       _searchQuery = '';
       _minPrice = 0;
       _maxPrice = 1000000;
+      _minKm = 0;
+      _maxKm = 1000000;
+      _minYear = 2000;
+      _maxYear = DateTime.now().year;
       _filteredProducts = _allProducts;
     });
   }
@@ -98,16 +118,85 @@ class _ProductPageState extends State<ProductPageCustomer> with SingleTickerProv
     });
   }
 
+  void _showDeleteConfirmationDialog(BuildContext context, Product product) {
+    showDialog(
+      context: context,
+      builder: (BuildContext dialogContext) {
+        final request = context.read<CookieRequest>();
+        return AlertDialog(
+          title: const Text('Delete Product'),
+          content: Text(
+              'Are you sure you want to delete ${product.fields.name}?'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(),
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+              onPressed: () async {
+                Navigator.of(dialogContext).pop(); // Close the dialog
+
+                try {
+                  // Perform delete request
+                  final response = await request.post(
+                      'http://127.0.0.1:8000/product/delete_product_flutter/${product
+                          .pk}/',
+                      {}
+                  );
+
+                  if (response['status'] == 'success') {
+                    // Refresh the product list
+                    await _refreshProducts(request);
+
+                    // Show success message
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                            '${product.fields.name} deleted successfully'),
+                        backgroundColor: Colors.green,
+                      ),
+                    );
+                  } else {
+                    // Show error message
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                            'Failed to delete product: ${response['message']}'),
+                        backgroundColor: Colors.red,
+                      ),
+                    );
+                  }
+                } catch (e) {
+                  // Show network or unexpected error
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Error deleting product: $e'),
+                      backgroundColor: Colors.red,
+                    ),
+                  );
+                }
+              },
+              child: const Text('Delete'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final request = context.watch<CookieRequest>();
-    final colorScheme = Theme.of(context).colorScheme;
+    final colorScheme = Theme
+        .of(context)
+        .colorScheme;
 
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text(
-          'Vehicle Marketplace',
+          'Our Products',
           style: TextStyle(
             fontWeight: FontWeight.bold,
             color: colorScheme.onPrimary,
@@ -141,6 +230,13 @@ class _ProductPageState extends State<ProductPageCustomer> with SingleTickerProv
         child: CustomScrollView(
           physics: const BouncingScrollPhysics(),
           slivers: [
+            const SliverToBoxAdapter(
+              child: Padding(
+                padding: EdgeInsets.symmetric(vertical: 10),
+                child: RentalPromoCarousel(),
+              ),
+            ),
+
             SliverToBoxAdapter(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -231,7 +327,8 @@ class _ProductPageState extends State<ProductPageCustomer> with SingleTickerProv
                         return FadeTransition(
                           opacity: _animation,
                           child: ScaleTransition(
-                            scale: Tween<double>(begin: 0.9, end: 1.0).animate(_animation),
+                            scale: Tween<double>(begin: 0.9, end: 1.0).animate(
+                                _animation),
                             child: _buildProductCard(context, product),
                           ),
                         );
@@ -263,197 +360,208 @@ class _ProductPageState extends State<ProductPageCustomer> with SingleTickerProv
       ),
     );
   }
-}
 
-Widget _buildProductCard(BuildContext context, Product product) {
-  return LayoutBuilder(
-    builder: (context, constraints) {
-      return GestureDetector(
-        onTap: () {
-          // Navigate to the ProductDetailPage when the card is tapped
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => ProductDetailPage(product: product),
+  Widget _buildProductCard(BuildContext context, Product product) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return GestureDetector(
+          onTap: () {
+            // Navigate to the ProductDetailPage when the card is tapped
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => ProductDetailPage(product: product),
+              ),
+            );
+          },
+          child: Card(
+            elevation: 4,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(15),
             ),
-          );
-        },
-        child: Card(
-          elevation: 4,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(15),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              // Image Section
-              ClipRRect(
-                borderRadius: const BorderRadius.vertical(
-                  top: Radius.circular(15),
-                ),
-                child: AspectRatio(
-                  aspectRatio: 16 / 9,
-                  child: Image.network(
-                    product.fields.imageUrl,
-                    fit: BoxFit.cover,
-                    loadingBuilder: (context, child, loadingProgress) {
-                      if (loadingProgress == null) return child;
-                      return Center(
-                        child: CircularProgressIndicator(
-                          value: loadingProgress.expectedTotalBytes != null
-                              ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
-                              : null,
-                        ),
-                      );
-                    },
-                    errorBuilder: (context, error, stackTrace) {
-                      return const Center(
-                        child: Icon(
-                          Icons.broken_image,
-                          size: 50,
-                          color: Colors.grey,
-                        ),
-                      );
-                    },
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Image Section
+                ClipRRect(
+                  borderRadius: const BorderRadius.vertical(
+                    top: Radius.circular(15),
+                  ),
+                  child: AspectRatio(
+                    aspectRatio: 16 / 9,
+                    child: Image.network(
+                      product.fields.imageUrl,
+                      fit: BoxFit.cover,
+                      loadingBuilder: (context, child, loadingProgress) {
+                        if (loadingProgress == null) return child;
+                        return Center(
+                          child: CircularProgressIndicator(
+                            value: loadingProgress.expectedTotalBytes != null
+                                ? loadingProgress.cumulativeBytesLoaded /
+                                loadingProgress.expectedTotalBytes!
+                                : null,
+                          ),
+                        );
+                      },
+                      errorBuilder: (context, error, stackTrace) {
+                        return const Center(
+                          child: Icon(
+                            Icons.broken_image,
+                            size: 50,
+                            color: Colors.grey,
+                          ),
+                        );
+                      },
+                    ),
                   ),
                 ),
-              ),
 
-              // Product Details
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    // Product Name
-                    Text(
-                      product.fields.name,
-                      style: const TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.black87,
+                // Product Details
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      // Product Name
+                      Text(
+                        product.fields.name,
+                        style: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.black87,
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
                       ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    const SizedBox(height: 8),
+                      const SizedBox(height: 8),
 
-                    // Vehicle Details and Price
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Expanded(
-                          child: Wrap(
-                            spacing: 4,
-                            runSpacing: 4,
-                            children: [
-                              _buildDetailChip(
-                                icon: Icons.calendar_month,
-                                text: product.fields.year.toStringAsFixed(0),
-                              ),
-                              _buildDetailChip(
-                                icon: Icons.speed,
-                                text: "${product.fields.kmDriven.toStringAsFixed(0)} km",
-                              ),
-                            ],
+                      // Vehicle Details and Price
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Expanded(
+                            child: Wrap(
+                              spacing: 4,
+                              runSpacing: 4,
+                              children: [
+                                _buildDetailChip(
+                                  icon: Icons.calendar_month,
+                                  text: product.fields.year.toStringAsFixed(0),
+                                ),
+                                _buildDetailChip(
+                                  icon: Icons.speed,
+                                  text: "${product.fields.kmDriven
+                                      .toStringAsFixed(0)} km",
+                                ),
+                              ],
+                            ),
                           ),
-                        ),
-                        Text(
-                          "Rp. ${product.fields.price.toStringAsFixed(2)}/day",
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.green.shade700,
+                          Text(
+                            "Rp. ${product.fields.price.toStringAsFixed(
+                                2)}/day",
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.green.shade700,
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
+                        ],
+                      ),
 
-                    const SizedBox(height: 8),
+                      const SizedBox(height: 8),
 
-                    // Action Buttons
-                    Row(
-                      children: [
-                        Expanded(
-                          child: ElevatedButton(
+                      // Action Buttons
+                      Row(
+                        children: [
+                          Expanded(
+                            child: ElevatedButton(
+                              onPressed: () {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(
+                                        'Added ${product.fields.name} to cart'),
+                                    backgroundColor: Colors.green,
+                                  ),
+                                );
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.yellow.shade700,
+                                foregroundColor: Colors.black,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 8),
+                              ),
+                              child: const FittedBox(
+                                child: Text(
+                                  "Add to Cart",
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 12,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                          // Delete Button
+                          IconButton(
+                            icon: const Icon(Icons.delete, color: Colors.red),
+                            onPressed: () =>
+                                _showDeleteConfirmationDialog(context, product),
+                          ),
+                          IconButton(
+                            constraints: const BoxConstraints(),
+                            padding: EdgeInsets.zero,
+                            icon: const Icon(Icons.favorite_border, size: 20),
                             onPressed: () {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
-                                  content: Text('Added ${product.fields.name} to cart'),
-                                  backgroundColor: Colors.green,
+                                  content: Text('Added ${product.fields
+                                      .name} to favorites'),
+                                  backgroundColor: Colors.pink,
                                 ),
                               );
                             },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.yellow.shade700,
-                              foregroundColor: Colors.black,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              padding: const EdgeInsets.symmetric(vertical: 8),
-                            ),
-                            child: const FittedBox(
-                              child: Text(
-                                "Add to Cart",
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 12,
-                                ),
-                              ),
-                            ),
+                            color: Colors.pink.shade300,
                           ),
-                        ),
-                        const SizedBox(width: 8),
-                        IconButton(
-                          constraints: const BoxConstraints(),
-                          padding: EdgeInsets.zero,
-                          icon: const Icon(Icons.favorite_border, size: 20),
-                          onPressed: () {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text('Added ${product.fields.name} to favorites'),
-                                backgroundColor: Colors.pink,
-                              ),
-                            );
-                          },
-                          color: Colors.pink.shade300,
-                        ),
-                      ],
-                    ),
-                  ],
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
-      );
-    },
-  );
-}
+        );
+      },
+    );
+  }
 
 // Helper method for creating detail chips
-Widget _buildDetailChip({required IconData icon, required String text}) {
-  return Container(
-    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
-    decoration: BoxDecoration(
-      color: Colors.grey.shade200,
-      borderRadius: BorderRadius.circular(8),
-    ),
-    child: Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Icon(icon, size: 12, color: Colors.grey.shade600),
-        const SizedBox(width: 2),
-        Text(
-          text,
-          style: TextStyle(
-            fontSize: 10,
-            color: Colors.grey.shade800,
+  Widget _buildDetailChip({required IconData icon, required String text}) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+      decoration: BoxDecoration(
+        color: Colors.grey.shade200,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 12, color: Colors.grey.shade600),
+          const SizedBox(width: 2),
+          Text(
+            text,
+            style: TextStyle(
+              fontSize: 10,
+              color: Colors.grey.shade800,
+            ),
           ),
-        ),
-      ],
-    ),
-  );
+        ],
+      ),
+    );
+  }
 }
