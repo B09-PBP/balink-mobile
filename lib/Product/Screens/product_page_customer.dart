@@ -370,7 +370,7 @@ class _ProductPageState extends State<ProductPageAdmin> with SingleTickerProvide
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => ProductDetailPage(product: product),
+                builder: (context) => ProductDetailPage(product: product, allProducts: _allProducts),
               ),
             );
           },

@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
 import 'package:provider/provider.dart';
@@ -12,17 +11,14 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
-  // Form controllers for capturing user input
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController = TextEditingController();
 
-  // Define BaLink's color palette
-  final Color _primaryBlue = const Color(0xFF1E88E5); // Vibrant blue
-  final Color _accentYellow = const Color(0xFFFFC107); // Bright yellow
+  final Color _primaryBlue = const Color(0xFF1E88E5);
+  final Color _accentYellow = const Color(0xFFFFC107);
 
-  // Default privilege selection
   String _selectedPrivilege = "customer";
 
   @override
@@ -74,7 +70,6 @@ class _RegisterPageState extends State<RegisterPage> {
                   ),
                   const SizedBox(height: 24.0),
 
-                  // Input Fields with Custom Styling
                   _buildCustomTextField(
                     controller: _usernameController,
                     label: 'Username',
@@ -224,7 +219,6 @@ class _RegisterPageState extends State<RegisterPage> {
       return;
     }
 
-    // API Registration Call
     final response = await request.post(
       "http://127.0.0.1:8000/auth/register-mobile/",
       jsonEncode({
