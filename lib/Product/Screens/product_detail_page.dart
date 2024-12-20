@@ -1,10 +1,38 @@
 import 'package:flutter/material.dart';
 import 'package:balink_mobile/Product/Models/product_model.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class ProductDetailPage extends StatelessWidget {
   final Product product;
 
   const ProductDetailPage({super.key, required this.product});
+
+  Future<void> _addToCart(BuildContext context, String productId) async {
+    final url = Uri.parse("http://127.0.0.1:8000/api/add/$productId/");
+    try {
+      final response = await http.post(
+        url,
+        headers: {"Content-Type": "application/json"},
+        body: json.encode({
+          'product_id': productId,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Added ${product.fields.name} to cart'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      } else {
+        print("Failed to add item to cart: ${response.body}");
+      }
+    } catch (e) {
+      print("Error adding item to cart: $e");
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -52,7 +80,7 @@ class ProductDetailPage extends StatelessWidget {
                         child: CircularProgressIndicator(
                           value: loadingProgress.expectedTotalBytes != null
                               ? loadingProgress.cumulativeBytesLoaded /
-                              loadingProgress.expectedTotalBytes!
+                                  loadingProgress.expectedTotalBytes!
                               : null,
                         ),
                       );
@@ -63,7 +91,8 @@ class ProductDetailPage extends StatelessWidget {
                   bottom: 16,
                   right: 16,
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(
                       color: colorScheme.primary,
                       borderRadius: BorderRadius.circular(8),
@@ -110,7 +139,8 @@ class ProductDetailPage extends StatelessWidget {
                       ),
                       _buildDetailChip(
                         icon: Icons.speed,
-                        text: "${product.fields.kmDriven.toStringAsFixed(0)} km",
+                        text:
+                            "${product.fields.kmDriven.toStringAsFixed(0)} km",
                       ),
                     ],
                   ),
@@ -147,12 +177,7 @@ class ProductDetailPage extends StatelessWidget {
                       Expanded(
                         child: ElevatedButton(
                           onPressed: () {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text('Added ${product.fields.name} to cart'),
-                                backgroundColor: Colors.green,
-                              ),
-                            );
+                            _addToCart(context, product.pk.toString());
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.yellow.shade700,
@@ -177,7 +202,8 @@ class ProductDetailPage extends StatelessWidget {
                         onPressed: () {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
-                              content: Text('Added ${product.fields.name} to favorites'),
+                              content: Text(
+                                  'Added ${product.fields.name} to favorites'),
                               backgroundColor: Colors.pink,
                             ),
                           );
