@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:balink_mobile/Product/Screens/add_product_page.dart';
 import 'package:balink_mobile/cart/models/cart_models.dart';
 import 'package:balink_mobile/cart/models/ride_models.dart';
@@ -170,27 +169,30 @@ class _ProductPageState extends State<ProductPageAdmin> with SingleTickerProvide
     );
   }
 
-  Future<void> _addToCart(int productId) async {
-    final url = Uri.parse('http://127.0.0.1:8000/cart/add-to-cart-flutter/');
+  // Instead of http.post, use the CookieRequest instance:
+  Future<void> _addToCart(String productId) async {
+    final request = context.read<CookieRequest>();
+
     try {
-      final response = await http.post(
-        url,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: json.encode({'product_id': productId}),
+      final response = await request.post(
+          'http://127.0.0.1:8000/cart/add-to-cart-flutter/$productId/',
+          {}  // Empty map since we're passing the ID in the URL
       );
 
-      if (response.statusCode == 200) {
+      if (response['message'] != null) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Product added to cart!')),
+          SnackBar(
+            content: Text(response['message']),
+            backgroundColor: Colors.green,
+          ),
         );
-      } else {
-        throw Exception('Failed to add product to cart: ${response.body}');
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error adding to cart: $e')),
+        SnackBar(
+          content: Text('Error adding to cart: $e'),
+          backgroundColor: Colors.red,
+        ),
       );
     }
   }
@@ -481,7 +483,7 @@ class _ProductPageState extends State<ProductPageAdmin> with SingleTickerProvide
                           Expanded(
                             child: ElevatedButton(
                               onPressed: () {
-                                _addToCart(product.pk as int); // Panggil fungsi tambah ke cart dengan ID produk
+                                _addToCart(product.pk); // Panggil fungsi tambah ke cart dengan ID produk
                               },
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.yellow.shade700,
