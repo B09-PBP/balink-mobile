@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
 import 'dart:convert';
 import '../models/article_model.dart';
+import 'article_page.dart';
 
 class ArticleForm extends StatefulWidget {
   final Article? article;
@@ -62,6 +63,10 @@ class _ArticleFormState extends State<ArticleForm> {
               controller: _titleController,
               decoration: const InputDecoration(
                 labelText: 'Title',
+                prefixIcon: Icon(
+                  Icons.title,
+                  color: Colors.blue, // Blue color for title
+                ),
                 border: OutlineInputBorder(),
               ),
               validator: (value) =>
@@ -72,6 +77,10 @@ class _ArticleFormState extends State<ArticleForm> {
               controller: _contentController,
               decoration: const InputDecoration(
                 labelText: 'Content',
+                prefixIcon: Icon(
+                  Icons.text_fields,
+                  color: Color.fromARGB(255, 142, 204, 255), // Light blue for content
+                ),
                 border: OutlineInputBorder(),
               ),
               maxLines: 5,
@@ -83,6 +92,10 @@ class _ArticleFormState extends State<ArticleForm> {
               controller: _imageController,
               decoration: const InputDecoration(
                 labelText: 'Main Image URL',
+                prefixIcon: Icon(
+                  Icons.image,
+                  color: Colors.blue, // Blue color for main image
+                ),
                 border: OutlineInputBorder(),
               ),
               validator: (value) =>
@@ -93,6 +106,10 @@ class _ArticleFormState extends State<ArticleForm> {
               controller: _image1Controller,
               decoration: const InputDecoration(
                 labelText: 'Additional Image 1 URL',
+                prefixIcon: Icon(
+                  Icons.image,
+                  color: Color.fromARGB(255, 142, 204, 255), // Light blue for additional image 1
+                ),
                 border: OutlineInputBorder(),
               ),
             ),
@@ -101,6 +118,10 @@ class _ArticleFormState extends State<ArticleForm> {
               controller: _image2Controller,
               decoration: const InputDecoration(
                 labelText: 'Additional Image 2 URL',
+                prefixIcon: Icon(
+                  Icons.image,
+                  color: Color.fromARGB(255, 142, 204, 255), // Light blue for additional image 2
+                ),
                 border: OutlineInputBorder(),
               ),
             ),
@@ -109,6 +130,10 @@ class _ArticleFormState extends State<ArticleForm> {
               controller: _image3Controller,
               decoration: const InputDecoration(
                 labelText: 'Additional Image 3 URL',
+                prefixIcon: Icon(
+                  Icons.image,
+                  color: Color.fromARGB(255, 142, 204, 255), // Light blue for additional image 3
+                ),
                 border: OutlineInputBorder(),
               ),
             ),
@@ -116,11 +141,10 @@ class _ArticleFormState extends State<ArticleForm> {
             ElevatedButton(
               onPressed: () async {
                 if (_formKey.currentState!.validate()) {
-                  // Make sure your URL is correct and ends with /
                   final response = await request.postJson(
-                    "http://127.0.0.1:8000/article/create-flutter/", // Update this URL to match your Django endpoint
+                    "http://127.0.0.1:8000/article/create-flutter/",
                     jsonEncode({
-                      'user': 1, // Add user ID
+                      'user': 1, 
                       'title': _titleController.text,
                       'content': _contentController.text,
                       'image': _imageController.text,
@@ -134,16 +158,23 @@ class _ArticleFormState extends State<ArticleForm> {
                     try {
                       if (response['status'] == 'success') {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                              content: Text("Article saved successfully!")),
+                          const SnackBar(content: Text("Article updated successfully!")),
                         );
-                        Navigator.pop(context);
+                        Navigator.pop(context, true); 
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                                "Failed to save article: ${response['message'] ?? 'Unknown error'}"),
+                            backgroundColor: Colors.red,
+                          ),
+                        );
                       }
                     } catch (e) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
                           content: Text(
-                              "Error saving article. Check your endpoint URL."),
+                              "Error saving article. Check your endpoint URL or response format."),
                           backgroundColor: Colors.red,
                         ),
                       );

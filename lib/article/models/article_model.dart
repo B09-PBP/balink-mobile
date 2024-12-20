@@ -36,25 +36,25 @@ class Article {
 
 class Fields {
   int user;
-  dynamic ride;
+  int? ride; 
   String title;
   String content;
   String image;
-  List<dynamic> comments;
-  String image1;
-  String image2;
-  String image3;
+  List<String> comments; 
+  String? image1; 
+  String? image2; 
+  String? image3;
 
   Fields({
     required this.user,
-    required this.ride,
+    this.ride, 
     required this.title,
     required this.content,
     required this.image,
     required this.comments,
-    required this.image1,
-    required this.image2,
-    required this.image3,
+    this.image1,
+    this.image2, 
+    this.image3, 
   });
 
   factory Fields.fromJson(Map<String, dynamic> json) => Fields(
@@ -63,7 +63,7 @@ class Fields {
         title: json["title"],
         content: json["content"],
         image: json["image"],
-        comments: List<dynamic>.from(json["comments"].map((x) => x)),
+        comments: List<String>.from(json["comments"].map((x) => x.toString())),
         image1: json["image1"],
         image2: json["image2"],
         image3: json["image3"],
