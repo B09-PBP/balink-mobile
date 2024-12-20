@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'dart:convert';
 
 class CartWidget extends StatelessWidget {
-  final ProductEntry cart;
+  final CartEntry cart;
   final VoidCallback? onDelete;
   final VoidCallback? onEdit;
 
@@ -40,7 +40,7 @@ class CartWidget extends StatelessWidget {
                       onPressed: onEdit,
                     ),
                     IconButton(
-                      icon: const Icon(Icons.delete, color: Colors.red),
+                      icon: const Icon(Icons.delete_forever_outlined, color: Colors.red),
                       onPressed: onDelete,
                     ),
                   ],

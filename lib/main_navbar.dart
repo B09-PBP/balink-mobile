@@ -1,4 +1,5 @@
 import 'package:balink_mobile/authentication/login.dart';
+import 'package:balink_mobile/cart/screens/cart.dart';
 import 'package:balink_mobile/landing.dart';
 import 'package:flutter/material.dart';
 import 'package:balink_mobile/left_drawer.dart';
@@ -35,7 +36,7 @@ class _MainNavigationScaffoldState extends State<MainNavigationScaffold> {
           ? const Placeholder(color: Colors.orange) // Article Page
           : const LoginPage(),
       widget.isLoggedIn
-          ? const Placeholder(color: Colors.purple)  // Cart Page
+          ? const CartPage() // Cart Page
           : const LoginPage(),
     ];
   }

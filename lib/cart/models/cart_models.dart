@@ -1,65 +1,65 @@
-// To parse this JSON data, do
-//
-//     final productEntry = productEntryFromJson(jsonString);
-
 import 'dart:convert';
 
-List<ProductEntry> productEntryFromJson(String str) => List<ProductEntry>.from(json.decode(str).map((x) => ProductEntry.fromJson(x)));
+class CartEntry {
+  final String model;
+  final int pk;
+  final CartFields fields;
 
-String productEntryToJson(List<ProductEntry> data) => json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
+  CartEntry({
+    required this.model,
+    required this.pk,
+    required this.fields,
+  });
 
-class ProductEntry {
-    String model;
-    int pk;
-    Fields fields;
-
-    ProductEntry({
-        required this.model,
-        required this.pk,
-        required this.fields,
-    });
-
-    factory ProductEntry.fromJson(Map<String, dynamic> json) => ProductEntry(
+  factory CartEntry.fromJson(Map<String, dynamic> json) => CartEntry(
         model: json["model"],
         pk: json["pk"],
-        fields: Fields.fromJson(json["fields"]),
-    );
+        fields: CartFields.fromJson(json["fields"]),
+      );
 
-    Map<String, dynamic> toJson() => {
+  Map<String, dynamic> toJson() => {
         "model": model,
         "pk": pk,
         "fields": fields.toJson(),
-    };
+      };
 }
 
-class Fields {
-    int user;
-    String name;
-    DateTime date;
-    String address;
-    List<String> car;
+class CartFields {
+  final int user;
+  final String name;
+  final DateTime date;
+  final String address;
+  final List<String> car;
 
-    Fields({
-        required this.user,
-        required this.name,
-        required this.date,
-        required this.address,
-        required this.car,
-    });
+  CartFields({
+    required this.user,
+    required this.name,
+    required this.date,
+    required this.address,
+    required this.car,
+  });
 
-    factory Fields.fromJson(Map<String, dynamic> json) => Fields(
+  factory CartFields.fromJson(Map<String, dynamic> json) => CartFields(
         user: json["user"],
         name: json["name"],
         date: DateTime.parse(json["date"]),
         address: json["address"],
         car: List<String>.from(json["car"].map((x) => x)),
-    );
+      );
 
-    Map<String, dynamic> toJson() => {
+  Map<String, dynamic> toJson() => {
         "user": user,
         "name": name,
         "date": "${date.year.toString().padLeft(4, '0')}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}",
         "address": address,
         "car": List<dynamic>.from(car.map((x) => x)),
-    };
+      };
 }
+
+// Fungsi untuk mengonversi JSON menjadi List<CartEntry>
+List<CartEntry> cartEntryFromJson(String str) => List<CartEntry>.from(
+    json.decode(str).map((x) => CartEntry.fromJson(x)));
+
+// Fungsi untuk mengonversi List<CartEntry> ke dalam format JSON
+String cartEntryToJson(List<CartEntry> data) => json.encode(
+    List<dynamic>.from(data.map((x) => x.toJson())));
