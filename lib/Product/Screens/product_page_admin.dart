@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:balink_mobile/Product/Screens/add_product_page.dart';
+import 'package:balink_mobile/Product/Widgets/vehicle_carousel.dart';
 import 'package:balink_mobile/cart/models/cart_models.dart';
 import 'package:balink_mobile/cart/models/ride_models.dart';
 import 'package:flutter/foundation.dart';
@@ -23,6 +24,11 @@ class _ProductPageState extends State<ProductPageAdmin> with SingleTickerProvide
   String _searchQuery = '';
   double _minPrice = 0;
   double _maxPrice = 1000000;
+  int _minKm = 0;
+  int _maxKm = 1000000;
+  int _minYear = 2000;
+  int _maxYear = DateTime.now().year;
+
   late AnimationController _animationController;
   late Animation<double> _animation;
   List<Product> _allProducts = [];
@@ -32,12 +38,12 @@ class _ProductPageState extends State<ProductPageAdmin> with SingleTickerProvide
   void initState() {
     super.initState();
     _animationController = AnimationController(
-      duration: const Duration(milliseconds: 500),
+      duration: const Duration(milliseconds: 800),
       vsync: this,
     );
     _animation = CurvedAnimation(
       parent: _animationController,
-      curve: Curves.easeInOut,
+      curve: Curves.elasticOut,
     );
   }
 
@@ -71,16 +77,26 @@ class _ProductPageState extends State<ProductPageAdmin> with SingleTickerProvide
         final matchesPrice = product.fields.price >= _minPrice &&
             product.fields.price <= _maxPrice;
 
-        return matchesQuery && matchesPrice;
+        final matchesKm = product.fields.kmDriven >= _minKm &&
+            product.fields.kmDriven <= _maxKm;
+
+        final matchesYear = product.fields.year >= _minYear &&
+            product.fields.year <= _maxYear;
+
+        return matchesQuery && matchesPrice && matchesKm && matchesYear;
       }).toList();
     });
   }
 
-  void _updateFilter(String query, double minPrice, double maxPrice) {
+  void _updateFilter(String query, double minPrice, double maxPrice, int minKm, int maxKm, int minYear, int maxYear) {
     setState(() {
       _searchQuery = query;
       _minPrice = minPrice;
       _maxPrice = maxPrice;
+      _minKm =  minKm;
+      _maxKm = maxKm;
+      _minYear = minYear;
+      _maxYear= maxYear;
       _filterProducts();
     });
   }
@@ -90,6 +106,10 @@ class _ProductPageState extends State<ProductPageAdmin> with SingleTickerProvide
       _searchQuery = '';
       _minPrice = 0;
       _maxPrice = 1000000;
+      _minKm = 0;
+      _maxKm = 1000000;
+      _minYear = 2000;
+      _maxYear = DateTime.now().year;
       _filteredProducts = _allProducts;
     });
   }
@@ -242,6 +262,13 @@ class _ProductPageState extends State<ProductPageAdmin> with SingleTickerProvide
         child: CustomScrollView(
           physics: const BouncingScrollPhysics(),
           slivers: [
+            const SliverToBoxAdapter(
+              child: Padding(
+                padding: EdgeInsets.symmetric(vertical: 10),
+                child: RentalPromoCarousel(),
+              ),
+            ),
+
             SliverToBoxAdapter(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -375,7 +402,7 @@ class _ProductPageState extends State<ProductPageAdmin> with SingleTickerProvide
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => ProductDetailPage(product: product),
+                builder: (context) => ProductDetailPage(product: product, allProducts: _allProducts),
               ),
             );
           },
@@ -491,6 +518,8 @@ class _ProductPageState extends State<ProductPageAdmin> with SingleTickerProvide
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(10),
                                 ),
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 8),
                               ),
                               child: const Text("Add to Cart"),
                             ),
