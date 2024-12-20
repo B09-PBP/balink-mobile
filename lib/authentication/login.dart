@@ -5,7 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:balink_mobile/authentication/register.dart';
 
 class LoginPage extends StatefulWidget {
-  final VoidCallback? onLoginSuccess; // Optional callback for login success
+  final VoidCallback? onLoginSuccess;
 
   const LoginPage({
     super.key,
@@ -183,7 +183,7 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                       child: _isLoading
                           ? const CircularProgressIndicator()
-                          : Text(
+                          : const Text(
                         'Login',
                         style: TextStyle(
                           fontSize: 18.0,
