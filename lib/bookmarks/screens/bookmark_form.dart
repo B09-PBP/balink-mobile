@@ -56,45 +56,53 @@ class _BookmarkFormPageState extends State<BookmarkFormPage> {
 
   // Submit form
   Future<void> _submitForm() async {
-    if (_formKey.currentState!.validate()) {
-      if (_selectedProduct == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Please select a product')),
-        );
-        return;
-      }
+    // 1) Lakukan validasi form
+    if (!_formKey.currentState!.validate()) return;
 
-      if (_selectedReminderDate == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Please select a reminder date')),
-        );
-        return;
-      }
+    // 2) Cek apakah product sudah dipilih
+    if (_selectedProduct == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please select a product')),
+      );
+      return;
+    }
 
-      final request = context.read<CookieRequest>();
-      final response = await request.post(
-        'http://127.0.0.1:8000/bookmarks/create-bookmark/',
-        {
-          "product_id": _selectedProduct!.pk.toString(),
-          "note": _noteController.text,
-          "priority": _selectedPriority!,
-          "reminder": _selectedReminderDate!.toIso8601String(),
-        },
+    // 3) Cek apakah tanggal reminder sudah dipilih
+    if (_selectedReminderDate == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please select a reminder date')),
+      );
+      return;
+    }
+
+    // 4) Kirim ke backend
+    final request = context.read<CookieRequest>();
+    final response = await request.post(
+      'http://127.0.0.1:8000/bookmarks/create-bookmark/',
+      {
+        "product_id": _selectedProduct!.pk.toString(),
+        "note": _noteController.text,
+        "priority": _selectedPriority!,
+        "reminder": _selectedReminderDate!.toIso8601String(),
+      },
+    );
+
+    // 5) Tangani respons dari server
+    if (response['status'] == 'success') {
+      // (Opsional) Tampilkan snackbar sebelum pindah halaman
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Bookmark added successfully!')),
       );
 
-      if (response['status'] == 'success') {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Bookmark added successfully!')),
-        );
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const BookmarkPage()),
-        );
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Failed to add bookmark. Please try again.')),
-        );
-      }
+      // 6) Langsung navigate ke BookmarkPage
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const BookmarkPage()),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Failed to add bookmark. Please try again.')),
+      );
     }
   }
 
@@ -214,7 +222,10 @@ class _BookmarkFormPageState extends State<BookmarkFormPage> {
                                   ),
                                   child: Text(
                                     _selectedReminderDate != null
-                                        ? _selectedReminderDate!.toLocal().toString().split(' ')[0]
+                                        ? _selectedReminderDate!
+                                            .toLocal()
+                                            .toString()
+                                            .split(' ')[0]
                                         : 'Select a date',
                                     style: const TextStyle(fontSize: 16),
                                   ),
@@ -227,11 +238,17 @@ class _BookmarkFormPageState extends State<BookmarkFormPage> {
                                   onPressed: _submitForm,
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: const Color.fromRGBO(32, 73, 255, 1),
-                                    padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 32,
+                                      vertical: 12,
+                                    ),
                                   ),
                                   child: const Text(
                                     'Submit',
-                                    style: TextStyle(color: Colors.white, fontSize: 16),
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 16,
+                                    ),
                                   ),
                                 ),
                               ),

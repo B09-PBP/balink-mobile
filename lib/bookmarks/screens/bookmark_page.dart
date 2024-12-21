@@ -5,6 +5,7 @@ import 'package:balink_mobile/bookmarks/models/bookmark_product_models.dart';
 import 'bookmark_form.dart';
 import 'package:balink_mobile/bookmarks/widgets/update_bookmark_modal.dart';
 import 'package:intl/intl.dart';
+import 'package:balink_mobile/left_drawer.dart';
 
 class BookmarkPage extends StatefulWidget {
   const BookmarkPage({super.key});
@@ -114,6 +115,7 @@ class _BookmarkPageState extends State<BookmarkPage> {
     final request = context.watch<CookieRequest>();
 
     return Scaffold(
+      drawer: const LeftDrawer(),
       appBar: AppBar(
         title: const Text(
           'Bookmarks',
