@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-// Conversion functions
 List<Product> productFromJson(String str) =>
     List<Product>.from(json.decode(str).map((x) => Product.fromJson(x)));
 
@@ -19,16 +18,16 @@ class Product {
   });
 
   factory Product.fromJson(Map<String, dynamic> json) => Product(
-    model: json["model"] as String?,
-    pk: json["pk"].toString(),
-    fields: Fields.fromJson(json["fields"] ?? {}),
-  );
+        model: json["model"] as String?,
+        pk: json["pk"].toString(),
+        fields: Fields.fromJson(json["fields"] ?? {}),
+      );
 
   Map<String, dynamic> toJson() => {
-    "model": model,
-    "pk": pk,
-    "fields": fields.toJson(),
-  };
+        "model": model,
+        "pk": pk,
+        "fields": fields.toJson(),
+      };
 }
 
 class Fields {
@@ -49,22 +48,22 @@ class Fields {
   });
 
   factory Fields.fromJson(Map<String, dynamic> json) => Fields(
-    name: json["name"] ?? '',
-    year: _parseYear(json["year"]),
-    price: _parsePrice(json["price"]),
-    kmDriven: _parseKmDriven(json["km_driven"]),
-    imageUrl: json["image_url"] ?? '',
-    dealer: json["dealer"] ?? '',
-  );
+        name: json["name"] ?? '',
+        year: _parseYear(json["year"]),
+        price: _parsePrice(json["price"]),
+        kmDriven: _parseKmDriven(json["km_driven"]),
+        imageUrl: json["image_url"] ?? '',
+        dealer: json["dealer"] ?? '',
+      );
 
   Map<String, dynamic> toJson() => {
-    "name": name,
-    "year": year,
-    "price": price.toString(),
-    "km_driven": kmDriven,
-    "image_url": imageUrl,
-    "dealer": dealer,
-  };
+        "name": name,
+        "year": year,
+        "price": price.toString(),
+        "km_driven": kmDriven,
+        "image_url": imageUrl,
+        "dealer": dealer,
+      };
 
   // Helper parsing methods with fallback values
   static int _parseYear(dynamic value) {
