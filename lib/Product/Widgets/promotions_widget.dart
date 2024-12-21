@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class PromotionsWidget extends StatelessWidget {
-  const PromotionsWidget({Key? key}) : super(key: key);
+  const PromotionsWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
