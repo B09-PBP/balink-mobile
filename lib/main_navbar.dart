@@ -1,4 +1,6 @@
+import 'package:balink_mobile/article/screen/article_page.dart';
 import 'package:flutter/material.dart';
+import 'package:balink_mobile/cart/screens/cart.dart';
 import 'package:balink_mobile/authentication/login.dart';
 import 'package:balink_mobile/landing.dart';
 import 'package:balink_mobile/left_drawer.dart';
@@ -6,7 +8,7 @@ import 'package:balink_mobile/Product/Screens/product_page_admin.dart';
 
 class MainNavigationScaffold extends StatefulWidget {
   final bool isLoggedIn;
-  final int startingPage; // Parameter untuk menentukan halaman awal
+  final int startingPage;
 
   const MainNavigationScaffold({
     super.key,
@@ -15,64 +17,94 @@ class MainNavigationScaffold extends StatefulWidget {
   });
 
   @override
-  State<MainNavigationScaffold> createState() => _MainNavigationScaffoldState();
+  State createState() => _MainNavigationScaffoldState();
 }
 
-class _MainNavigationScaffoldState extends State<MainNavigationScaffold> {
-  late int _selectedIndex; // Ubah ke `late` agar bisa diinisialisasi di `initState`
+class _MainNavigationScaffoldState extends State<MainNavigationScaffold>
+    with TickerProviderStateMixin {
+  late int _selectedIndex;
+  late AnimationController _animationController;
 
   final List<NavigationItem> _navigationItems = [
     const NavigationItem(
-      icon: Icons.home,
+      icon: Icons.home_rounded,
       label: 'Home',
       requiresAuth: false,
       page: MyHomePage(),
     ),
     const NavigationItem(
-      icon: Icons.directions_car,
+      icon: Icons.directions_car_rounded,
       label: 'Product',
       requiresAuth: true,
       page: ProductPageAdmin(),
     ),
     const NavigationItem(
-      icon: Icons.reviews,
+      icon: Icons.star_rounded,
       label: 'Review',
       requiresAuth: true,
       page: Placeholder(color: Colors.green),
     ),
     const NavigationItem(
-      icon: Icons.bookmark,
+      icon: Icons.bookmark_rounded,
       label: 'Bookmark',
       requiresAuth: true,
       page: Placeholder(color: Colors.orange),
     ),
-    const NavigationItem(
-      icon: Icons.article,
+    NavigationItem(
+      icon: Icons.article_rounded,
       label: 'Article',
       requiresAuth: true,
-      page: Placeholder(color: Colors.orange),
+      page: ArticlePage(),
     ),
     const NavigationItem(
-      icon: Icons.shopping_cart,
+      icon: Icons.shopping_cart_rounded,
       label: 'Cart',
       requiresAuth: true,
-      page: Placeholder(color: Colors.purple),
+      page: CartPage(),
     ),
   ];
 
   @override
   void initState() {
     super.initState();
-    // Gunakan parameter startingPage untuk inisialisasi _selectedIndex
     _selectedIndex = widget.startingPage;
+    _animationController = AnimationController(
+      duration: const Duration(milliseconds: 350),
+      vsync: this,
+    );
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
+
+  Widget _buildPage(Widget page) {
+    return AnimatedSwitcher(
+      duration: const Duration(milliseconds: 300),
+      transitionBuilder: (Widget child, Animation<double> animation) {
+        return FadeTransition(
+          opacity: animation,
+          child: SlideTransition(
+            position: Tween<Offset>(
+              begin: const Offset(0.05, 0),
+              end: Offset.zero,
+            ).animate(animation),
+            child: child,
+          ),
+        );
+      },
+      child: page,
+    );
   }
 
   Widget _getCurrentPage() {
     final item = _navigationItems[_selectedIndex];
     if (item.requiresAuth && !widget.isLoggedIn) {
-      return const LoginPage();
+      return _buildPage(const LoginPage());
     }
-    return item.page;
+    return _buildPage(item.page);
   }
 
   void _onItemTapped(int index) {
@@ -87,6 +119,9 @@ class _MainNavigationScaffoldState extends State<MainNavigationScaffold> {
     setState(() {
       _selectedIndex = index;
     });
+    _animationController
+      ..reset()
+      ..forward();
   }
 
   @override
@@ -96,24 +131,62 @@ class _MainNavigationScaffoldState extends State<MainNavigationScaffold> {
     return Scaffold(
       drawer: const LeftDrawer(),
       body: _getCurrentPage(),
-      bottomNavigationBar: BottomNavigationBar(
-        items: _navigationItems
-            .map((item) => BottomNavigationBarItem(
-          icon: Icon(item.icon),
-          label: item.label,
-        ))
-            .toList(),
-        currentIndex: _selectedIndex,
-        selectedItemColor: colorScheme.primary,
-        unselectedItemColor: const Color.fromRGBO(32, 73, 255, 1),
-        onTap: _onItemTapped,
-        type: BottomNavigationBarType.fixed,
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.1),
+              blurRadius: 10,
+              offset: const Offset(0, -5),
+            ),
+          ],
+        ),
+        child: ClipRRect(
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+          child: BottomNavigationBar(
+            items: _navigationItems.map((item) {
+              return BottomNavigationBarItem(
+                icon: AnimatedContainer(
+                  duration: const Duration(milliseconds: 300),
+                  padding: EdgeInsets.all(
+                    _selectedIndex == _navigationItems.indexOf(item) ? 8.0 : 4.0,
+                  ),
+                  decoration: BoxDecoration(
+                    color: _selectedIndex == _navigationItems.indexOf(item)
+                        ? colorScheme.primary.withOpacity(0.2)
+                        : Colors.transparent,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(
+                    item.icon,
+                    size: _selectedIndex == _navigationItems.indexOf(item) ? 28 : 24,
+                  ),
+                ),
+                label: item.label,
+              );
+            }).toList(),
+            currentIndex: _selectedIndex,
+            selectedItemColor: colorScheme.primary,
+            unselectedItemColor: Colors.grey,
+            backgroundColor: Colors.white,
+            elevation: 0,
+            type: BottomNavigationBarType.fixed,
+            selectedLabelStyle: const TextStyle(
+              fontWeight: FontWeight.w600,
+              fontSize: 12,
+            ),
+            unselectedLabelStyle: const TextStyle(
+              fontWeight: FontWeight.normal,
+              fontSize: 11,
+            ),
+            onTap: _onItemTapped,
+          ),
+        ),
       ),
     );
   }
 }
 
-// Helper class to manage navigation items
 class NavigationItem {
   final IconData icon;
   final String label;
