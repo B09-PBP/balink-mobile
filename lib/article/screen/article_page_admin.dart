@@ -58,6 +58,7 @@ class _ArticleAdminPageState extends State<ArticleAdminPage> {
   Future<void> _handleRefresh() async {
     await fetchArticles();
   }
+
   // Function to create article tile with consistent size
   Widget _buildArticleTile(String title, String url) {
     return GestureDetector(
@@ -176,8 +177,9 @@ class _ArticleAdminPageState extends State<ArticleAdminPage> {
                                     height: 250,
                                     width: double.infinity,
                                     fit: BoxFit.cover,
-                                    errorBuilder: (context, error, stackTrace) =>
-                                        Container(
+                                    errorBuilder:
+                                        (context, error, stackTrace) =>
+                                            Container(
                                       height: 250,
                                       color: Colors.grey[300],
                                       child: const Center(
@@ -189,7 +191,8 @@ class _ArticleAdminPageState extends State<ArticleAdminPage> {
                                 ),
                                 const SizedBox(height: 8),
                                 Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 12),
                                   child: Text(
                                     article.fields.title,
                                     style: const TextStyle(
@@ -201,7 +204,8 @@ class _ArticleAdminPageState extends State<ArticleAdminPage> {
                                 ),
                                 const SizedBox(height: 4),
                                 Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 12),
                                   child: Text(
                                     article.fields.content,
                                     maxLines: 2,
@@ -238,22 +242,29 @@ class _ArticleAdminPageState extends State<ArticleAdminPage> {
                                         onPressed: () async {
                                           bool confirm = await showDialog(
                                                 context: context,
-                                                builder: (context) => AlertDialog(
-                                                  title: const Text('Delete Article'),
+                                                builder: (context) =>
+                                                    AlertDialog(
+                                                  title: const Text(
+                                                      'Delete Article'),
                                                   content: const Text(
                                                       'Are you sure you want to delete this article?'),
                                                   actions: [
                                                     TextButton(
                                                       onPressed: () =>
-                                                          Navigator.pop(context, false),
-                                                      child: const Text('Cancel'),
+                                                          Navigator.pop(
+                                                              context, false),
+                                                      child:
+                                                          const Text('Cancel'),
                                                     ),
                                                     TextButton(
                                                       onPressed: () =>
-                                                          Navigator.pop(context, true),
-                                                      child: const Text('Delete',
+                                                          Navigator.pop(
+                                                              context, true),
+                                                      child: const Text(
+                                                          'Delete',
                                                           style: TextStyle(
-                                                              color: Colors.red)),
+                                                              color:
+                                                                  Colors.red)),
                                                     ),
                                                   ],
                                                 ),
@@ -272,7 +283,8 @@ class _ArticleAdminPageState extends State<ArticleAdminPage> {
                                                 ScaffoldMessenger.of(context)
                                                     .showSnackBar(
                                                   const SnackBar(
-                                                    content: Text("Article deleted"),
+                                                    content:
+                                                        Text("Article deleted"),
                                                     backgroundColor: Colors.red,
                                                   ),
                                                 );
@@ -340,7 +352,8 @@ class _ArticleAdminPageState extends State<ArticleAdminPage> {
                   },
                 ),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 24.0),
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 16.0, vertical: 24.0),
                 child: Container(
                   padding: const EdgeInsets.all(16.0),
                   decoration: BoxDecoration(
@@ -372,9 +385,9 @@ class _ArticleAdminPageState extends State<ArticleAdminPage> {
                   ),
                 ),
               ),
-
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 16.0, vertical: 16.0),
                 child: GestureDetector(
                   onTap: () async {
                     const url = 'https://maps.app.goo.gl/kfZPeRu7nzBXYgU56';
@@ -385,8 +398,10 @@ class _ArticleAdminPageState extends State<ArticleAdminPage> {
                     }
                   },
                   child: Container(
-                    padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
-                    width: double.infinity, // Pastikan tombol mengambil lebar penuh
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 12.0, horizontal: 16.0),
+                    width: double
+                        .infinity, // Pastikan tombol mengambil lebar penuh
                     decoration: BoxDecoration(
                       color: Colors.red, // Merah
                       borderRadius: BorderRadius.circular(12),
@@ -412,9 +427,9 @@ class _ArticleAdminPageState extends State<ArticleAdminPage> {
                   ),
                 ),
               ),
-              
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 16.0, vertical: 16.0),
                 child: Container(
                   padding: const EdgeInsets.all(16.0),
                   decoration: BoxDecoration(
@@ -466,7 +481,6 @@ class _ArticleAdminPageState extends State<ArticleAdminPage> {
                   ),
                 ),
               ),
-
             ],
           ),
         ),
