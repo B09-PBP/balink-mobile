@@ -29,6 +29,7 @@ class _ReviewProductAdminPageState extends State<ReviewProductAdminPage> {
   Future<void> deleteReview(CookieRequest request, String reviewId) async {
     final response = await request.post(
       'http://127.0.0.1:8000/review/delete-review-flutter/$reviewId/',
+      // 'hhttp://nevin-thang-balink.pbp.cs.ui.ac.id/review/delete-review-flutter/$reviewId/',
       {},
     );
 
