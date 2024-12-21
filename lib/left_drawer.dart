@@ -149,7 +149,7 @@ class LeftDrawer extends StatelessWidget {
         // Navigate to login screen or home screen
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(
-              builder: (context) => MainNavigationScaffold(isLoggedIn: false)),
+              builder: (context) => MainNavigationScaffold(isLoggedIn: false, startingPage: 0,)),
         );
       } else {
         // Show error message

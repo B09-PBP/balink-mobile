@@ -1,52 +1,85 @@
-import 'package:balink_mobile/authentication/login.dart';
-import 'package:balink_mobile/cart/screens/cart.dart';
-import 'package:balink_mobile/landing.dart';
 import 'package:flutter/material.dart';
+import 'package:balink_mobile/authentication/login.dart';
+import 'package:balink_mobile/landing.dart';
 import 'package:balink_mobile/left_drawer.dart';
 import 'package:balink_mobile/Product/Screens/product_page_admin.dart';
 
 class MainNavigationScaffold extends StatefulWidget {
   final bool isLoggedIn;
-  const MainNavigationScaffold({super.key, required this.isLoggedIn});
+  final int startingPage; // Parameter untuk menentukan halaman awal
+
+  const MainNavigationScaffold({
+    super.key,
+    required this.isLoggedIn,
+    required this.startingPage,
+  });
 
   @override
-  _MainNavigationScaffoldState createState() => _MainNavigationScaffoldState();
+  State<MainNavigationScaffold> createState() => _MainNavigationScaffoldState();
 }
 
 class _MainNavigationScaffoldState extends State<MainNavigationScaffold> {
-  int _selectedIndex = 0;
+  late int _selectedIndex; // Ubah ke `late` agar bisa diinisialisasi di `initState`
 
-  // Pages to navigate
-  late List<Widget> _pages;
+  final List<NavigationItem> _navigationItems = [
+    const NavigationItem(
+      icon: Icons.home,
+      label: 'Home',
+      requiresAuth: false,
+      page: MyHomePage(),
+    ),
+    const NavigationItem(
+      icon: Icons.directions_car,
+      label: 'Product',
+      requiresAuth: true,
+      page: ProductPageAdmin(),
+    ),
+    const NavigationItem(
+      icon: Icons.reviews,
+      label: 'Review',
+      requiresAuth: true,
+      page: Placeholder(color: Colors.green),
+    ),
+    const NavigationItem(
+      icon: Icons.bookmark,
+      label: 'Bookmark',
+      requiresAuth: true,
+      page: Placeholder(color: Colors.orange),
+    ),
+    const NavigationItem(
+      icon: Icons.article,
+      label: 'Article',
+      requiresAuth: true,
+      page: Placeholder(color: Colors.orange),
+    ),
+    const NavigationItem(
+      icon: Icons.shopping_cart,
+      label: 'Cart',
+      requiresAuth: true,
+      page: Placeholder(color: Colors.purple),
+    ),
+  ];
 
   @override
   void initState() {
     super.initState();
-    // Initialize pages, with home page always accessible
-    _pages = [
-      const MyHomePage(), // Home Page (always accessible)
-      widget.isLoggedIn ? const ProductPageAdmin() : const LoginPage(),
-      widget.isLoggedIn
-          ? const Placeholder(color: Colors.green) // Review Page
-          : const LoginPage(),
-      widget.isLoggedIn
-          ? const Placeholder(color: Colors.red)   // Bookmark Page
-          : const LoginPage(),
-      widget.isLoggedIn
-          ? const Placeholder(color: Colors.orange) // Article Page
-          : const LoginPage(),
-      widget.isLoggedIn
-          ? const CartPage() // Cart Page
-          : const LoginPage(),
-    ];
+    // Gunakan parameter startingPage untuk inisialisasi _selectedIndex
+    _selectedIndex = widget.startingPage;
+  }
+
+  Widget _getCurrentPage() {
+    final item = _navigationItems[_selectedIndex];
+    if (item.requiresAuth && !widget.isLoggedIn) {
+      return const LoginPage();
+    }
+    return item.page;
   }
 
   void _onItemTapped(int index) {
-    // If the selected page requires login and user is not logged in,
-    // show login page
-    if (!widget.isLoggedIn && index != 0) {
+    final item = _navigationItems[index];
+    if (item.requiresAuth && !widget.isLoggedIn) {
       Navigator.of(context).push(
-          MaterialPageRoute(builder: (context) => const LoginPage())
+        MaterialPageRoute(builder: (context) => const LoginPage()),
       );
       return;
     }
@@ -62,22 +95,35 @@ class _MainNavigationScaffoldState extends State<MainNavigationScaffold> {
 
     return Scaffold(
       drawer: const LeftDrawer(),
-      body: _pages[_selectedIndex],
+      body: _getCurrentPage(),
       bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(Icons.directions_car), label: 'Product'),
-          BottomNavigationBarItem(icon: Icon(Icons.reviews), label: 'Review'),
-          BottomNavigationBarItem(icon: Icon(Icons.bookmark), label: 'Bookmark'),
-          BottomNavigationBarItem(icon: Icon(Icons.article), label: 'Article'),
-          BottomNavigationBarItem(icon: Icon(Icons.shopping_cart), label: 'Cart'),
-        ],
+        items: _navigationItems
+            .map((item) => BottomNavigationBarItem(
+          icon: Icon(item.icon),
+          label: item.label,
+        ))
+            .toList(),
         currentIndex: _selectedIndex,
         selectedItemColor: colorScheme.primary,
-        unselectedItemColor: Colors.blue,
+        unselectedItemColor: const Color.fromRGBO(32, 73, 255, 1),
         onTap: _onItemTapped,
         type: BottomNavigationBarType.fixed,
       ),
     );
   }
+}
+
+// Helper class to manage navigation items
+class NavigationItem {
+  final IconData icon;
+  final String label;
+  final bool requiresAuth;
+  final Widget page;
+
+  const NavigationItem({
+    required this.icon,
+    required this.label,
+    required this.requiresAuth,
+    required this.page,
+  });
 }

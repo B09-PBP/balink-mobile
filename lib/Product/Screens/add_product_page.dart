@@ -11,7 +11,6 @@ class AddProductPage extends StatefulWidget {
 }
 
 class _AddProductPageState extends State<AddProductPage> {
-  // Create separate form keys for each step
   final List<GlobalKey<FormState>> _formKeys = [
     GlobalKey<FormState>(),
     GlobalKey<FormState>(),
@@ -25,7 +24,6 @@ class _AddProductPageState extends State<AddProductPage> {
   final TextEditingController _imageUrlController = TextEditingController();
   final TextEditingController _dealerController = TextEditingController();
 
-  bool _isLoading = false;
   int _currentStep = 0;
 
   final List<String> _stepTitles = [
@@ -71,9 +69,7 @@ class _AddProductPageState extends State<AddProductPage> {
     bool allFormsValid = _formKeys.every((key) => key.currentState?.validate() ?? false);
 
     if (allFormsValid) {
-      setState(() {
-        _isLoading = true;
-      });
+      setState(() {});
 
       try {
         var url = Uri.parse('http://127.0.0.1:8000/product/add_product_flutter/');
@@ -100,9 +96,7 @@ class _AddProductPageState extends State<AddProductPage> {
       } catch (e) {
         _showErrorSnackBar('Network error: ${e.toString()}');
       } finally {
-        setState(() {
-          _isLoading = false;
-        });
+        setState(() {});
       }
     }
   }

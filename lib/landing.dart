@@ -10,106 +10,250 @@ class MyHomePage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          'Balink',
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+          'BaLink',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 24,
+            color: Colors.white,
+          ),
         ),
         centerTitle: true,
-        backgroundColor: Colors.blue[800],
+        backgroundColor: const Color.fromRGBO(32, 73, 255, 1),
       ),
       body: Container(
-        padding: const EdgeInsets.all(16.0),
         decoration: const BoxDecoration(
           gradient: LinearGradient(
-            colors: [Color(0xFF0D47A1), Color(0xFF1976D2)],
+            colors: [Color.fromRGBO(32, 73, 255, 1), Color.fromRGBO(32, 73, 255, 1)],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
           ),
         ),
         child: SingleChildScrollView(
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              const SizedBox(height: 50),
-              Card(
-                elevation: 10,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Container(
-                  padding: const EdgeInsets.all(20),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Column(
-                    children: [
-                      const Icon(
-                        Icons.directions_car_rounded,
-                        size: 100,
-                        color: Colors.blueAccent,
+              // Header Section
+              Container(
+                height: MediaQuery.of(context).size.height * 0.7,
+                padding: const EdgeInsets.all(16.0),
+                color: Colors.white,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    // Image Section
+                    Expanded(
+                      child: Image.asset(
+                        'assets/image 6.png',
+                        fit: BoxFit.contain,
                       ),
-                      const SizedBox(height: 20),
-                      const Text(
-                        'Welcome to Balink!',
-                        style: TextStyle(
-                          fontSize: 26,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black87,
+                    ),
+                    // Text Section
+                    Expanded(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'Linking your Road with',
+                            style: TextStyle(
+                                fontSize: 26,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black
+                            ),
+                          ),
+                          const Row(
+                            children: [
+                              Text(
+                                'Ba',
+                                style: TextStyle(
+                                  fontSize: 26,
+                                  fontWeight: FontWeight.bold,
+                                  color: Color.fromRGBO(255, 203, 48, 1),
+                                ),
+                              ),
+                              Text(
+                                'Link',
+                                style: TextStyle(
+                                  fontSize: 26,
+                                  fontWeight: FontWeight.bold,
+                                  color: Color.fromRGBO(32, 73, 255, 1),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 20),
+                          ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color.fromRGBO(32, 73, 255, 1),
+                              padding: const EdgeInsets.symmetric(
+                                vertical: 10,
+                                horizontal: 20,
+                              ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8.0),
+                              ),
+                            ),
+                            onPressed: () {
+                              Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(builder: (context) => const MainNavigationScaffold(isLoggedIn: true, startingPage: 1)));
+                            },
+                            child: const Text(
+                              "Let's Go!",
+                              style: TextStyle(
+                                fontSize: 18,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              // Popular Section
+              Container(
+                padding: const EdgeInsets.symmetric(vertical: 20.0),
+                color: const Color.fromRGBO(32, 73, 255, 1),
+                child: Column(
+                  children: [
+                    const Text(
+                      'Our Popular',
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    Wrap(
+                      spacing: 20,
+                      runSpacing: 20,
+                      alignment: WrapAlignment.center,
+                      children: [
+                        _buildPopularCard(
+                          imagePath: 'assets/mercedes-benz-gls-class.png',
+                          title: 'Mercedes-Benz GLS',
+                          price: 'Rp1.000.000/day',
                         ),
-                      ),
-                      const SizedBox(height: 10),
-                      Text(
-                        'Your trusted vehicle rental app in Bali, Denpasar. '
-                            'Explore the beauty of Bali with ease and comfort.',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: Colors.grey[600],
+                        _buildPopularCard(
+                          imagePath: 'assets/motor-keren.jpg',
+                          title: 'Royal Enfield Thunderbird 350X',
+                          price: 'Rp500.000/day',
                         ),
+                        _buildPopularCard(
+                          imagePath: 'assets/BMW-7-Series.png',
+                          title: 'BMW 7 Series 730Ld',
+                          price: 'Rp1.000.000/day',
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              // Services Section
+              Container(
+                padding: const EdgeInsets.all(20.0),
+                color: Colors.white,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    const Text(
+                      'Our Services',
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color:Color.fromRGBO(255, 203, 48, 1),
                       ),
-                    ],
-                  ),
+                    ),
+                    const SizedBox(height: 10),
+                    _buildServiceItem(
+                      title: 'Pick-Up and Drop-Off Service',
+                      description:
+                      'BaLink ensures that customers have the convenience of being picked up and dropped off at their preferred locations.',
+                    ),
+                    _buildServiceItem(
+                      title: 'Daily and Weekly Car Rentals',
+                      description:
+                      'Customers can choose from a variety of vehicles available for rental on both daily and weekly bases.',
+                    ),
+                    _buildServiceItem(
+                      title: '24/7 Customer Support',
+                      description:
+                      'BaLink provides round-the-clock customer support, ensuring that any issues or inquiries are addressed promptly.',
+                    ),
+                  ],
                 ),
-              ),
-              const SizedBox(height: 30),
-              ElevatedButton.icon(
-                onPressed: () {
-                  // Action: Navigate to the product page or onboarding
-                },
-                icon: const Icon(Icons.explore),
-                label: const Text(
-                  'Explore Now',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue[800],
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 50,
-                    vertical: 15,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(25),
-                  ),
-                  elevation: 5,
-                ),
-              ),
-              const SizedBox(height: 20),
-              Text(
-                'Start your journey today!',
-                style: TextStyle(fontSize: 14, color: Colors.white70),
-              ),
-              const SizedBox(height: 40),
-              const Text(
-                '© 2024 Balink, All rights reserved.',
-                style: TextStyle(fontSize: 12, color: Colors.white54),
               ),
             ],
           ),
         ),
       ),
       drawer: const LeftDrawer(),
+    );
+  }
+
+  Widget _buildPopularCard({
+    required String imagePath,
+    required String title,
+    required String price,
+  }) {
+    return Card(
+      elevation: 5,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(15),
+      ),
+      child: Container(
+        width: 200,
+        padding: const EdgeInsets.all(10),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(15),
+        ),
+        child: Column(
+          children: [
+            Image.asset(imagePath, fit: BoxFit.cover, height: 120),
+            const SizedBox(height: 10),
+            Text(
+              title,
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            Text(
+              price,
+              style: const TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+                color:Color.fromRGBO(32, 73, 255, 1),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildServiceItem({required String title, required String description}) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 20.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: const TextStyle(fontSize: 18, color: Color.fromRGBO(32, 73, 255, 1)),
+          ),
+          const SizedBox(height: 5),
+          Text(
+            description,
+            style: const TextStyle(fontSize: 14, color: Colors.black),
+          ),
+        ],
+      ),
     );
   }
 }
