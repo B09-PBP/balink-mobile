@@ -1,29 +1,40 @@
 import 'dart:convert';
-import 'package:balink_mobile/review/screens/review_customerpage.dart';
 import 'package:flutter/material.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
 import 'package:provider/provider.dart';
+import 'package:balink_mobile/review/screens/review_customerpage.dart';
 
-class ReviewFormPage extends StatefulWidget {
+class EditReviewPage extends StatefulWidget {
   final String id;
   final String rideName;
   final String image;
+  final double currentRating;
+  final String currentReviewMessage;
 
-  const ReviewFormPage({
+  const EditReviewPage({
     super.key,
     required this.id,
     required this.rideName,
     required this.image,
+    required this.currentRating,
+    required this.currentReviewMessage,
   });
 
   @override
-  State<ReviewFormPage> createState() => _ReviewFormPageState();
+  State<EditReviewPage> createState() => _EditReviewPageState();
 }
 
-class _ReviewFormPageState extends State<ReviewFormPage> {
+class _EditReviewPageState extends State<EditReviewPage> {
   final _formKey = GlobalKey<FormState>();
-  int _rating = 0;
+  double _rating = 0;
   String _reviewMessage = "";
+
+  @override
+  void initState() {
+    super.initState();
+    _rating = widget.currentRating;
+    _reviewMessage = widget.currentReviewMessage;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +50,7 @@ class _ReviewFormPageState extends State<ReviewFormPage> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              "Add ",
+              "Edit ",
               style: TextStyle(
                 color: yellow,
                 fontWeight: FontWeight.bold,
@@ -64,6 +75,27 @@ class _ReviewFormPageState extends State<ReviewFormPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              const SizedBox(height: 10),
+              const Center(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      "Edit Review ",
+                      style: TextStyle(
+                        fontSize: 20.0,
+                        fontWeight: FontWeight.w900,
+                        color: Colors.black,
+                      ),
+                    ),
+                    Icon(
+                      Icons.star,
+                      color: Color.fromRGBO(255, 203, 48, 1),
+                      size: 20.0,
+                    ),
+                  ],
+                ),
+              ),
               const SizedBox(height: 10),
               Center(
                 child: ClipRRect(
@@ -90,6 +122,7 @@ class _ReviewFormPageState extends State<ReviewFormPage> {
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: TextFormField(
+                  initialValue: _rating.toString(),
                   decoration: InputDecoration(
                     hintText: "Rating (1-5)",
                     labelText: "Rating",
@@ -100,7 +133,7 @@ class _ReviewFormPageState extends State<ReviewFormPage> {
                   keyboardType: TextInputType.number,
                   onChanged: (String? value) {
                     setState(() {
-                      _rating = int.tryParse(value!) ?? 0;
+                      _rating = double.tryParse(value!) ?? 0;
                     });
                   },
                   validator: (String? value) {
@@ -118,6 +151,7 @@ class _ReviewFormPageState extends State<ReviewFormPage> {
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: TextFormField(
+                  initialValue: _reviewMessage,
                   decoration: InputDecoration(
                     hintText: "Write your review message",
                     labelText: "Review Message",
@@ -151,10 +185,9 @@ class _ReviewFormPageState extends State<ReviewFormPage> {
                     onPressed: () async {
                       if (_formKey.currentState!.validate()) {
                         final response = await request.postJson(
-                          "http://127.0.0.1:8000/review/add-review-flutter/",
-                          // "http://nevin-thang-balink.pbp.cs.ui.ac.id/review/add-review-flutter/",
+                          "http://127.0.0.1:8000/review/edit-review-flutter/",
                           jsonEncode(<String, String>{
-                            'id': widget.id.toString(),
+                            'id': widget.id,
                             'rating': _rating.toString(),
                             'review_message': _reviewMessage,
                           }),
@@ -164,11 +197,11 @@ class _ReviewFormPageState extends State<ReviewFormPage> {
                           if (response['status'] == 'success') {
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
-                                content: Text("Review submitted successfully!"),
+                                content: Text("Review updated successfully!"),
                               ),
                             );
-                            Navigator.push(
-                               context,
+                            Navigator.pushReplacement(
+                              context,
                               MaterialPageRoute(builder: (context) => const ReviewProductPage()),
                             );
                           }

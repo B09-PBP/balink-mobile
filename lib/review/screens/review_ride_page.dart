@@ -48,13 +48,37 @@ class _ReviewRidePageState extends State<ReviewRidePage> {
   @override
   Widget build(BuildContext context) {
     final request = context.watch<CookieRequest>();
+    const Color blue400 = Color.fromRGBO(32, 73, 255, 1);
+    const Color yellow = Color.fromRGBO(255, 203, 48, 1);
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Review'),
-        backgroundColor: Theme.of(context).colorScheme.primary,
+        backgroundColor: Colors.white,
+        elevation: 0,
+        title: const Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              "Add ",
+              style: TextStyle(
+                color: yellow,
+                fontWeight: FontWeight.bold,
+                fontSize: 24,
+              ),
+            ),
+            Text(
+              "Review",
+              style: TextStyle(
+                color: blue400,
+                fontWeight: FontWeight.bold,
+                fontSize: 24,
+              ),
+            ),
+          ],
+        ),
+        centerTitle: true,
       ),
-      drawer: const LeftDrawer(),
+
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: FutureBuilder<List<ReviewRideModels>>(
