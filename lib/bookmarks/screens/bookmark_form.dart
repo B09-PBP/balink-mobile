@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:pbp_django_auth/pbp_django_auth.dart';
 import 'package:provider/provider.dart';
+import 'package:pbp_django_auth/pbp_django_auth.dart';
+import 'bookmark_page.dart';
 import 'package:balink_mobile/Product/Models/product_model.dart';
 
 class BookmarkFormPage extends StatefulWidget {
@@ -11,203 +12,235 @@ class BookmarkFormPage extends StatefulWidget {
 }
 
 class _BookmarkFormPageState extends State<BookmarkFormPage> {
-  final TextEditingController _searchController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
   final TextEditingController _noteController = TextEditingController();
-  final TextEditingController _reminderController = TextEditingController();
-  String _priority = '';
+  String? _selectedPriority;
+  DateTime? _selectedReminderDate;
+
+  // Product selection variables
+  List<Product> _products = [];
+  bool _isLoadingProducts = true;
   Product? _selectedProduct;
 
-  Future<List<Product>> fetchProducts(CookieRequest request) async {
-    final response = await request.get('http://127.0.0.1:8000/product/json/');
-    return productFromJson(response);
+  @override
+  void initState() {
+    super.initState();
+    _fetchProducts();
   }
 
-  Future<void> _submitBookmark(CookieRequest request) async {
-    if (_selectedProduct == null || _priority.isEmpty || _noteController.text.isEmpty || _reminderController.text.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please fill all fields')),
+  // Fetch products from the backend
+  Future<void> _fetchProducts() async {
+    final request = context.read<CookieRequest>();
+    final response = await request.get('http://127.0.0.1:8000/product/json/');
+
+    setState(() {
+      _products = response.map<Product>((json) => Product.fromJson(json)).toList();
+      _isLoadingProducts = false;
+    });
+  }
+
+  // Show date picker for reminder
+  Future<void> _selectReminderDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: _selectedReminderDate ?? DateTime.now(),
+      firstDate: DateTime.now(),
+      lastDate: DateTime(2101),
+    );
+    if (picked != null && picked != _selectedReminderDate) {
+      setState(() {
+        _selectedReminderDate = picked;
+      });
+    }
+  }
+
+  // Submit form
+  Future<void> _submitForm() async {
+    if (_formKey.currentState!.validate()) {
+      if (_selectedProduct == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Please select a product')),
+        );
+        return;
+      }
+
+      if (_selectedReminderDate == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Please select a reminder date')),
+        );
+        return;
+      }
+
+      final request = context.read<CookieRequest>();
+      final response = await request.post(
+        'http://127.0.0.1:8000/bookmarks/create-bookmark/',
+        {
+          "product_id": _selectedProduct!.pk.toString(),
+          "note": _noteController.text,
+          "priority": _selectedPriority!,
+          "reminder": _selectedReminderDate!.toIso8601String(),
+        },
       );
-      return;
+
+      if (response['status'] == 'success') {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Bookmark added successfully!')),
+        );
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const BookmarkPage()),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Failed to add bookmark. Please try again.')),
+        );
+      }
+    }
+  }
+
+  // Build product list
+  Widget _buildProductList() {
+    if (_isLoadingProducts) {
+      return const Center(child: CircularProgressIndicator());
     }
 
-    final response = await request.post(
-      'http://127.0.0.1:8000/bookmarks/',
-      {
-        'product_id': _selectedProduct!.pk,
-        'note': _noteController.text,
-        'priority': _priority,
-        'reminder': _reminderController.text,
+    return ListView.builder(
+      shrinkWrap: true,
+      itemCount: _products.length,
+      itemBuilder: (context, index) {
+        final product = _products[index];
+        return Card(
+          child: ListTile(
+            leading: Image.network(product.fields.imageUrl),
+            title: Text(product.fields.name),
+            trailing: ElevatedButton(
+              onPressed: () {
+                setState(() {
+                  _selectedProduct = product;
+                });
+              },
+              child: const Text('Select'),
+            ),
+          ),
+        );
       },
     );
-
-    if (response['status'] == 'success') {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Bookmark added successfully')),
-      );
-      Navigator.pop(context);
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Failed to add bookmark')),
-      );
-    }
   }
 
   @override
   Widget build(BuildContext context) {
-    final request = context.watch<CookieRequest>();
-
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Add Bookmark',
-          style: TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ),
-        ),
-        backgroundColor:const Color.fromRGBO(32, 73, 255, 1),
+        title: const Text('Add Bookmark'),
+        backgroundColor: const Color.fromRGBO(32, 73, 255, 1),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
+      body: SingleChildScrollView(
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Search Bar
-            TextField(
-              controller: _searchController,
-              decoration: InputDecoration(
-                labelText: 'Search Products',
-                prefixIcon: const Icon(Icons.search),
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-              ),
-              onChanged: (value) {
-                setState(() {});
-              },
-            ),
-            const SizedBox(height: 16),
-            // Product Grid
-            Expanded(
-              child: FutureBuilder<List<Product>>(
-                future: fetchProducts(request),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(child: CircularProgressIndicator());
-                  } else if (snapshot.hasError) {
-                    return const Center(child: Text('Failed to load products'));
-                  } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                    return const Center(
-                      child: Text('No products found'),
-                    );
-                  }
-
-                  final products = snapshot.data!
-                      .where((product) => product.fields.name
-                          .toLowerCase()
-                          .contains(_searchController.text.toLowerCase()))
-                      .toList();
-
-                  return GridView.builder(
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      crossAxisSpacing: 8,
-                      mainAxisSpacing: 8,
-                    ),
-                    itemCount: products.length,
-                    itemBuilder: (context, index) {
-                      final product = products[index];
-                      return GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            _selectedProduct = product;
-                          });
-                        },
-                        child: Card(
-                          elevation: 4,
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            // Product List Section
+            _selectedProduct == null
+                ? _buildProductList()
+                : Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      children: [
+                        // Display selected product image
+                        Image.network(
+                          _selectedProduct!.fields.imageUrl,
+                          height: 200,
+                          width: double.infinity,
+                          fit: BoxFit.cover,
+                        ),
+                        const SizedBox(height: 16),
+                        // Display selected product name
+                        Text(
+                          'Selected Product: ${_selectedProduct!.fields.name}',
+                          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        ),
+                        const SizedBox(height: 16),
+                        // Bookmark Form
+                        Form(
+                          key: _formKey,
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              // Product Image
-                              ClipRRect(
-                                borderRadius: const BorderRadius.vertical(top: Radius.circular(10)),
-                                child: Image.network(
-                                  product.fields.imageUrl,
-                                  height: 120,
-                                  width: double.infinity,
-                                  fit: BoxFit.cover,
-                                  errorBuilder: (context, error, stackTrace) {
-                                    return const Center(
-                                      child: Icon(Icons.broken_image, size: 50, color: Colors.grey),
-                                    );
-                                  },
+                              // Note Field
+                              TextFormField(
+                                controller: _noteController,
+                                decoration: const InputDecoration(
+                                  labelText: 'Note',
+                                  border: OutlineInputBorder(),
+                                ),
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Please enter a note';
+                                  }
+                                  return null;
+                                },
+                              ),
+                              const SizedBox(height: 16),
+                              // Priority Dropdown
+                              DropdownButtonFormField<String>(
+                                value: _selectedPriority,
+                                decoration: const InputDecoration(
+                                  labelText: 'Priority',
+                                  border: OutlineInputBorder(),
+                                ),
+                                items: const [
+                                  DropdownMenuItem(value: 'H', child: Text('High')),
+                                  DropdownMenuItem(value: 'M', child: Text('Medium')),
+                                  DropdownMenuItem(value: 'L', child: Text('Low')),
+                                ],
+                                onChanged: (value) {
+                                  setState(() {
+                                    _selectedPriority = value;
+                                  });
+                                },
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Please select a priority';
+                                  }
+                                  return null;
+                                },
+                              ),
+                              const SizedBox(height: 16),
+                              // Reminder Date Picker
+                              InkWell(
+                                onTap: () => _selectReminderDate(context),
+                                child: InputDecorator(
+                                  decoration: const InputDecoration(
+                                    labelText: 'Reminder',
+                                    border: OutlineInputBorder(),
+                                  ),
+                                  child: Text(
+                                    _selectedReminderDate != null
+                                        ? _selectedReminderDate!.toLocal().toString().split(' ')[0]
+                                        : 'Select a date',
+                                    style: const TextStyle(fontSize: 16),
+                                  ),
                                 ),
                               ),
-                              // Product Name and Price
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      product.fields.name,
-                                      style: const TextStyle(fontWeight: FontWeight.bold),
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                    const SizedBox(height: 4),
-                                    Text(
-                                      "Rp. ${product.fields.price.toStringAsFixed(2)}",
-                                      style: const TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
-                                    ),
-                                  ],
+                              const SizedBox(height: 8),
+                              // Submit Button
+                              Center(
+                                child: ElevatedButton(
+                                  onPressed: _submitForm,
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: const Color.fromRGBO(32, 73, 255, 1),
+                                    padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+                                  ),
+                                  child: const Text(
+                                    'Submit',
+                                    style: TextStyle(color: Colors.white, fontSize: 16),
+                                  ),
                                 ),
                               ),
                             ],
                           ),
                         ),
-                      );
-                    },
-                  );
-                },
-              ),
-            ),
-            const SizedBox(height: 16),
-            // Form Fields
-            if (_selectedProduct != null) ...[
-              TextField(
-                controller: _noteController,
-                decoration: const InputDecoration(
-                  labelText: 'Note',
-                  border: OutlineInputBorder(),
-                ),
-                maxLines: 3,
-              ),
-              const SizedBox(height: 16),
-              DropdownButtonFormField<String>(
-                value: _priority,
-                onChanged: (value) => setState(() => _priority = value ?? ''),
-                items: const [
-                  DropdownMenuItem(value: 'H', child: Text('High')),
-                  DropdownMenuItem(value: 'M', child: Text('Medium')),
-                  DropdownMenuItem(value: 'L', child: Text('Low')),
-                ],
-                decoration: const InputDecoration(labelText: 'Priority'),
-              ),
-              const SizedBox(height: 16),
-              TextField(
-                controller: _reminderController,
-                decoration: const InputDecoration(
-                  labelText: 'Reminder Date (YYYY-MM-DD)',
-                  border: OutlineInputBorder(),
-                ),
-              ),
-              const SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: () => _submitBookmark(request),
-                child: const Text('Add Bookmark'),
-              ),
-            ],
+                      ],
+                    ),
+                  ),
           ],
         ),
       ),

@@ -9,57 +9,53 @@ List<BookmarkModel> bookmarkModelFromJson(String str) => List<BookmarkModel>.fro
 String bookmarkModelToJson(List<BookmarkModel> data) => json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
 
 class BookmarkModel {
-    String model;
-    int pk;
-    Fields fields;
-
-    BookmarkModel({
-        required this.model,
-        required this.pk,
-        required this.fields,
-    });
-
-    factory BookmarkModel.fromJson(Map<String, dynamic> json) => BookmarkModel(
-        model: json["model"],
-        pk: json["pk"],
-        fields: Fields.fromJson(json["fields"]),
-    );
-
-    Map<String, dynamic> toJson() => {
-        "model": model,
-        "pk": pk,
-        "fields": fields.toJson(),
-    };
-}
-
-class Fields {
-    int user;
-    String product;
+    int id;
     String note;
     String priority;
     DateTime reminder;
+    Product product;
 
-    Fields({
-        required this.user,
-        required this.product,
+    BookmarkModel({
+        required this.id,
         required this.note,
         required this.priority,
         required this.reminder,
+        required this.product,
     });
 
-    factory Fields.fromJson(Map<String, dynamic> json) => Fields(
-        user: json["user"],
-        product: json["product"],
+    factory BookmarkModel.fromJson(Map<String, dynamic> json) => BookmarkModel(
+        id: json["id"],
         note: json["note"],
         priority: json["priority"],
         reminder: DateTime.parse(json["reminder"]),
+        product: Product.fromJson(json["product"]),
     );
 
     Map<String, dynamic> toJson() => {
-        "user": user,
-        "product": product,
+        "id": id,
         "note": note,
         "priority": priority,
-        "reminder": reminder.toIso8601String(),
+        "reminder": "${reminder.year.toString().padLeft(4, '0')}-${reminder.month.toString().padLeft(2, '0')}-${reminder.day.toString().padLeft(2, '0')}",
+        "product": product.toJson(),
+    };
+}
+
+class Product {
+    String name;
+    String imageUrl;
+
+    Product({
+        required this.name,
+        required this.imageUrl,
+    });
+
+    factory Product.fromJson(Map<String, dynamic> json) => Product(
+        name: json["name"],
+        imageUrl: json["image_url"],
+    );
+
+    Map<String, dynamic> toJson() => {
+        "name": name,
+        "image_url": imageUrl,
     };
 }

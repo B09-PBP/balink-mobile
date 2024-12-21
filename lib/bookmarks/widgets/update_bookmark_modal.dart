@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:pbp_django_auth/pbp_django_auth.dart';
 import 'package:balink_mobile/bookmarks/models/bookmark_product_models.dart';
 
 class UpdateBookmarkModal extends StatefulWidget {
@@ -23,66 +25,96 @@ class _UpdateBookmarkModalState extends State<UpdateBookmarkModal> {
   @override
   void initState() {
     super.initState();
-    final fields = widget.bookmark.fields;
-    _noteController.text = fields.note;
-    _priority = fields.priority;
-    _reminderController.text = fields.reminder.toIso8601String().split('T').first;
+    _noteController.text = widget.bookmark.note;
+    _priority = widget.bookmark.priority;
+    _reminderController.text = widget.bookmark.reminder.toIso8601String().split('T').first;
   }
 
   Future<void> _submitUpdate() async {
-    // Simulate an update API call
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Bookmark updated successfully')),
-    );
-    widget.onUpdate();
-    Navigator.pop(context);
+    final request = context.read<CookieRequest>();
+    final url = 'http://127.0.0.1:8000/bookmarks/update-bookmark-flutter/${widget.bookmark.id}/';
+
+    // Data yang akan dikirim
+    final data = {
+      "note": _noteController.text,
+      "priority": _priority,
+      "reminder": _reminderController.text,
+    };
+
+    try {
+      final response = await request.post(url, data);
+
+      if (response['status'] == 'success') {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Bookmark updated successfully')),
+        );
+        widget.onUpdate();
+        Navigator.pop(context);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to update bookmark: ${response['message'] ?? ''}')),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error updating bookmark: $e')),
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const Text(
-            'Update Bookmark',
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 16),
-          TextField(
-            controller: _noteController,
-            decoration: const InputDecoration(
-              labelText: 'Note',
-              border: OutlineInputBorder(),
-            ),
-          ),
-          const SizedBox(height: 16),
-          DropdownButtonFormField<String>(
-            value: _priority,
-            onChanged: (value) => setState(() => _priority = value ?? ''),
-            items: const [
-              DropdownMenuItem(value: 'H', child: Text('High')),
-              DropdownMenuItem(value: 'M', child: Text('Medium')),
-              DropdownMenuItem(value: 'L', child: Text('Low')),
+      padding: MediaQuery.of(context).viewInsets, 
+      child: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text(
+                'Update Bookmark',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 16),
+              TextField(
+                controller: _noteController,
+                decoration: const InputDecoration(
+                  labelText: 'Note',
+                  border: OutlineInputBorder(),
+                ),
+              ),
+              const SizedBox(height: 16),
+              DropdownButtonFormField<String>(
+                value: _priority,
+                onChanged: (value) => setState(() => _priority = value ?? ''),
+                items: const [
+                  DropdownMenuItem(value: 'H', child: Text('High')),
+                  DropdownMenuItem(value: 'M', child: Text('Medium')),
+                  DropdownMenuItem(value: 'L', child: Text('Low')),
+                ],
+                decoration: const InputDecoration(
+                  labelText: 'Priority',
+                  border: OutlineInputBorder(),
+                ),
+              ),
+              const SizedBox(height: 16),
+              TextField(
+                controller: _reminderController,
+                decoration: const InputDecoration(
+                  labelText: 'Reminder Date (YYYY-MM-DD)',
+                  border: OutlineInputBorder(),
+                ),
+              ),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: _submitUpdate,
+                style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
+                child: const Text('Save Changes'),
+              ),
             ],
-            decoration: const InputDecoration(labelText: 'Priority'),
           ),
-          const SizedBox(height: 16),
-          TextField(
-            controller: _reminderController,
-            decoration: const InputDecoration(
-              labelText: 'Reminder Date',
-              border: OutlineInputBorder(),
-            ),
-          ),
-          const SizedBox(height: 16),
-          ElevatedButton(
-            onPressed: _submitUpdate,
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
-            child: const Text('Save Changes'),
-          ),
-        ],
+        ),
       ),
     );
   }

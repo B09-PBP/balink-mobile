@@ -29,9 +29,7 @@ class _MainNavigationScaffoldState extends State<MainNavigationScaffold> {
       widget.isLoggedIn
           ? const Placeholder(color: Colors.green) // Review Page
           : const LoginPage(),
-      widget.isLoggedIn
-          ? const Placeholder(color: Colors.red)   // Bookmark Page
-          : const LoginPage(),
+      widget.isLoggedIn ? const BookmarkPage() : const LoginPage(),
       widget.isLoggedIn
           ? const Placeholder(color: Colors.orange) // Article Page
           : const LoginPage(),
@@ -74,7 +72,7 @@ class _MainNavigationScaffoldState extends State<MainNavigationScaffold> {
         ],
         currentIndex: _selectedIndex,
         selectedItemColor: colorScheme.primary,
-        unselectedItemColor: Colors.blue,
+        unselectedItemColor: const Color.fromRGBO(32, 73, 255, 1),
         onTap: _onItemTapped,
         type: BottomNavigationBarType.fixed,
       ),

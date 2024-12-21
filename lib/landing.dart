@@ -13,7 +13,7 @@ class MyHomePage extends StatelessWidget {
           'BaLink',
           style: TextStyle(
             fontWeight: FontWeight.bold, 
-            fontSize: 20,
+            fontSize: 24,
             color: Colors.white,
           ),
         ),
