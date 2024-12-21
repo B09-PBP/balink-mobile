@@ -28,11 +28,35 @@ class _ReviewFormPageState extends State<ReviewFormPage> {
   @override
   Widget build(BuildContext context) {
     final request = context.watch<CookieRequest>();
+    const Color blue400 = Color.fromRGBO(32, 73, 255, 1);
+    const Color yellow = Color.fromRGBO(255, 203, 48, 1);
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Review'),
-        backgroundColor: Theme.of(context).colorScheme.primary,
+        backgroundColor: Colors.white,
+        elevation: 0,
+        title: const Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              "Add ",
+              style: TextStyle(
+                color: yellow,
+                fontWeight: FontWeight.bold,
+                fontSize: 24,
+              ),
+            ),
+            Text(
+              "Review",
+              style: TextStyle(
+                color: blue400,
+                fontWeight: FontWeight.bold,
+                fontSize: 24,
+              ),
+            ),
+          ],
+        ),
+        centerTitle: true,
       ),
       body: Form(
         key: _formKey,
@@ -40,27 +64,6 @@ class _ReviewFormPageState extends State<ReviewFormPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SizedBox(height: 10),
-              const Center(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      "Add Review ",
-                      style: TextStyle(
-                        fontSize: 20.0,
-                        fontWeight: FontWeight.w900,
-                        color:  Colors.black,
-                      ),
-                    ),
-                    Icon(
-                      Icons.star,
-                      color: Color.fromRGBO(255, 203, 48, 1),
-                      size: 20.0,
-                    ),
-                  ],
-                ),
-              ),
               const SizedBox(height: 10),
               Center(
                 child: ClipRRect(

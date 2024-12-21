@@ -32,11 +32,35 @@ class _ReviewProductPageState extends State<ReviewProductPage> {
   Widget build(BuildContext context) {
     final request = context.watch<CookieRequest>();
     final screenWidth = MediaQuery.of(context).size.width;
+    const Color blue400 = Color.fromRGBO(32, 73, 255, 1);
+    const Color yellow = Color.fromRGBO(255, 203, 48, 1);
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Review'),
-        backgroundColor: Theme.of(context).colorScheme.primary,
+        backgroundColor: Colors.white,
+        elevation: 0,
+        title: const Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              "Our ",
+              style: TextStyle(
+                color: yellow,
+                fontWeight: FontWeight.bold,
+                fontSize: 24,
+              ),
+            ),
+            Text(
+              "Review",
+              style: TextStyle(
+                color: blue400,
+                fontWeight: FontWeight.bold,
+                fontSize: 24,
+              ),
+            ),
+          ],
+        ),
+        centerTitle: true,
       ),
       drawer: const LeftDrawer(),
       body: SingleChildScrollView(
@@ -47,7 +71,7 @@ class _ReviewProductPageState extends State<ReviewProductPage> {
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
                 gradient: LinearGradient(
-                  colors: [Color.fromRGBO(32, 73, 255, 1), Colors.blue.shade700],
+                  colors: [const Color.fromRGBO(32, 73, 255, 1), Colors.blue.shade700],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
