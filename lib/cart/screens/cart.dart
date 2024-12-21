@@ -1,7 +1,6 @@
 import 'package:balink_mobile/cart/screens/checkout_form.dart';
 import 'package:balink_mobile/cart/screens/history.dart';
 import 'package:balink_mobile/left_drawer.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
@@ -54,9 +53,7 @@ class CartPageState extends State<CartPage> {
         setState(() => _isLoading = false);
       }
     } catch (e) {
-      if (kDebugMode) {
-        print('Error fetching cart: $e');
-      }
+      print('Error fetching cart: $e');
       setState(() => _isLoading = false);
     }
   }
@@ -152,7 +149,6 @@ class CartPageState extends State<CartPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: const LeftDrawer(),
       backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
@@ -161,7 +157,7 @@ class CartPageState extends State<CartPage> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              "Ba",
+              "My ",
               style: TextStyle(
                 color: yellow,
                 fontWeight: FontWeight.bold,
@@ -169,17 +165,22 @@ class CartPageState extends State<CartPage> {
               ),
             ),
             Text(
-              "Link",
+              "Cart ",
               style: TextStyle(
                 color: blue400,
                 fontWeight: FontWeight.bold,
                 fontSize: 24,
               ),
             ),
+            Icon(
+              Icons.shopping_cart,
+              color: blue400,
+            ),
           ],
         ),
         centerTitle: true,
       ),
+      drawer: const LeftDrawer(),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : Column(
