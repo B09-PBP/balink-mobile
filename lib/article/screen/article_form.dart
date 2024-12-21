@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
 import 'dart:convert';
 import '../models/article_model.dart';
-import 'article_page.dart';
+import 'article_page_admin.dart';
 
 class ArticleForm extends StatefulWidget {
   final Article? article;
