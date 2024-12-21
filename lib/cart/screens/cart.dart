@@ -1,5 +1,7 @@
 import 'package:balink_mobile/cart/screens/checkout_form.dart';
 import 'package:balink_mobile/cart/screens/history.dart';
+import 'package:balink_mobile/left_drawer.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
@@ -52,7 +54,9 @@ class CartPageState extends State<CartPage> {
         setState(() => _isLoading = false);
       }
     } catch (e) {
-      print('Error fetching cart: $e');
+      if (kDebugMode) {
+        print('Error fetching cart: $e');
+      }
       setState(() => _isLoading = false);
     }
   }
@@ -148,6 +152,7 @@ class CartPageState extends State<CartPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer: const LeftDrawer(),
       backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,

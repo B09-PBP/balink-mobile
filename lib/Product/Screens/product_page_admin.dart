@@ -18,6 +18,8 @@ class ProductPageAdmin extends StatefulWidget {
 }
 
 class _ProductPageState extends State<ProductPageAdmin> with SingleTickerProviderStateMixin {
+  final Color blue400 = const Color.fromRGBO(32, 73, 255, 1); // Bright Blue
+  final Color yellow = const Color.fromRGBO(255, 203, 48, 1);  // Bright Yellow
   String _searchQuery = '';
   double _minPrice = 0;
   double _maxPrice = 1000000;
@@ -253,15 +255,29 @@ class _ProductPageState extends State<ProductPageAdmin> with SingleTickerProvide
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Text(
-          'Our Products',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            color: colorScheme.onPrimary,
-          ),
-        ),
-        backgroundColor: colorScheme.primary,
+        backgroundColor: Colors.white,
         elevation: 0,
+        title: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              "Ba",
+              style: TextStyle(
+                color: yellow,
+                fontWeight: FontWeight.bold,
+                fontSize: 24,
+              ),
+            ),
+            Text(
+              "Link",
+              style: TextStyle(
+                color: blue400,
+                fontWeight: FontWeight.bold,
+                fontSize: 24,
+              ),
+            ),
+          ],
+        ),
         centerTitle: true,
         actions: [
           IconButton(
@@ -518,7 +534,7 @@ class _ProductPageState extends State<ProductPageAdmin> with SingleTickerProvide
                                     child: ElevatedButton(
                                       onPressed: () => _addToCart(product.pk),
                                       style: ElevatedButton.styleFrom(
-                                        backgroundColor: Colors.yellow.shade700,
+                                        backgroundColor: yellow,
                                         foregroundColor: Colors.black,
                                         padding: const EdgeInsets.symmetric(
                                             horizontal: 8),
@@ -554,29 +570,6 @@ class _ProductPageState extends State<ProductPageAdmin> with SingleTickerProvide
                                   onPressed: () =>
                                       _showDeleteConfirmationDialog(
                                           context, product),
-                                ),
-                                IconButton(
-                                  constraints: const BoxConstraints(
-                                    minWidth: 32,
-                                    maxWidth: 32,
-                                    minHeight: 32,
-                                    maxHeight: 32,
-                                  ),
-                                  padding: EdgeInsets.zero,
-                                  icon: Icon(
-                                    Icons.favorite_border,
-                                    size: isMobile ? 18 : 20,
-                                    color: Colors.pink.shade300,
-                                  ),
-                                  onPressed: () {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                        content: Text('Added ${product.fields
-                                            .name} to favorites'),
-                                        backgroundColor: Colors.pink,
-                                      ),
-                                    );
-                                  },
                                 ),
                                 IconButton(
                                   icon: const Icon(Icons.edit),
