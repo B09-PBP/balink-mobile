@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:balink_mobile/review/screens/review_page.dart';
+import 'package:balink_mobile/review/screens/review_customerpage.dart';
 import 'package:flutter/material.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
 import 'package:provider/provider.dart';
@@ -50,12 +50,12 @@ class _ReviewFormPageState extends State<ReviewFormPage> {
                       style: TextStyle(
                         fontSize: 20.0,
                         fontWeight: FontWeight.w900,
-                        color: Colors.indigo,
+                        color:  Colors.black,
                       ),
                     ),
                     Icon(
                       Icons.star,
-                      color: Colors.yellow,
+                      color: Color.fromRGBO(255, 203, 48, 1),
                       size: 20.0,
                     ),
                   ],

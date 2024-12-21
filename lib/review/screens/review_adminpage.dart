@@ -50,7 +50,7 @@ class _ReviewProductAdminPageState extends State<ReviewProductAdminPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Admin: Review Management'),
+        title: const Text('Review: Admin'),
         backgroundColor: Theme.of(context).colorScheme.primary,
       ),
       drawer: const LeftDrawer(),
@@ -83,11 +83,23 @@ class _ReviewProductAdminPageState extends State<ReviewProductAdminPage> {
               return Card(
                 margin: const EdgeInsets.symmetric(vertical: 8),
                 child: ListTile(
-                  leading: Image.network(
-                    review.image,
-                    width: 60,
-                    height: 60,
-                    fit: BoxFit.cover,
+                  leading: ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: Image.network(
+                      review.image,
+                      width: 60,
+                      height: 60,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Container(
+                          width: 60,
+                          height: 60,
+                          color: Colors.grey,
+                          alignment: Alignment.center,
+                          child: const Icon(Icons.error, color: Colors.red),
+                        );
+                      },
+                    ),
                   ),
                   title: Text(
                     review.rideName,
@@ -105,7 +117,7 @@ class _ReviewProductAdminPageState extends State<ReviewProductAdminPage> {
                     ],
                   ),
                   trailing: IconButton(
-                    icon: const Icon(Icons.delete, color: Colors.red),
+                    icon: const Icon(Icons.delete, color: Color.fromRGBO(32, 73, 255, 1)),
                     onPressed: () async {
                       final confirm = await showDialog(
                         context: context,

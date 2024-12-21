@@ -13,7 +13,7 @@ class ReviewProductPage extends StatefulWidget {
 }
 
 class _ReviewProductPageState extends State<ReviewProductPage> {
-  Future<List<ReviewModels>> fetchMood(CookieRequest request) async {
+  Future<List<ReviewModels>> fetchreviews(CookieRequest request) async {
     final response = await request.get('http://127.0.0.1:8000/review/all-reviews-flutter/');
     // final response = await request.get('http://nevin-thang-balink.pbp.cs.ui.ac.id/review/all-reviews-flutter/');
     var data = response;
@@ -45,7 +45,7 @@ class _ReviewProductPageState extends State<ReviewProductPage> {
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
                 gradient: LinearGradient(
-                  colors: [Colors.blue.shade600, Colors.blue.shade700],
+                  colors: [Color.fromRGBO(32, 73, 255, 1), Colors.blue.shade700],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
@@ -97,7 +97,7 @@ class _ReviewProductPageState extends State<ReviewProductPage> {
                             );
                           },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.yellow.shade500,
+                            backgroundColor: Color.fromRGBO(255, 203, 48, 1),
                             foregroundColor: Colors.black,
                             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                             shape: RoundedRectangleBorder(
@@ -120,7 +120,7 @@ class _ReviewProductPageState extends State<ReviewProductPage> {
 
             // Review
             FutureBuilder<List<ReviewModels>>(
-              future: fetchMood(request),
+              future: fetchreviews(request),
               builder: (context, snapshot) {
                 if (snapshot.data == null) {
                   return const Center(child: CircularProgressIndicator());
@@ -129,7 +129,7 @@ class _ReviewProductPageState extends State<ReviewProductPage> {
                     return const Center(
                       child: Text(
                         'No Review',
-                        style: TextStyle(fontSize: 20, color: Color(0xff59A5D8)),
+                        style: TextStyle(fontSize: 20, color: Colors.black),
                       ),
                     );
                   } else {
@@ -138,10 +138,10 @@ class _ReviewProductPageState extends State<ReviewProductPage> {
                       physics: const NeverScrollableScrollPhysics(),
                       padding: const EdgeInsets.all(16),
                       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2, // 2 Kolom
+                        crossAxisCount: 2,
                         crossAxisSpacing: 16,
                         mainAxisSpacing: 16,
-                        childAspectRatio: 0.8,
+                        childAspectRatio: 0.7,
                       ),
                       itemCount: snapshot.data!.length,
                       itemBuilder: (_, index) {
@@ -171,6 +171,14 @@ class _ReviewProductPageState extends State<ReviewProductPage> {
                                   height: 120,
                                   width: double.infinity,
                                   fit: BoxFit.cover,
+                                  errorBuilder: (context, error, stackTrace) {
+                                    return Container(
+                                      height: 120,
+                                      color: Colors.grey,
+                                      alignment: Alignment.center,
+                                      child: const Icon(Icons.error, color: Colors.red),
+                                    );
+                                  },
                                 ),
                               ),
                               const SizedBox(height: 10),
@@ -188,23 +196,23 @@ class _ReviewProductPageState extends State<ReviewProductPage> {
                               Text(
                                 "⭐ ${review.rating}",
                                 style: const TextStyle(
-                                  color: Color.fromRGBO(251, 192, 45, 1),
+                                  color: Color.fromRGBO(255, 203, 48, 1),
                                   fontSize: 14.0,
                                   fontWeight: FontWeight.w900,
                                 ),
                               ),
                               const SizedBox(height: 6),
-                              Text(
-                                review.reviewMessage.length > 85
-                                  ? "${review.reviewMessage.substring(0, 85)}..."
-                                  : review.reviewMessage,
-                                maxLines: 3,
-                                overflow: TextOverflow.ellipsis,
-                                style: const TextStyle(
-                                  color: Colors.black,
+                              Expanded(
+                                child: Text(
+                                  review.reviewMessage,
+                                  maxLines: 3,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: const TextStyle(
+                                    color: Colors.black,
+                                  ),
                                 ),
                               ),
-                              const Spacer(),
+                              const SizedBox(height: 6),
                               Text(
                                 "Reviewed by ${review.username}",
                                 style: const TextStyle(fontSize: 10.0, color: Colors.grey),
@@ -214,7 +222,7 @@ class _ReviewProductPageState extends State<ReviewProductPage> {
                         );
                       },
                     );
-                }
+                  }
                 }
               },
             ),
