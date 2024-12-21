@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'package:balink_mobile/Product/Screens/add_product_page.dart';
 import 'package:balink_mobile/Product/Widgets/vehicle_carousel.dart';
 import 'package:balink_mobile/cart/models/cart_models.dart';
-import 'package:balink_mobile/cart/models/ride_models.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:balink_mobile/Product/Models/product_model.dart';

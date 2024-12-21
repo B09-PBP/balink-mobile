@@ -1,167 +1,128 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-
-// Model untuk Item di History
-class HistoryItem {
-  final String id;
-  final String name;
-  final String address;
-  final String date;
-  final List<Map<String, dynamic>> cars;
-
-  HistoryItem({
-    required this.id,
-    required this.name,
-    required this.address,
-    required this.date,
-    required this.cars,
-  });
-
-  factory HistoryItem.fromJson(Map<String, dynamic> json) {
-    return HistoryItem(
-      id: json['id'],
-      name: json['name'],
-      address: json['address'],
-      date: json['date'],
-      cars: List<Map<String, dynamic>>.from(
-          json['car'].map((car) => {'name': car['name'], 'price': car['price']})),
-    );
-  }
-}
+import 'package:pbp_django_auth/pbp_django_auth.dart';
+import 'package:provider/provider.dart';
+import '../widgets/history_card.dart';
 
 class HistoryPage extends StatefulWidget {
-  const HistoryPage({super.key});
+  const HistoryPage({Key? key}) : super(key: key);
 
   @override
   State<HistoryPage> createState() => _HistoryPageState();
 }
 
 class _HistoryPageState extends State<HistoryPage> {
-  List<HistoryItem> _historyItems = [];
-  bool _isLoading = true;
-
-  @override
-  void initState() {
-    super.initState();
-    _fetchHistory();
-  }
-
-  Future<void> _fetchHistory() async {
-    final url =
-        Uri.parse("http://127.0.0.1:8000/cart/api/history/");
-    try {
-      final response = await http.get(
-        url,
-        headers: {
-          'Content-Type': 'application/json', // Header tanpa token
-        },
-      );
-
-      if (response.statusCode == 200) {
-        final List<dynamic> data = json.decode(response.body)['history'];
-        setState(() {
-          _historyItems =
-              data.map((json) => HistoryItem.fromJson(json)).toList();
-          _isLoading = false;
-        });
-      } else {
-        throw Exception("Failed to fetch history");
-      }
-    } catch (e) {
-      print("Error fetching history: $e");
-      setState(() {
-        _isLoading = false;
-      });
-    }
+  Future<List<dynamic>> fetchHistory(CookieRequest request) async {
+    final response = await request.get('http://127.0.0.1:8000/cart/get-history/');
+    return response;
   }
 
   @override
   Widget build(BuildContext context) {
+    final Color blue400 = const Color.fromRGBO(32, 73, 255, 1); // Bright Blue
+    final Color yellow = const Color.fromRGBO(255, 203, 48, 1); // Bright Yellow
+
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        centerTitle: true,
-        elevation: 0,
-        title: const Text(
-          "Order History",
-          style: TextStyle(
-            color: Color.fromRGBO(32, 73, 255, 1),
-            fontWeight: FontWeight.bold,
-            fontSize: 20,
-          ),
-        ),
-        iconTheme: const IconThemeData(color: Colors.black),
-      ),
-      body: _isLoading
-          ? const Center(
-              child: CircularProgressIndicator(),
-            )
-          : _historyItems.isEmpty
-              ? const Center(
-                  child: Text(
-                    "No order history available",
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.grey,
-                    ),
+      body: SafeArea(
+        child: Column(
+          children: [
+            // Custom Header
+            Container(
+              color: Colors.white, // Background putih
+              padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+              child: Row(
+                children: [
+                  // Back Button di Kiri
+                  IconButton(
+                    icon: const Icon(Icons.arrow_back, color: Color.fromRGBO(32, 73, 255, 1)), // Ikon panah biru
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
                   ),
-                )
-              : ListView.builder(
-                  padding: const EdgeInsets.all(16),
-                  itemCount: _historyItems.length,
-                  itemBuilder: (context, index) {
-                    final history = _historyItems[index];
-                    return Card(
-                      margin: const EdgeInsets.only(bottom: 16),
-                      elevation: 4,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            // Title
-                            Text(
-                              "Order ID: ${history.id}",
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16,
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            Text("Name: ${history.name}"),
-                            Text("Address: ${history.address}"),
-                            Text("Date: ${history.date}"),
-                            const SizedBox(height: 12),
-                            const Text(
-                              "Rented Cars:",
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 14,
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            Column(
-                              children: history.cars.map((car) {
-                                return Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text(car['name']),
-                                    Text("Rp ${car['price']}"),
-                                  ],
-                                );
-                              }).toList(),
-                            ),
-                          ],
+
+                  // Spacer untuk memusatkan Judul dan Ikon
+                  const Spacer(),
+
+                  // Judul dan Ikon di Tengah
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      // "My" dengan warna kuning
+                      Text(
+                        'My',
+                        style: TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                          color: yellow, // Warna kuning
                         ),
                       ),
+                      const SizedBox(width: 4), // Spasi kecil antara kata
+                      // "History" dengan warna biru
+                      Text(
+                        'History',
+                        style: TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                          color: blue400, // Warna biru
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      const Icon(
+                        Icons.shopping_cart_sharp,
+                        color: Color.fromRGBO(32, 73, 255, 1), // Warna biru
+                        size: 24,
+                      ),
+                    ],
+                  ),
+
+                  // Spacer untuk menjaga kesimetrisan layout
+                  const Spacer(),
+                ],
+              ),
+            ),
+
+            // Body Content
+            Expanded(
+              child: FutureBuilder<List<dynamic>>(
+                future: fetchHistory(context.watch<CookieRequest>()),
+                builder: (context, AsyncSnapshot<List<dynamic>> snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+
+                  if (snapshot.hasError) {
+                    return Center(child: Text('Error: ${snapshot.error}'));
+                  }
+
+                  if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                    return const Center(
+                      child: Text(
+                        'No orders found',
+                        style: TextStyle(fontSize: 18, color: Colors.grey),
+                      ),
                     );
-                  },
-                ),
+                  }
+
+                  return ListView.builder(
+                    itemCount: snapshot.data!.length,
+                    itemBuilder: (context, index) {
+                      final item = snapshot.data![index];
+                      return HistoryCard(
+                        username: item['username'],
+                        name: item['name'],
+                        address: item['address'],
+                        dateOrdered: item['date'],
+                        productName: item['product_name'],
+                        imageUrl: item['image_url'],
+                        price: item['price'].toDouble(),
+                      );
+                    },
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
