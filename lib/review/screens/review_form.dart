@@ -167,8 +167,10 @@ class _ReviewFormPageState extends State<ReviewFormPage> {
                                 content: Text("Review submitted successfully!"),
                               ),
                             );
-                            Navigator.pop(context);
-                            Navigator.pop(context);
+                            Navigator.push(
+                               context,
+                              MaterialPageRoute(builder: (context) => const ReviewProductPage()),
+                            );
                           }
                         }
                       }
