@@ -133,8 +133,7 @@ class _ProductPageState extends State<ProductPageAdmin> with SingleTickerProvide
         final request = context.read<CookieRequest>();
         return AlertDialog(
           title: const Text('Delete Product'),
-          content: Text(
-              'Are you sure you want to delete ${product.fields.name}?'),
+          content: Text('Are you sure you want to delete ${product.fields.name}?'),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(dialogContext).pop(),
@@ -142,54 +141,18 @@ class _ProductPageState extends State<ProductPageAdmin> with SingleTickerProvide
             ),
             ElevatedButton(
               style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-              onPressed: () async {
+              onPressed: () {
+                // Store context before async gap
+                final scaffoldMessenger = ScaffoldMessenger.of(context);
+
                 Navigator.of(dialogContext).pop(); // Close the dialog
 
-                try {
-                  // Perform delete request
-                  final response = await request.post(
-                      'http://127.0.0.1:8000/product/delete_product_flutter/${product
-                          .pk}/',
-                      {}
-                  );
-
-                  if (response['status'] == 'success') {
-                    // Refresh the product list
-                    await _refreshProducts(request);
-
-                    // Show success message
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                            '${product.fields.name} deleted successfully'),
-                        backgroundColor: Colors.green,
-                      ),
-                    );
-                  } else {
-                    // Show error message
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                            'Failed to delete product: ${response['message']}'),
-                        backgroundColor: Colors.red,
-                      ),
-                    );
-                  }
-                } catch (e) {
-                  // Show network or unexpected error
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('Error deleting product: $e'),
-                      backgroundColor: Colors.red,
-                    ),
-                  );
-                }
+                // Move async operation outside of onPressed
+                _handleDelete(request, product, scaffoldMessenger);
               },
               child: const Text(
                 'Delete',
-                style: TextStyle(
-                  color: Colors.white, // Set the color to white
-                ),
+                style: TextStyle(color: Colors.white),
               ),
             ),
           ],
@@ -198,18 +161,59 @@ class _ProductPageState extends State<ProductPageAdmin> with SingleTickerProvide
     );
   }
 
-  // Instead of http.post, use the CookieRequest instance:
-  Future<void> _addToCart(String productId) async {
+// Separate method to handle deletion
+  Future<void> _handleDelete(
+      CookieRequest request,
+      Product product,
+      ScaffoldMessengerState scaffoldMessenger,
+      ) async {
+    try {
+      final response = await request.post(
+        'http://127.0.0.1:8000/product/delete_product_flutter/${product.pk}/',
+        {},
+      );
+
+      if (response['status'] == 'success') {
+        await _refreshProducts(request);
+
+        scaffoldMessenger.showSnackBar(
+          SnackBar(
+            content: Text('${product.fields.name} deleted successfully'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      } else {
+        scaffoldMessenger.showSnackBar(
+          SnackBar(
+            content: Text('Failed to delete product: ${response['message']}'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } catch (e) {
+      scaffoldMessenger.showSnackBar(
+        SnackBar(
+          content: Text('Error deleting product: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
+// Fixed _addToCart method
+  Future<void> _addToCart(BuildContext context, String productId) async {
     final request = context.read<CookieRequest>();
+    // Store ScaffoldMessenger before async gap
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
 
     try {
       final response = await request.post(
-          'http://127.0.0.1:8000/cart/add-to-cart-flutter/$productId/',
-          {}
+        'http://127.0.0.1:8000/cart/add-to-cart-flutter/$productId/',
+        {},
       );
 
       if (response['message'] != null) {
-        ScaffoldMessenger.of(context).showSnackBar(
+        scaffoldMessenger.showSnackBar(
           SnackBar(
             content: Text(response['message']),
             backgroundColor: Colors.green,
@@ -217,7 +221,7 @@ class _ProductPageState extends State<ProductPageAdmin> with SingleTickerProvide
         );
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
+      scaffoldMessenger.showSnackBar(
         SnackBar(
           content: Text('Error adding to cart: $e'),
           backgroundColor: Colors.red,
@@ -532,7 +536,7 @@ class _ProductPageState extends State<ProductPageAdmin> with SingleTickerProvide
                                   child: SizedBox(
                                     height: 32, // Fixed height
                                     child: ElevatedButton(
-                                      onPressed: () => _addToCart(product.pk),
+                                      onPressed: () => _addToCart(context,product.pk),
                                       style: ElevatedButton.styleFrom(
                                         backgroundColor: yellow,
                                         foregroundColor: Colors.black,
