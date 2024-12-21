@@ -1,192 +1,288 @@
 import 'package:flutter/material.dart';
 import 'package:balink_mobile/Product/Models/product_model.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 
-class ProductDetailPage extends StatelessWidget {
+class ProductDetailPage extends StatefulWidget {
   final Product product;
+  final List<Product> allProducts; // For recommendations
 
-  const ProductDetailPage({super.key, required this.product});
+  const ProductDetailPage({
+    super.key,
+    required this.product,
+    required this.allProducts,
+  });
 
   @override
+  ProductDetailPageState createState() => ProductDetailPageState();
+}
+
+class ProductDetailPageState extends State<ProductDetailPage>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _animationController;
+  bool _isFavorite = false;
+  List<Product> _recommendations = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _animationController = AnimationController(
+      duration: const Duration(milliseconds: 800),
+      vsync: this,
+    );
+    _animationController.forward();
+    _loadRecommendations();
+  }
+
+  void _loadRecommendations() {
+    // Filter products from the same dealer, excluding current product
+    _recommendations = widget.allProducts
+        .where((p) => p.fields.dealer == widget.product.fields.dealer &&
+        p.pk != widget.product.pk)
+        .take(5)
+        .toList();
+  }
+
+  // In the build method, modify the SliverToBoxAdapter section like this:
+  @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-
     return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        title: Text(
-          'Vehicle Details',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            color: colorScheme.onPrimary,
-          ),
-        ),
-        backgroundColor: colorScheme.primary,
-        elevation: 0,
-        centerTitle: true,
-      ),
-      body: SingleChildScrollView(
+      body: CustomScrollView(
         physics: const BouncingScrollPhysics(),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Product Image Section
-            Stack(
-              children: [
-                AspectRatio(
-                  aspectRatio: 16 / 9,
-                  child: Image.network(
-                    product.fields.imageUrl,
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) {
-                      return const Center(
-                        child: Icon(
-                          Icons.broken_image,
-                          size: 50,
-                          color: Colors.grey,
-                        ),
-                      );
-                    },
-                    loadingBuilder: (context, child, loadingProgress) {
-                      if (loadingProgress == null) return child;
-                      return Center(
-                        child: CircularProgressIndicator(
-                          value: loadingProgress.expectedTotalBytes != null
-                              ? loadingProgress.cumulativeBytesLoaded /
-                              loadingProgress.expectedTotalBytes!
-                              : null,
-                        ),
-                      );
-                    },
-                  ),
-                ),
-                Positioned(
-                  bottom: 16,
-                  right: 16,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: colorScheme.primary,
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Text(
-                      "Year: ${product.fields.year}",
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 12,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-
-            // Product Details Section
-            Padding(
+        slivers: [
+          _buildAppBar(),
+          SliverToBoxAdapter(
+            child: Padding(
               padding: const EdgeInsets.all(16.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Product Name
-                  Text(
-                    product.fields.name,
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.black87,
-                    ),
-                  ),
-
-                  const SizedBox(height: 12),
-
-                  // Vehicle Details
-                  Wrap(
-                    spacing: 8,
-                    runSpacing: 8,
-                    children: [
-                      _buildDetailChip(
-                        icon: Icons.calendar_month,
-                        text: product.fields.year.toStringAsFixed(0),
-                      ),
-                      _buildDetailChip(
-                        icon: Icons.speed,
-                        text: "${product.fields.kmDriven.toStringAsFixed(0)} km",
-                      ),
-                    ],
-                  ),
-
+                  _buildAnimatedSection(_buildDetailsCard()),
                   const SizedBox(height: 16),
-
-                  // Price
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        "Price per day",
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.grey.shade600,
-                        ),
-                      ),
-                      Text(
-                        "Rp. ${product.fields.price.toStringAsFixed(2)}/day",
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.green.shade700,
-                        ),
-                      ),
-                    ],
-                  ),
-
+                  _buildAnimatedSection(_buildPriceSection()),
                   const SizedBox(height: 16),
-
-                  // Action Buttons
-                  Row(
-                    children: [
-                      Expanded(
-                        child: ElevatedButton(
-                          onPressed: () {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text('Added ${product.fields.name} to cart'),
-                                backgroundColor: Colors.green,
-                              ),
-                            );
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.yellow.shade700,
-                            foregroundColor: Colors.black,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            padding: const EdgeInsets.symmetric(vertical: 12),
-                          ),
-                          child: const Text(
-                            "Add to Cart",
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 14,
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      IconButton(
-                        icon: const Icon(Icons.favorite_border),
-                        onPressed: () {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text('Added ${product.fields.name} to favorites'),
-                              backgroundColor: Colors.pink,
-                            ),
-                          );
-                        },
-                        color: Colors.pink.shade300,
-                      ),
-                    ],
-                  ),
+                  _buildAnimatedSection(_buildRecommendations()),
                 ],
+              ),
+            ),
+          ),
+        ],
+      ),
+      bottomNavigationBar: _buildBottomBar(),
+    );
+  }
+
+  // Add this helper method to handle animations
+  Widget _buildAnimatedSection(Widget child) {
+    return AnimatedBuilder(
+      animation: _animationController,
+      builder: (context, child) {
+        return FadeTransition(
+          opacity: CurvedAnimation(
+            parent: _animationController,
+            curve: Curves.easeIn,
+          ),
+          child: Transform.translate(
+            offset: Offset(
+              0,
+              20 * (1 - _animationController.value),
+            ),
+            child: child,
+          ),
+        );
+      },
+      child: child,
+    );
+  }
+
+  // Update the _buildAppBar method to use AnimatedBuilder instead of animate()
+  Widget _buildAppBar() {
+    return SliverAppBar(
+      expandedHeight: 300,
+      pinned: true,
+      stretch: true,
+      flexibleSpace: FlexibleSpaceBar(
+        background: Hero(
+          tag: 'product_image_${widget.product.pk}',
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              Image.network(
+                widget.product.fields.imageUrl,
+                fit: BoxFit.cover,
+                errorBuilder: (_, __, ___) => const Icon(Icons.error),
+              ),
+              const DecoratedBox(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [Colors.transparent, Colors.black54],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+        title: Text(
+          widget.product.fields.name,
+          style: const TextStyle(fontWeight: FontWeight.bold),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDetailsCard() {
+    return Card(
+      elevation: 4,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Vehicle Details',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 16),
+            _buildDetailRow(
+              Icons.calendar_today,
+              'Year',
+              widget.product.fields.year.toString(),
+            ),
+            _buildDetailRow(
+              Icons.speed,
+              'Mileage',
+              '${widget.product.fields.kmDriven.toStringAsFixed(0)} km',
+            ),
+            _buildDetailRow(
+              Icons.store,
+              'Dealer',
+              widget.product.fields.dealer,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDetailRow(IconData icon, String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Row(
+        children: [
+          Icon(icon, size: 20, color: Colors.blue),
+          const SizedBox(width: 12),
+          Text(
+            label,
+            style: const TextStyle(fontSize: 16),
+          ),
+          const Spacer(),
+          Text(
+            value,
+            style: const TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildRecommendations() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'More from this Dealer',
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        const SizedBox(height: 16),
+        SizedBox(
+          height: 200,
+          child: ListView.builder(
+            scrollDirection: Axis.horizontal,
+            itemCount: _recommendations.length,
+            itemBuilder: (context, index) {
+              final product = _recommendations[index];
+              return Card(
+                margin: const EdgeInsets.only(right: 16),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: SizedBox(
+                  width: 160,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      ClipRRect(
+                        borderRadius: const BorderRadius.vertical(
+                          top: Radius.circular(12),
+                        ),
+                        child: Image.network(
+                          product.fields.imageUrl,
+                          height: 120,
+                          width: double.infinity,
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              product.fields.name,
+                              style: const TextStyle(fontWeight: FontWeight.bold),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            Text(
+                              'Rp ${product.fields.price.toStringAsFixed(2)}',
+                              style: const TextStyle(color: Colors.green),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ).animate()
+                  .fadeIn(delay: (100 * index).ms)
+                  .slideX(begin: 0.2, end: 0);
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildPriceSection() {
+    return Card(
+      elevation: 4,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            const Text(
+              'Rental Price',
+              style: TextStyle(fontSize: 18),
+            ),
+            Text(
+              'Rp ${widget.product.fields.price.toStringAsFixed(2)}/day',
+              style: const TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Colors.green,
               ),
             ),
           ],
@@ -195,28 +291,63 @@ class ProductDetailPage extends StatelessWidget {
     );
   }
 
-  // Helper method for creating detail chips (identical to the one in ProductPage)
-  Widget _buildDetailChip({required IconData icon, required String text}) {
+  Widget _buildBottomBar() {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.grey.shade200,
-        borderRadius: BorderRadius.circular(8),
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+          ),
+        ],
       ),
       child: Row(
-        mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 12, color: Colors.grey.shade600),
-          const SizedBox(width: 2),
-          Text(
-            text,
-            style: TextStyle(
-              fontSize: 10,
-              color: Colors.grey.shade800,
+          Expanded(
+            child: ElevatedButton(
+              onPressed: () {
+                // Implement booking logic
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.blue,
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+              child: const Text(
+                'Book Now',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(width: 16),
+          Container(
+            decoration: BoxDecoration(
+              color: _isFavorite ? Colors.pink.shade50 : Colors.grey.shade100,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: IconButton(
+              icon: Icon(
+                _isFavorite ? Icons.favorite : Icons.favorite_border,
+                color: _isFavorite ? Colors.pink : Colors.grey,
+              ),
+              onPressed: () => setState(() => _isFavorite = !_isFavorite),
             ),
           ),
         ],
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
   }
 }

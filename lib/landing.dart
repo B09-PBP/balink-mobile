@@ -1,6 +1,6 @@
+import 'package:balink_mobile/main_navbar.dart';
 import 'package:flutter/material.dart';
 import 'left_drawer.dart';
-import 'package:balink_mobile/Product/Screens/product_page_admin.dart';
 
 class MyHomePage extends StatelessWidget {
   const MyHomePage({super.key});
@@ -12,7 +12,7 @@ class MyHomePage extends StatelessWidget {
         title: const Text(
           'BaLink',
           style: TextStyle(
-            fontWeight: FontWeight.bold, 
+            fontWeight: FontWeight.bold,
             fontSize: 24,
             color: Colors.white,
           ),
@@ -55,9 +55,9 @@ class MyHomePage extends StatelessWidget {
                           const Text(
                             'Linking your Road with',
                             style: TextStyle(
-                              fontSize: 26,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black
+                                fontSize: 26,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black
                             ),
                           ),
                           const Row(
@@ -93,9 +93,9 @@ class MyHomePage extends StatelessWidget {
                               ),
                             ),
                             onPressed: () {
-                             Navigator.pushReplacement(
-                              context, 
-                              MaterialPageRoute(builder: (context) => const ProductPageAdmin()));
+                              Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(builder: (context) => const MainNavigationScaffold(isLoggedIn: true, startingPage: 1)));
                             },
                             child: const Text(
                               "Let's Go!",
@@ -170,17 +170,17 @@ class MyHomePage extends StatelessWidget {
                     _buildServiceItem(
                       title: 'Pick-Up and Drop-Off Service',
                       description:
-                          'BaLink ensures that customers have the convenience of being picked up and dropped off at their preferred locations.',
+                      'BaLink ensures that customers have the convenience of being picked up and dropped off at their preferred locations.',
                     ),
                     _buildServiceItem(
                       title: 'Daily and Weekly Car Rentals',
                       description:
-                          'Customers can choose from a variety of vehicles available for rental on both daily and weekly bases.',
+                      'Customers can choose from a variety of vehicles available for rental on both daily and weekly bases.',
                     ),
                     _buildServiceItem(
                       title: '24/7 Customer Support',
                       description:
-                          'BaLink provides round-the-clock customer support, ensuring that any issues or inquiries are addressed promptly.',
+                      'BaLink provides round-the-clock customer support, ensuring that any issues or inquiries are addressed promptly.',
                     ),
                   ],
                 ),
@@ -196,7 +196,7 @@ class MyHomePage extends StatelessWidget {
   Widget _buildPopularCard({
     required String imagePath,
     required String title,
-    required String price, 
+    required String price,
   }) {
     return Card(
       elevation: 5,
@@ -226,7 +226,7 @@ class MyHomePage extends StatelessWidget {
             Text(
               price,
               style: const TextStyle(
-                fontSize: 14, 
+                fontSize: 14,
                 fontWeight: FontWeight.bold,
                 color:Color.fromRGBO(32, 73, 255, 1),
               ),
