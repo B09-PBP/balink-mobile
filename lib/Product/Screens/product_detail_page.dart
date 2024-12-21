@@ -13,10 +13,10 @@ class ProductDetailPage extends StatefulWidget {
   });
 
   @override
-  _ProductDetailPageState createState() => _ProductDetailPageState();
+  ProductDetailPageState createState() => ProductDetailPageState();
 }
 
-class _ProductDetailPageState extends State<ProductDetailPage>
+class ProductDetailPageState extends State<ProductDetailPage>
     with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   bool _isFavorite = false;

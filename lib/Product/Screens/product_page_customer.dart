@@ -10,14 +10,14 @@ import 'package:provider/provider.dart';
 import 'product_detail_page.dart';
 import 'package:balink_mobile/Product/Widgets/filter.dart';
 
-class ProductPageAdmin extends StatefulWidget {
-  const ProductPageAdmin({super.key});
+class ProductPageCustomer extends StatefulWidget {
+  const ProductPageCustomer({super.key});
 
   @override
-  State<ProductPageAdmin> createState() => _ProductPageState();
+  State<ProductPageCustomer> createState() => _ProductPageState();
 }
 
-class _ProductPageState extends State<ProductPageAdmin> with SingleTickerProviderStateMixin {
+class _ProductPageState extends State<ProductPageCustomer> with SingleTickerProviderStateMixin {
   String _searchQuery = '';
   double _minPrice = 0;
   double _maxPrice = 1000000;
@@ -183,7 +183,12 @@ class _ProductPageState extends State<ProductPageAdmin> with SingleTickerProvide
                   );
                 }
               },
-              child: const Text('Delete'),
+              child: const Text(
+                'Delete',
+                style: TextStyle(
+                  color: Colors.white, // Set the color to white
+                ),
+              ),
             ),
           ],
         );

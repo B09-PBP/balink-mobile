@@ -12,7 +12,7 @@ final ThemeData djangoTheme = ThemeData(
 
   // Updated TextTheme using newer Flutter typography styles
   textTheme: TextTheme(
-    displayLarge: GoogleFonts.poppins(fontSize: 32, fontWeight: FontWeight.bold, color: Colors.blue.shade700),
+    displayLarge: GoogleFonts.poppins(fontSize: 32, fontWeight: FontWeight.bold, color: Colors.black),
     titleLarge: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.w600, color: Colors.grey.shade800),
     bodyLarge: GoogleFonts.poppins(fontSize: 14, color: Colors.grey.shade600),
     bodyMedium: GoogleFonts.poppins(fontSize: 12, color: Colors.grey.shade500),

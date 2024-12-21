@@ -1,3 +1,4 @@
+import 'package:balink_mobile/Product/Screens/product_page_customer.dart';
 import 'package:balink_mobile/article/screen/article_page.dart';
 import 'package:balink_mobile/review/screens/review_adminpage.dart';
 import 'package:balink_mobile/review/screens/review_customerpage.dart';
@@ -44,7 +45,11 @@ class _MainNavigationScaffoldState extends State<MainNavigationScaffold>
         icon: Icons.directions_car_rounded,
         label: 'Product',
         requiresAuth: true,
-        page: widget.isLoggedIn ? const ProductPageAdmin() : const LoginPage(),
+        page: !widget.isLoggedIn
+            ? const LoginPage()
+            : (_profileData != null && _profileData!['privilege'] == "customer"
+            ? const ProductPageCustomer()
+            : const ProductPageAdmin()),
       ),
       NavigationItem(
         icon: Icons.star_rounded,

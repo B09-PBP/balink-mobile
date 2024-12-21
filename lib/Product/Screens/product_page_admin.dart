@@ -183,7 +183,12 @@ class _ProductPageState extends State<ProductPageAdmin> with SingleTickerProvide
                   );
                 }
               },
-              child: const Text('Delete'),
+              child: const Text(
+                'Delete',
+                style: TextStyle(
+                  color: Colors.white, // Set the color to white
+                ),
+              ),
             ),
           ],
         );
