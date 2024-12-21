@@ -1,4 +1,4 @@
-import 'package:balink_mobile/article/screen/article_page.dart';
+import 'package:balink_mobile/article/screen/article_page_admin.dart';
 import 'package:balink_mobile/authentication/login.dart';
 import 'package:balink_mobile/landing.dart';
 import 'package:flutter/material.dart';
