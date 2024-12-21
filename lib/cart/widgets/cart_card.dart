@@ -57,6 +57,8 @@ class _CartCardState extends State<CartCard> with SingleTickerProviderStateMixin
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+
     return FadeTransition(
       opacity: _fadeAnimation,
       child: SizeTransition(
@@ -77,17 +79,17 @@ class _CartCardState extends State<CartCard> with SingleTickerProviderStateMixin
                       ? Image.network(
                           widget.cartEntry.fields.imageUrl,
                           width: double.infinity,
-                          height: 150,
-                          fit: BoxFit.cover,
+                          height: screenWidth * 0.5, // Dinamis berdasarkan lebar layar
+                          fit: BoxFit.cover, // Proporsional ke bawah
                         )
                       : Container(
                           width: double.infinity,
-                          height: 150,
+                          height: screenWidth * 0.5,
                           color: Colors.grey[200],
                           child: const Icon(Icons.car_rental),
                         ),
                 ),
-                // Product details
+                // Gradient Overlay
                 Positioned.fill(
                   child: Container(
                     decoration: BoxDecoration(
@@ -103,6 +105,7 @@ class _CartCardState extends State<CartCard> with SingleTickerProviderStateMixin
                     ),
                   ),
                 ),
+                // Product Details
                 Positioned(
                   bottom: 16,
                   left: 16,
@@ -130,7 +133,7 @@ class _CartCardState extends State<CartCard> with SingleTickerProviderStateMixin
                     ],
                   ),
                 ),
-                // Delete icon
+                // Delete Icon
                 Positioned(
                   top: 8,
                   right: 8,
