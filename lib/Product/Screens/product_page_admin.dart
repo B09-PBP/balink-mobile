@@ -200,10 +200,8 @@ class _ProductPageState extends State<ProductPageAdmin> with SingleTickerProvide
     }
   }
 
-// Fixed _addToCart method
   Future<void> _addToCart(BuildContext context, String productId) async {
     final request = context.read<CookieRequest>();
-    // Store ScaffoldMessenger before async gap
     final scaffoldMessenger = ScaffoldMessenger.of(context);
 
     try {
