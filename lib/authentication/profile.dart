@@ -57,7 +57,6 @@ class _ProfilePageState extends State<ProfilePage> {
           IconButton(
             icon: const Icon(Icons.edit),
             onPressed: () {
-              // TODO: Implement profile editing
             },
           ),
         ],

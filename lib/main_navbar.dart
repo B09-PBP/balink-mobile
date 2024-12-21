@@ -1,10 +1,14 @@
 import 'package:balink_mobile/article/screen/article_page.dart';
+import 'package:balink_mobile/review/screens/review_adminpage.dart';
+import 'package:balink_mobile/review/screens/review_customerpage.dart';
 import 'package:flutter/material.dart';
 import 'package:balink_mobile/cart/screens/cart.dart';
 import 'package:balink_mobile/authentication/login.dart';
 import 'package:balink_mobile/landing.dart';
 import 'package:balink_mobile/left_drawer.dart';
 import 'package:balink_mobile/Product/Screens/product_page_admin.dart';
+import 'package:pbp_django_auth/pbp_django_auth.dart';
+import 'package:provider/provider.dart';
 
 class MainNavigationScaffold extends StatefulWidget {
   final bool isLoggedIn;
@@ -24,45 +28,56 @@ class _MainNavigationScaffoldState extends State<MainNavigationScaffold>
     with TickerProviderStateMixin {
   late int _selectedIndex;
   late AnimationController _animationController;
+  Map<String, dynamic>? _profileData;
+  bool _isLoading = true;
+  String? _errorMessage;
 
-  final List<NavigationItem> _navigationItems = [
-    const NavigationItem(
-      icon: Icons.home_rounded,
-      label: 'Home',
-      requiresAuth: false,
-      page: MyHomePage(),
-    ),
-    const NavigationItem(
-      icon: Icons.directions_car_rounded,
-      label: 'Product',
-      requiresAuth: true,
-      page: ProductPageAdmin(),
-    ),
-    const NavigationItem(
-      icon: Icons.star_rounded,
-      label: 'Review',
-      requiresAuth: true,
-      page: Placeholder(color: Colors.green),
-    ),
-    const NavigationItem(
-      icon: Icons.bookmark_rounded,
-      label: 'Bookmark',
-      requiresAuth: true,
-      page: Placeholder(color: Colors.orange),
-    ),
-    NavigationItem(
-      icon: Icons.article_rounded,
-      label: 'Article',
-      requiresAuth: true,
-      page: ArticlePage(),
-    ),
-    const NavigationItem(
-      icon: Icons.shopping_cart_rounded,
-      label: 'Cart',
-      requiresAuth: true,
-      page: CartPage(),
-    ),
-  ];
+  List<NavigationItem> get _navigationItems {
+    return [
+      const NavigationItem(
+        icon: Icons.home_rounded,
+        label: 'Home',
+        requiresAuth: false,
+        page: MyHomePage(),
+      ),
+      NavigationItem(
+        icon: Icons.directions_car_rounded,
+        label: 'Product',
+        requiresAuth: true,
+        page: widget.isLoggedIn ? const ProductPageAdmin() : const LoginPage(),
+      ),
+      NavigationItem(
+        icon: Icons.star_rounded,
+        label: 'Review',
+        requiresAuth: true,
+        page: !widget.isLoggedIn
+            ? const LoginPage()
+            : (_profileData != null && _profileData!['privilege'] == "customer"
+            ? const ReviewProductPage()
+            : const ReviewProductAdminPage()),
+      ),
+      NavigationItem(
+        icon: Icons.bookmark_rounded,
+        label: 'Bookmark',
+        requiresAuth: true,
+        page: widget.isLoggedIn
+            ? const Placeholder(color: Colors.orange)
+            : const LoginPage(),
+      ),
+      NavigationItem(
+        icon: Icons.article_rounded,
+        label: 'Article',
+        requiresAuth: true,
+        page: widget.isLoggedIn ? ArticlePage() : const LoginPage(),
+      ),
+      NavigationItem(
+        icon: Icons.shopping_cart_rounded,
+        label: 'Cart',
+        requiresAuth: true,
+        page: widget.isLoggedIn ? const CartPage() : const LoginPage(),
+      ),
+    ];
+  }
 
   @override
   void initState() {
@@ -72,12 +87,46 @@ class _MainNavigationScaffoldState extends State<MainNavigationScaffold>
       duration: const Duration(milliseconds: 350),
       vsync: this,
     );
+    if (widget.isLoggedIn) {
+      _fetchUserProfile();
+    } else {
+      setState(() {
+        _isLoading = false;
+      });
+    }
   }
 
   @override
   void dispose() {
     _animationController.dispose();
     super.dispose();
+  }
+
+  Future<void> _fetchUserProfile() async {
+    final request = context.read<CookieRequest>();
+
+    try {
+      final response = await request.get(
+        "http://127.0.0.1:8000/auth/get-profile/",
+      );
+
+      if (response != null) {
+        setState(() {
+          _profileData = response;
+          _isLoading = false;
+        });
+      } else {
+        setState(() {
+          _errorMessage = 'Failed to load profile';
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      setState(() {
+        _errorMessage = 'Error connecting to server: ${e.toString()}';
+        _isLoading = false;
+      });
+    }
   }
 
   Widget _buildPage(Widget page) {
@@ -100,10 +149,15 @@ class _MainNavigationScaffoldState extends State<MainNavigationScaffold>
   }
 
   Widget _getCurrentPage() {
-    final item = _navigationItems[_selectedIndex];
-    if (item.requiresAuth && !widget.isLoggedIn) {
-      return _buildPage(const LoginPage());
+    if (_isLoading) {
+      return const Center(child: CircularProgressIndicator());
     }
+
+    if (_errorMessage != null) {
+      return Center(child: Text(_errorMessage!));
+    }
+
+    final item = _navigationItems[_selectedIndex];
     return _buildPage(item.page);
   }
 

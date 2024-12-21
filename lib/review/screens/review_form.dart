@@ -22,7 +22,7 @@ class ReviewFormPage extends StatefulWidget {
 
 class _ReviewFormPageState extends State<ReviewFormPage> {
   final _formKey = GlobalKey<FormState>();
-  double _rating = 0;
+  int _rating = 0;
   String _reviewMessage = "";
 
   @override
@@ -97,7 +97,7 @@ class _ReviewFormPageState extends State<ReviewFormPage> {
                   keyboardType: TextInputType.number,
                   onChanged: (String? value) {
                     setState(() {
-                      _rating = double.tryParse(value!) ?? 0;
+                      _rating = int.tryParse(value!) ?? 0;
                     });
                   },
                   validator: (String? value) {
@@ -164,10 +164,8 @@ class _ReviewFormPageState extends State<ReviewFormPage> {
                                 content: Text("Review submitted successfully!"),
                               ),
                             );
-                            Navigator.push(
-                               context,
-                              MaterialPageRoute(builder: (context) => const ReviewProductPage()),
-                            );
+                            Navigator.pop(context);
+                            Navigator.pop(context);
                           }
                         }
                       }
