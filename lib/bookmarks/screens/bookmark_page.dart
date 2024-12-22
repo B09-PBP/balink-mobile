@@ -217,6 +217,13 @@ class _BookmarkPageState extends State<BookmarkPage> {
     return Scaffold(
       drawer: const LeftDrawer(),
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.menu),
+          color: Colors.black, // Set the color to black
+          onPressed: () {
+            Scaffold.of(context).openDrawer();
+          },
+        ),
         backgroundColor: Colors.white,
         elevation: 0,
         centerTitle: true,
