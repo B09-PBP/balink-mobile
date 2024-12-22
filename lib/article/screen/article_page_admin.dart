@@ -259,7 +259,67 @@ class _ArticleAdminPageState extends State<ArticleAdminPage> {
                                                 Icons.delete_outline),
                                             color: Colors.red,
                                             onPressed: () async {
-                                              // Deletion logic remains the same
+                                              bool confirm = await showDialog(
+                                                    context: context,
+                                                    builder: (context) =>
+                                                        AlertDialog(
+                                                      title: const Text(
+                                                          'Delete Article'),
+                                                      content: const Text(
+                                                          'Are you sure you want to delete this article?'),
+                                                      actions: [
+                                                        TextButton(
+                                                          onPressed: () =>
+                                                              Navigator.pop(
+                                                                  context,
+                                                                  false),
+                                                          child: const Text(
+                                                              'Cancel'),
+                                                        ),
+                                                        TextButton(
+                                                          onPressed: () =>
+                                                              Navigator.pop(
+                                                                  context,
+                                                                  true),
+                                                          child: const Text(
+                                                            'Delete',
+                                                            style: TextStyle(
+                                                                color:
+                                                                    Colors.red),
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ) ??
+                                                  false;
+
+                                              if (confirm) {
+                                                final request = context
+                                                    .read<CookieRequest>();
+                                                try {
+                                                  await request.post(
+                                                    'http://127.0.0.1:8000/article/delete/${article.pk}/',
+                                                    {},
+                                                  );
+                                                } catch (e) {
+                                                  if (mounted) {
+                                                    ScaffoldMessenger.of(
+                                                            context)
+                                                        .showSnackBar(
+                                                      const SnackBar(
+                                                        content: Text(
+                                                            "Article deleted"),
+                                                        backgroundColor:
+                                                            Colors.green,
+                                                      ),
+                                                    );
+                                                  }
+                                                } finally {
+                                                  if (mounted) {
+                                                    fetchArticles();
+                                                  }
+                                                }
+                                              }
                                             },
                                           ),
                                         ],
