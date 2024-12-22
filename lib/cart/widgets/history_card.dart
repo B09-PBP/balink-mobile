@@ -10,7 +10,7 @@ class HistoryCard extends StatefulWidget {
   final double price;
 
   const HistoryCard({
-    Key? key,
+    super.key,
     required this.username,
     required this.name,
     required this.address,
@@ -18,9 +18,10 @@ class HistoryCard extends StatefulWidget {
     required this.productName,
     required this.price,
     this.imageUrl,
-  }) : super(key: key);
+  });
 
   @override
+  // ignore: library_private_types_in_public_api
   _HistoryCardState createState() => _HistoryCardState();
 }
 
@@ -29,8 +30,8 @@ class _HistoryCardState extends State<HistoryCard>
   late AnimationController _controller;
   late Animation<double> _fadeAnimation;
 
-  final Color blue400 = Color.fromRGBO(32, 73, 255, 1); // Bright Blue
-  final Color yellow = Color.fromRGBO(255, 203, 48, 1); // Bright Yellow
+  final Color blue400 = const Color.fromRGBO(32, 73, 255, 1); // Bright Blue
+  final Color yellow = const Color.fromRGBO(255, 203, 48, 1); // Bright Yellow
 
   @override
   void initState() {

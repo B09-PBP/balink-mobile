@@ -1,4 +1,3 @@
-import 'package:balink_mobile/main_navbar.dart';
 import 'package:flutter/material.dart';
 import 'left_drawer.dart';
 
@@ -96,7 +95,7 @@ class MyHomePage extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 20),
-              Text(
+              const Text(
                 'Start your journey today!',
                 style: TextStyle(fontSize: 14, color: Colors.white70),
               ),

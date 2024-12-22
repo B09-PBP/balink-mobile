@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 import '../widgets/history_card.dart';
 
 class HistoryPage extends StatefulWidget {
-  const HistoryPage({Key? key}) : super(key: key);
+  const HistoryPage({super.key});
 
   @override
   State<HistoryPage> createState() => _HistoryPageState();
@@ -18,8 +18,8 @@ class _HistoryPageState extends State<HistoryPage> {
 
   @override
   Widget build(BuildContext context) {
-    final Color blue400 = const Color.fromRGBO(32, 73, 255, 1); // Bright Blue
-    final Color yellow = const Color.fromRGBO(255, 203, 48, 1); // Bright Yellow
+    const Color blue400 = Color.fromRGBO(32, 73, 255, 1); // Bright Blue
+    const Color yellow = Color.fromRGBO(255, 203, 48, 1); // Bright Yellow
 
     return Scaffold(
       body: SafeArea(
@@ -43,7 +43,7 @@ class _HistoryPageState extends State<HistoryPage> {
                   const Spacer(),
 
                   // Judul dan Ikon di Tengah
-                  Row(
+                  const Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       // "My" dengan warna kuning
@@ -55,7 +55,7 @@ class _HistoryPageState extends State<HistoryPage> {
                           color: yellow, // Warna kuning
                         ),
                       ),
-                      const SizedBox(width: 4), // Spasi kecil antara kata
+                      SizedBox(width: 4), // Spasi kecil antara kata
                       // "History" dengan warna biru
                       Text(
                         'History',
@@ -65,8 +65,8 @@ class _HistoryPageState extends State<HistoryPage> {
                           color: blue400, // Warna biru
                         ),
                       ),
-                      const SizedBox(width: 8),
-                      const Icon(
+                      SizedBox(width: 8),
+                      Icon(
                         Icons.shopping_cart_sharp,
                         color: Color.fromRGBO(32, 73, 255, 1), // Warna biru
                         size: 24,

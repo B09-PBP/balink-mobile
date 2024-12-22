@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:balink_mobile/cart/screens/checkout_form.dart';
 import 'package:balink_mobile/cart/screens/history.dart';
 import 'package:balink_mobile/left_drawer.dart';
@@ -53,7 +55,6 @@ class CartPageState extends State<CartPage> {
         setState(() => _isLoading = false);
       }
     } catch (e) {
-      print('Error fetching cart: $e');
       setState(() => _isLoading = false);
     }
   }
@@ -202,17 +203,17 @@ class CartPageState extends State<CartPage> {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Row(
+                                const Row(
                                   children: [
                                     Text(
                                       'My Cart ',
-                                      style: const TextStyle(
+                                      style: TextStyle(
                                         color: Colors.white,
                                         fontSize: 24,
                                         fontWeight: FontWeight.bold,
                                       ),
                                     ),
-                                    const Icon(
+                                    Icon(
                                       Icons.shopping_cart_outlined,
                                       color: Colors.white,
                                     ),

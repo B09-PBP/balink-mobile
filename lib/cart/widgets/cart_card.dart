@@ -6,10 +6,10 @@ class CartCard extends StatefulWidget {
   final VoidCallback onRemove;
 
   const CartCard({
-    Key? key,
+    super.key,
     required this.cartEntry,
     required this.onRemove,
-  }) : super(key: key);
+  });
 
   @override
   State<CartCard> createState() => _CartCardState();

@@ -1,3 +1,5 @@
+// ignore_for_file: library_private_types_in_public_api, use_build_context_synchronously
+
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
@@ -13,8 +15,8 @@ class CheckoutForm extends StatefulWidget {
     required this.cartItems,
     required this.totalPrice,
     required this.onCheckoutSuccess,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   _CheckoutFormState createState() => _CheckoutFormState();
@@ -139,7 +141,7 @@ class _CheckoutFormState extends State<CheckoutForm> {
                   controller: _nameController,
                   decoration: InputDecoration(
                     hintText: 'Enter your name',
-                    hintStyle: TextStyle(color: Colors.black),
+                    hintStyle: const TextStyle(color: Colors.black),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8),
                     ),
@@ -166,7 +168,7 @@ class _CheckoutFormState extends State<CheckoutForm> {
                   controller: _addressController,
                   decoration: InputDecoration(
                     hintText: 'Enter your address',
-                    hintStyle: TextStyle(color: Colors.black),
+                    hintStyle: const TextStyle(color: Colors.black),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8),
                     ),
