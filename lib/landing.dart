@@ -9,16 +9,30 @@ class MyHomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'BaLink',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 24,
-            color: Colors.white,
-          ),
-        ),
+        backgroundColor: Colors.white,
+        elevation: 0,
         centerTitle: true,
-        backgroundColor: const Color.fromRGBO(32, 73, 255, 1),
+        title: const Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              "Ba",
+              style: TextStyle(
+                color: Color.fromRGBO(255, 203, 48, 1),
+                fontWeight: FontWeight.bold,
+                fontSize: 24,
+              ),
+            ),
+            Text(
+              "Link",
+              style: TextStyle(
+                color: Color.fromRGBO(32, 73, 255, 1),
+                fontWeight: FontWeight.bold,
+                fontSize: 24,
+              ),
+            ),
+          ],
+        ),
       ),
       body: Container(
         decoration: const BoxDecoration(
