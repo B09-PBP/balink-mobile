@@ -36,7 +36,7 @@ class _BookmarkFormPageState extends State<BookmarkFormPage> {
   // Fetch products from the backend
   Future<void> _fetchProducts() async {
     final request = context.read<CookieRequest>();
-    final response = await request.get('http://127.0.0.1:8000/product/json/');
+    final response = await request.get('https://nevin-thang-balink.pbp.cs.ui.ac.id/product/json/');
 
     setState(() {
       _allProducts = response.map<Product>((json) => Product.fromJson(json)).toList();
@@ -97,7 +97,7 @@ class _BookmarkFormPageState extends State<BookmarkFormPage> {
 
     final request = context.read<CookieRequest>();
     final response = await request.post(
-      'http://127.0.0.1:8000/bookmarks/create-bookmark-flutter/',
+      'https://nevin-thang-balink.pbp.cs.ui.ac.id/bookmarks/create-bookmark-flutter/',
       {
         "product_id": _selectedProduct!.pk.toString(),
         "note": _noteController.text,

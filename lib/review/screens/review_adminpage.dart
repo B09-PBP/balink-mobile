@@ -14,7 +14,7 @@ class ReviewProductAdminPage extends StatefulWidget {
 
 class _ReviewProductAdminPageState extends State<ReviewProductAdminPage> {
   Future<List<ReviewModels>> fetchReviews(CookieRequest request) async {
-    final response = await request.get('http://127.0.0.1:8000/review/all-reviews-flutter/');
+    final response = await request.get('https://nevin-thang-balink.pbp.cs.ui.ac.id/review/all-reviews-flutter/');
     // final response = await request.get('http://nevin-thang-balink.pbp.cs.ui.ac.id/review/all-reviews-flutter/');
 
     List<ReviewModels> listReview = [];
@@ -28,7 +28,7 @@ class _ReviewProductAdminPageState extends State<ReviewProductAdminPage> {
 
   Future<void> deleteReview(CookieRequest request, String reviewId) async {
     final response = await request.post(
-      'http://127.0.0.1:8000/review/delete-review-flutter/$reviewId/',
+      'https://nevin-thang-balink.pbp.cs.ui.ac.id/review/delete-review-flutter/$reviewId/',
       // 'hhttp://nevin-thang-balink.pbp.cs.ui.ac.id/review/delete-review-flutter/$reviewId/',
       {},
     );

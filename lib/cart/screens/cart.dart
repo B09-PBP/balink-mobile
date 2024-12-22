@@ -36,7 +36,7 @@ class CartPageState extends State<CartPage> {
     final request = context.read<CookieRequest>();
 
     try {
-      final response = await request.get('http://127.0.0.1:8000/cart/get-user-cart/');
+      final response = await request.get('https://nevin-thang-balink.pbp.cs.ui.ac.id/cart/get-user-cart/');
       if (response != null && response is List) {
         List<CartEntry> items = response.map((item) => CartEntry.fromJson(item)).toList();
 
@@ -64,7 +64,7 @@ class CartPageState extends State<CartPage> {
 
     try {
       final response = await request.post(
-        'http://127.0.0.1:8000/cart/remove-product-from-cart-flutter/',
+        'https://nevin-thang-balink.pbp.cs.ui.ac.id/cart/remove-product-from-cart-flutter/',
         {
           'product_name': productName, // Kirimkan nama produk sebagai parameter
         },
@@ -108,7 +108,7 @@ class CartPageState extends State<CartPage> {
 
     try {
       final response = await request.post(
-        'http://127.0.0.1:8000/cart/booking-cart-flutter/',
+        'https://nevin-thang-balink.pbp.cs.ui.ac.id/cart/booking-cart-flutter/',
         {
           'customer_name': customerName,
           'delivery_address': deliveryAddress,

@@ -43,7 +43,7 @@ class _ArticleAdminPageState extends State<ArticleAdminPage> {
 
     try {
       final request = context.read<CookieRequest>();
-      final response = await request.get('http://127.0.0.1:8000/article/json/');
+      final response = await request.get('https://nevin-thang-balink.pbp.cs.ui.ac.id/article/json/');
       String jsonString = jsonEncode(response);
       articles = articleFromJson(jsonString);
     } catch (e) {
@@ -315,7 +315,7 @@ class _ArticleAdminPageState extends State<ArticleAdminPage> {
                                                     .read<CookieRequest>();
                                                 try {
                                                   await request.post(
-                                                    'http://127.0.0.1:8000/article/delete/${article.pk}/',
+                                                    'https://nevin-thang-balink.pbp.cs.ui.ac.id/article/delete/${article.pk}/',
                                                     {},
                                                   );
                                                 } catch (e) {

@@ -54,7 +54,7 @@ class _ProductCustomerPageState extends State<ProductPageCustomer> with SingleTi
 
   Future<List<Product>> fetchProducts(CookieRequest request) async {
     try {
-      final response = await request.get('http://127.0.0.1:8000/product/json/');
+      final response = await request.get('https://nevin-thang-balink.pbp.cs.ui.ac.id/product/json/');
       if (response == null) throw Exception('Failed to load products');
 
       return (response as List).map((d) => Product.fromJson(d)).toList();
@@ -130,7 +130,7 @@ class _ProductCustomerPageState extends State<ProductPageCustomer> with SingleTi
 
     try {
       final response = await request.post(
-        'http://127.0.0.1:8000/cart/add-to-cart-flutter/$productId/',
+        'https://nevin-thang-balink.pbp.cs.ui.ac.id/cart/add-to-cart-flutter/$productId/',
         {},
       );
 

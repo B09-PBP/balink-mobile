@@ -32,7 +32,7 @@ class MyAppState extends State<MyApp> {
     try {
       // Attempt to validate login status
       final response =
-          await request.get('http://127.0.0.1:8000/auth/check_login/');
+          await request.get('https://nevin-thang-balink.pbp.cs.ui.ac.id/auth/check_login/');
 
       // Check if the backend confirms login status
       setState(() {
@@ -84,7 +84,7 @@ class MyAppState extends State<MyApp> {
 
     try {
       final response =
-          await request.get('http://127.0.0.1:8000/auth/check_login/');
+          await request.get('https://nevin-thang-balink.pbp.cs.ui.ac.id/auth/check_login/');
       return response['is_logged_in'] == true;
     } catch (e) {
       final prefs = await SharedPreferences.getInstance();

@@ -244,7 +244,7 @@ class _LoginPageState extends State<LoginPage> {
 
     try {
       final response = await request.login(
-        "http://127.0.0.1:8000/auth/login-mobile/",
+        "https://nevin-thang-balink.pbp.cs.ui.ac.id/auth/login-mobile/",
         {
           'username': username,
           'password': password,

@@ -141,7 +141,7 @@ class _ArticleFormState extends State<ArticleForm> {
               onPressed: () async {
                 if (_formKey.currentState!.validate()) {
                   final response = await request.postJson(
-                    "http://127.0.0.1:8000/article/create-flutter/",
+                    "https://nevin-thang-balink.pbp.cs.ui.ac.id/article/create-flutter/",
                     jsonEncode({
                       'user': 1, 
                       'title': _titleController.text,

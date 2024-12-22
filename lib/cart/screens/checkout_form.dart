@@ -43,7 +43,7 @@ class _CheckoutFormState extends State<CheckoutForm> {
       };
 
       final response = await request.postJson(
-        'http://127.0.0.1:8000/cart/booking-cart-flutter/',
+        'https://nevin-thang-balink.pbp.cs.ui.ac.id/cart/booking-cart-flutter/',
         jsonEncode(data),
       );
 

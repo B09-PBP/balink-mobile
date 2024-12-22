@@ -17,7 +17,7 @@ class BookmarkPage extends StatefulWidget {
 class _BookmarkPageState extends State<BookmarkPage> {
   // Fetch user's bookmarks from the server
   Future<List<BookmarkModel>> fetchBookmarks(CookieRequest request) async {
-    final response = await request.get('http://127.0.0.1:8000/bookmarks/json/');
+    final response = await request.get('https://nevin-thang-balink.pbp.cs.ui.ac.id/bookmarks/json/');
     List<BookmarkModel> listBookmark = [];
     for (var d in response) {
       if (d != null) {
@@ -72,7 +72,7 @@ class _BookmarkPageState extends State<BookmarkPage> {
     if (confirmed == null || !confirmed) return;
 
     final request = context.read<CookieRequest>(); // ignore: use_build_context_synchronously
-    final url = 'http://127.0.0.1:8000/bookmarks/delete-bookmark-flutter/${bookmark.id}/';
+    final url = 'https://nevin-thang-balink.pbp.cs.ui.ac.id/bookmarks/delete-bookmark-flutter/${bookmark.id}/';
     try {
       final response = await request.post(url, {});
       if (response['status'] == 'success') {

@@ -12,7 +12,7 @@ class HistoryPage extends StatefulWidget {
 
 class _HistoryPageState extends State<HistoryPage> {
   Future<List<dynamic>> fetchHistory(CookieRequest request) async {
-    final response = await request.get('http://127.0.0.1:8000/cart/get-history/');
+    final response = await request.get('https://nevin-thang-balink.pbp.cs.ui.ac.id/cart/get-history/');
     return response;
   }
 

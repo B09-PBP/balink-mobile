@@ -55,7 +55,7 @@ class ProfilePageState extends State<ProfilePage> with SingleTickerProviderState
 
     try {
       final response = await request.get(
-        "http://127.0.0.1:8000/auth/get-profile/",
+        "https://nevin-thang-balink.pbp.cs.ui.ac.id/auth/get-profile/",
       );
 
       if (response != null) {

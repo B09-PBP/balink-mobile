@@ -32,7 +32,7 @@ class _UpdateBookmarkModalState extends State<UpdateBookmarkModal> {
 
   Future<void> _submitUpdate() async {
     final request = context.read<CookieRequest>();
-    final url = 'http://127.0.0.1:8000/bookmarks/update-bookmark-flutter/${widget.bookmark.id}/';
+    final url = 'https://nevin-thang-balink.pbp.cs.ui.ac.id/bookmarks/update-bookmark-flutter/${widget.bookmark.id}/';
 
     // Data yang akan dikirim
     final data = {

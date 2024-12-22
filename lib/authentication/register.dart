@@ -220,7 +220,7 @@ class _RegisterPageState extends State<RegisterPage> {
     }
 
     final response = await request.post(
-      "http://127.0.0.1:8000/auth/register-mobile/",
+      "https://nevin-thang-balink.pbp.cs.ui.ac.id/auth/register-mobile/",
       jsonEncode({
         'username': username,
         'name': name,

@@ -72,7 +72,7 @@ class _AddProductPageState extends State<AddProductPage> {
       setState(() {});
 
       try {
-        var url = Uri.parse('http://127.0.0.1:8000/product/add_product_flutter/');
+        var url = Uri.parse('https://nevin-thang-balink.pbp.cs.ui.ac.id/product/add_product_flutter/');
         var response = await http.post(
           url,
           headers: {"Content-Type": "application/json"},

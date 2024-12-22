@@ -140,7 +140,7 @@ class _EditArticleState extends State<EditArticle> {
               onPressed: () async {
                 if (_formKey.currentState!.validate()) {
                   final response = await request.postJson(
-                    "http://127.0.0.1:8000/article/edit-flutter/${widget.article.pk}/",
+                    "https://nevin-thang-balink.pbp.cs.ui.ac.id/article/edit-flutter/${widget.article.pk}/",
                     jsonEncode({
                       'title': _titleController.text,
                       'content': _contentController.text,

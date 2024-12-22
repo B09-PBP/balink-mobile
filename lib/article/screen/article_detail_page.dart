@@ -155,7 +155,7 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
 
     try {
       final response = await request.get(
-        'http://127.0.0.1:8000/article/${widget.article.pk}/comments/',
+        'https://nevin-thang-balink.pbp.cs.ui.ac.id/article/${widget.article.pk}/comments/',
       );
 
       if (response['success'] == true) {
@@ -188,7 +188,7 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
 
       try {
         final response = await request.post(
-          'http://127.0.0.1:8000/article/${widget.article.pk}/add_comment/',
+          'https://nevin-thang-balink.pbp.cs.ui.ac.id/article/${widget.article.pk}/add_comment/',
           {
             'comment_text': commentText,
           },
@@ -226,7 +226,7 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
 
   Future<List<Product>> fetchProducts(CookieRequest request) async {
     try {
-      final response = await request.get('http://127.0.0.1:8000/product/json/');
+      final response = await request.get('https://nevin-thang-balink.pbp.cs.ui.ac.id/product/json/');
       if (response == null) throw Exception('Failed to load products');
 
       return (response as List).map((d) => Product.fromJson(d)).toList();

@@ -49,7 +49,7 @@ class ProductDetailPageState extends State<ProductDetailPage>
 
     try {
       final response = await request.post(
-        'http://127.0.0.1:8000/cart/add-to-cart-flutter/$productId/',
+        'https://nevin-thang-balink.pbp.cs.ui.ac.id/cart/add-to-cart-flutter/$productId/',
         {},
       );
 

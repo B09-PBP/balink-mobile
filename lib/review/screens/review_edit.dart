@@ -189,7 +189,7 @@ class _EditReviewPageState extends State<EditReviewPage> {
                     onPressed: () async {
                       if (_formKey.currentState!.validate()) {
                         final response = await request.postJson(
-                          "http://127.0.0.1:8000/review/edit-review-flutter/",
+                          "https://nevin-thang-balink.pbp.cs.ui.ac.id/review/edit-review-flutter/",
                           jsonEncode(<String, String>{
                             'id': widget.id,
                             'rating': _rating.toString(),

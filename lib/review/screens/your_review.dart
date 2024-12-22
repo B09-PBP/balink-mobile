@@ -13,7 +13,7 @@ class YourReviewPage extends StatefulWidget {
 
 class _YourReviewPageState extends State<YourReviewPage> {
   Future<List<ReviewModels>> fetchreviews(CookieRequest request) async {
-    final response = await request.get('http://127.0.0.1:8000/review/user-review-flutter/');
+    final response = await request.get('https://nevin-thang-balink.pbp.cs.ui.ac.id/review/user-review-flutter/');
     var data = response;
 
     List<ReviewModels> listReview = [];

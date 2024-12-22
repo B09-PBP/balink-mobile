@@ -247,7 +247,7 @@ class _LeftDrawerState extends State<LeftDrawer> {
     final request = context.read<CookieRequest>();
 
     try {
-      final response = await request.logout('http://127.0.0.1:8000/auth/logout-mobile/');
+      final response = await request.logout('https://nevin-thang-balink.pbp.cs.ui.ac.id/auth/logout-mobile/');
 
       if (response['status'] == true) {
         // Use context within the correct scope
