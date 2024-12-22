@@ -96,10 +96,10 @@ class _ArticleAdminPageState extends State<ArticleAdminPage> {
                         color: Colors.black87,
                         letterSpacing: -0.5,
                       ),
-                    ).animate()
+                    )
+                        .animate()
                         .fadeIn(duration: 600.ms)
                         .slideX(begin: -0.2, end: 0),
-
                     const SizedBox(height: 8),
                     const Text(
                       'Curated guides for your next adventure',
@@ -108,7 +108,8 @@ class _ArticleAdminPageState extends State<ArticleAdminPage> {
                         color: Colors.black54,
                         letterSpacing: 0.2,
                       ),
-                    ).animate()
+                    )
+                        .animate()
                         .fadeIn(duration: 800.ms)
                         .slideX(begin: -0.2, end: 0),
                   ],
@@ -125,166 +126,160 @@ class _ArticleAdminPageState extends State<ArticleAdminPage> {
                   ),
                 ),
               )
-            else
-              if (articles == null || articles!.isEmpty)
-                const SliverFillRemaining(
-                  child: Center(
-                    child: Text(
-                      'No articles available',
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.black38,
-                        letterSpacing: 0.5,
-                      ),
-                    ),
-                  ),
-                )
-              else
-                SliverPadding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24),
-                  sliver: SliverList(
-                    delegate: SliverChildBuilderDelegate(
-                          (context, index) {
-                        final article = articles![index];
-                        return GestureDetector(
-                          onTap: () =>
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) =>
-                                      ArticleDetailPage(
-                                        article: article,
-                                        isAdmin: widget.isAdmin,
-                                      ),
-                                ),
-                              ),
-                          child: Container(
-                            margin: const EdgeInsets.only(bottom: 24),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(16),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.03),
-                                  offset: const Offset(0, 8),
-                                  blurRadius: 24,
-                                ),
-                              ],
-                            ),
-                            clipBehavior: Clip.antiAlias,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                AspectRatio(
-                                  aspectRatio: 16 / 9,
-                                  child: Image.network(
-                                    article.fields.image,
-                                    fit: BoxFit.cover,
-                                    errorBuilder: (context, error,
-                                        stackTrace) =>
-                                        Container(
-                                          color: Colors.grey[100],
-                                          child: const Center(
-                                            child: Icon(
-                                              Icons
-                                                  .image_not_supported_outlined,
-                                              size: 32,
-                                              color: Colors.black26,
-                                            ),
-                                          ),
-                                        ),
-                                  ),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.all(20),
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment
-                                        .start,
-                                    children: [
-                                      Text(
-                                        article.fields.title,
-                                        style: const TextStyle(
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.w600,
-                                          color: Colors.black87,
-                                          height: 1.4,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 8),
-                                      Text(
-                                        article.fields.content,
-                                        maxLines: 2,
-                                        overflow: TextOverflow.ellipsis,
-                                        style: const TextStyle(
-                                          fontSize: 15,
-                                          color: Colors.black54,
-                                          height: 1.6,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 16),
-                                      Row(
-                                        children: [
-                                          const Text(
-                                            'Read article',
-                                            style: TextStyle(
-                                              fontSize: 14,
-                                              fontWeight: FontWeight.w500,
-                                              color: Colors.blue,
-                                            ),
-                                          ),
-                                          const SizedBox(width: 4),
-                                          Icon(
-                                            Icons.arrow_forward,
-                                            size: 16,
-                                            color: Colors.blue.shade400,
-                                          ),
-                                          const Spacer(),
-                                          if (widget.isAdmin) ...[
-                                            IconButton(
-                                              icon: const Icon(
-                                                  Icons.edit_outlined),
-                                              color: Colors.orange,
-                                              onPressed: () async {
-                                                final result = await Navigator
-                                                    .push(
-                                                  context,
-                                                  MaterialPageRoute(
-                                                    builder: (context) =>
-                                                        EditArticle(
-                                                            article: article),
-                                                  ),
-                                                );
-                                                if (result != null) {
-                                                  fetchArticles();
-                                                }
-                                              },
-                                            ),
-                                            IconButton(
-                                              icon: const Icon(
-                                                  Icons.delete_outline),
-                                              color: Colors.red,
-                                              onPressed: () async {
-                                                // Deletion logic remains the same
-                                              },
-                                            ),
-                                          ],
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ).animate()
-                              .fadeIn(delay: Duration(
-                              milliseconds: 100 * index))
-                              .slideY(begin: 0.1, end: 0),
-                        );
-                      },
-                      childCount: articles!.length,
+            else if (articles == null || articles!.isEmpty)
+              const SliverFillRemaining(
+                child: Center(
+                  child: Text(
+                    'No articles available',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.black38,
+                      letterSpacing: 0.5,
                     ),
                   ),
                 ),
+              )
+            else
+              SliverPadding(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                sliver: SliverList(
+                  delegate: SliverChildBuilderDelegate(
+                    (context, index) {
+                      final article = articles![index];
+                      return GestureDetector(
+                        onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ArticleDetailPage(
+                              article: article,
+                              isAdmin: widget.isAdmin,
+                            ),
+                          ),
+                        ),
+                        child: Container(
+                          margin: const EdgeInsets.only(bottom: 24),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(16),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.03),
+                                offset: const Offset(0, 8),
+                                blurRadius: 24,
+                              ),
+                            ],
+                          ),
+                          clipBehavior: Clip.antiAlias,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              AspectRatio(
+                                aspectRatio: 16 / 9,
+                                child: Image.network(
+                                  article.fields.image,
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (context, error, stackTrace) =>
+                                      Container(
+                                    color: Colors.grey[100],
+                                    child: const Center(
+                                      child: Icon(
+                                        Icons.image_not_supported_outlined,
+                                        size: 32,
+                                        color: Colors.black26,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(20),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      article.fields.title,
+                                      style: const TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.w600,
+                                        color: Colors.black87,
+                                        height: 1.4,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 8),
+                                    Text(
+                                      article.fields.content,
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: const TextStyle(
+                                        fontSize: 15,
+                                        color: Colors.black54,
+                                        height: 1.6,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 16),
+                                    Row(
+                                      children: [
+                                        const Text(
+                                          'Read article',
+                                          style: TextStyle(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w500,
+                                            color: Colors.blue,
+                                          ),
+                                        ),
+                                        const SizedBox(width: 4),
+                                        Icon(
+                                          Icons.arrow_forward,
+                                          size: 16,
+                                          color: Colors.blue.shade400,
+                                        ),
+                                        const Spacer(),
+                                        if (widget.isAdmin) ...[
+                                          IconButton(
+                                            icon:
+                                                const Icon(Icons.edit_outlined),
+                                            color: Colors.orange,
+                                            onPressed: () async {
+                                              final result =
+                                                  await Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      EditArticle(
+                                                          article: article),
+                                                ),
+                                              );
+                                              if (result != null) {
+                                                fetchArticles();
+                                              }
+                                            },
+                                          ),
+                                          IconButton(
+                                            icon: const Icon(
+                                                Icons.delete_outline),
+                                            color: Colors.red,
+                                            onPressed: () async {
+                                              // Deletion logic remains the same
+                                            },
+                                          ),
+                                        ],
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        )
+                            .animate()
+                            .fadeIn(delay: Duration(milliseconds: 100 * index))
+                            .slideY(begin: 0.1, end: 0),
+                      );
+                    },
+                    childCount: articles!.length,
+                  ),
+                ),
+              ),
 
             // Quick Links Section
             SliverToBoxAdapter(
@@ -337,31 +332,27 @@ class _ArticleAdminPageState extends State<ArticleAdminPage> {
                     ),
                   ],
                 ),
-              ).animate()
-                  .fadeIn(delay: 800.ms)
-                  .slideY(begin: 0.2, end: 0),
+              ).animate().fadeIn(delay: 800.ms).slideY(begin: 0.2, end: 0),
             ),
           ],
         ),
       ),
       floatingActionButton: widget.isAdmin
           ? FloatingActionButton(
-        onPressed: () async {
-          final result = await Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const ArticleForm(isAdmin: true),
-            ),
-          );
-          if (result != null) {
-            fetchArticles();
-          }
-        },
-        backgroundColor: Colors.black87,
-        child: const Icon(Icons.add),
-      ).animate()
-          .fadeIn(delay: 1200.ms)
-          .scale()
+              onPressed: () async {
+                final result = await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const ArticleForm(isAdmin: true),
+                  ),
+                );
+                if (result != null) {
+                  fetchArticles();
+                }
+              },
+              backgroundColor: Colors.black87,
+              child: const Icon(Icons.add),
+            ).animate().fadeIn(delay: 1200.ms).scale()
           : null,
     );
   }
