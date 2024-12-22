@@ -1,5 +1,6 @@
 import 'package:balink_mobile/cart/screens/checkout_form.dart';
 import 'package:balink_mobile/cart/screens/history.dart';
+import 'package:balink_mobile/left_drawer.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
@@ -150,13 +151,20 @@ class CartPageState extends State<CartPage> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.menu),
+          color: Colors.black, // Set the color to black
+          onPressed: () {
+            Scaffold.of(context).openDrawer();
+          },
+        ),
         backgroundColor: Colors.white,
         elevation: 0,
         title: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              "Ba",
+              "My ",
               style: TextStyle(
                 color: yellow,
                 fontWeight: FontWeight.bold,
@@ -164,17 +172,22 @@ class CartPageState extends State<CartPage> {
               ),
             ),
             Text(
-              "Link",
+              "Cart ",
               style: TextStyle(
                 color: blue400,
                 fontWeight: FontWeight.bold,
                 fontSize: 24,
               ),
             ),
+            Icon(
+              Icons.shopping_cart,
+              color: blue400,
+            ),
           ],
         ),
         centerTitle: true,
       ),
+      drawer: const LeftDrawer(),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : Column(

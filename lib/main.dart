@@ -14,10 +14,10 @@ class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
   @override
-  _MyAppState createState() => _MyAppState();
+  MyAppState createState() => MyAppState();
 }
 
-class _MyAppState extends State<MyApp> {
+class MyAppState extends State<MyApp> {
   bool _isLoggedIn = false;
 
   @override
@@ -31,8 +31,8 @@ class _MyAppState extends State<MyApp> {
 
     try {
       // Attempt to validate login status
-      final response = await request.get(
-          'http://127.0.0.1:8000/auth/check_login/');
+      final response =
+          await request.get('http://127.0.0.1:8000/auth/check_login/');
 
       // Check if the backend confirms login status
       setState(() {
@@ -66,12 +66,12 @@ class _MyAppState extends State<MyApp> {
             return snapshot.data == true
                 ? MainNavigationScaffold(isLoggedIn: _isLoggedIn, startingPage: 0,)
                 : LoginPage(
-              onLoginSuccess: () {
-                setState(() {
-                  _isLoggedIn = true;
-                });
-              },
-            );
+                    onLoginSuccess: () {
+                      setState(() {
+                        _isLoggedIn = true;
+                      });
+                    },
+                  );
           },
         ),
       ),
@@ -82,8 +82,8 @@ class _MyAppState extends State<MyApp> {
     final request = CookieRequest();
 
     try {
-      final response = await request.get(
-          'http://127.0.0.1:8000/auth/check_login/');
+      final response =
+          await request.get('http://127.0.0.1:8000/auth/check_login/');
       return response['is_logged_in'] == true;
     } catch (e) {
       final prefs = await SharedPreferences.getInstance();

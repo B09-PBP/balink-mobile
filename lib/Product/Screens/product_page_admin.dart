@@ -14,10 +14,12 @@ class ProductPageAdmin extends StatefulWidget {
   const ProductPageAdmin({super.key});
 
   @override
-  State<ProductPageAdmin> createState() => _ProductPageState();
+  State<ProductPageAdmin> createState() => _ProductAdminPageState();
 }
 
-class _ProductPageState extends State<ProductPageAdmin> with SingleTickerProviderStateMixin {
+class _ProductAdminPageState extends State<ProductPageAdmin> with SingleTickerProviderStateMixin {
+  final Color blue400 = const Color.fromRGBO(32, 73, 255, 1); // Bright Blue
+  final Color yellow = const Color.fromRGBO(255, 203, 48, 1);  // Bright Yellow
   String _searchQuery = '';
   double _minPrice = 0;
   double _maxPrice = 1000000;
@@ -131,8 +133,7 @@ class _ProductPageState extends State<ProductPageAdmin> with SingleTickerProvide
         final request = context.read<CookieRequest>();
         return AlertDialog(
           title: const Text('Delete Product'),
-          content: Text(
-              'Are you sure you want to delete ${product.fields.name}?'),
+          content: Text('Are you sure you want to delete ${product.fields.name}?'),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(dialogContext).pop(),
@@ -140,50 +141,19 @@ class _ProductPageState extends State<ProductPageAdmin> with SingleTickerProvide
             ),
             ElevatedButton(
               style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-              onPressed: () async {
+              onPressed: () {
+                // Store context before async gap
+                final scaffoldMessenger = ScaffoldMessenger.of(context);
+
                 Navigator.of(dialogContext).pop(); // Close the dialog
 
-                try {
-                  // Perform delete request
-                  final response = await request.post(
-                      'http://127.0.0.1:8000/product/delete_product_flutter/${product
-                          .pk}/',
-                      {}
-                  );
-
-                  if (response['status'] == 'success') {
-                    // Refresh the product list
-                    await _refreshProducts(request);
-
-                    // Show success message
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                            '${product.fields.name} deleted successfully'),
-                        backgroundColor: Colors.green,
-                      ),
-                    );
-                  } else {
-                    // Show error message
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                            'Failed to delete product: ${response['message']}'),
-                        backgroundColor: Colors.red,
-                      ),
-                    );
-                  }
-                } catch (e) {
-                  // Show network or unexpected error
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('Error deleting product: $e'),
-                      backgroundColor: Colors.red,
-                    ),
-                  );
-                }
+                // Move async operation outside of onPressed
+                _handleDelete(request, product, scaffoldMessenger);
               },
-              child: const Text('Delete'),
+              child: const Text(
+                'Delete',
+                style: TextStyle(color: Colors.white),
+              ),
             ),
           ],
         );
@@ -191,18 +161,57 @@ class _ProductPageState extends State<ProductPageAdmin> with SingleTickerProvide
     );
   }
 
-  // Instead of http.post, use the CookieRequest instance:
-  Future<void> _addToCart(String productId) async {
+// Separate method to handle deletion
+  Future<void> _handleDelete(
+      CookieRequest request,
+      Product product,
+      ScaffoldMessengerState scaffoldMessenger,
+      ) async {
+    try {
+      final response = await request.post(
+        'http://127.0.0.1:8000/product/delete_product_flutter/${product.pk}/',
+        {},
+      );
+
+      if (response['status'] == 'success') {
+        await _refreshProducts(request);
+
+        scaffoldMessenger.showSnackBar(
+          SnackBar(
+            content: Text('${product.fields.name} deleted successfully'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      } else {
+        scaffoldMessenger.showSnackBar(
+          SnackBar(
+            content: Text('Failed to delete product: ${response['message']}'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } catch (e) {
+      scaffoldMessenger.showSnackBar(
+        SnackBar(
+          content: Text('Error deleting product: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
+  Future<void> _addToCart(BuildContext context, String productId) async {
     final request = context.read<CookieRequest>();
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
 
     try {
       final response = await request.post(
-          'http://127.0.0.1:8000/cart/add-to-cart-flutter/$productId/',
-          {}
+        'http://127.0.0.1:8000/cart/add-to-cart-flutter/$productId/',
+        {},
       );
 
       if (response['message'] != null) {
-        ScaffoldMessenger.of(context).showSnackBar(
+        scaffoldMessenger.showSnackBar(
           SnackBar(
             content: Text(response['message']),
             backgroundColor: Colors.green,
@@ -210,7 +219,7 @@ class _ProductPageState extends State<ProductPageAdmin> with SingleTickerProvide
         );
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
+      scaffoldMessenger.showSnackBar(
         SnackBar(
           content: Text('Error adding to cart: $e'),
           backgroundColor: Colors.red,
@@ -248,15 +257,40 @@ class _ProductPageState extends State<ProductPageAdmin> with SingleTickerProvide
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Text(
-          'Our Products',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            color: colorScheme.onPrimary,
-          ),
+        leading: IconButton(
+          icon: const Icon(Icons.menu),
+          color: Colors.black, // Set the color to black
+          onPressed: () {
+            Scaffold.of(context).openDrawer();
+          },
         ),
-        backgroundColor: colorScheme.primary,
+        backgroundColor: Colors.white,
         elevation: 0,
+        title: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              "Our",
+              style: TextStyle(
+                color: yellow,
+                fontWeight: FontWeight.bold,
+                fontSize: 24,
+              ),
+            ),
+            Text(
+              " Products ",
+              style: TextStyle(
+                color: blue400,
+                fontWeight: FontWeight.bold,
+                fontSize: 24,
+              ),
+            ),
+            Icon(
+              Icons.directions_car_rounded,
+              color: blue400,
+            ),
+          ],
+        ),
         centerTitle: true,
         actions: [
           IconButton(
@@ -511,9 +545,9 @@ class _ProductPageState extends State<ProductPageAdmin> with SingleTickerProvide
                                   child: SizedBox(
                                     height: 32, // Fixed height
                                     child: ElevatedButton(
-                                      onPressed: () => _addToCart(product.pk),
+                                      onPressed: () => _addToCart(context,product.pk),
                                       style: ElevatedButton.styleFrom(
-                                        backgroundColor: Colors.yellow.shade700,
+                                        backgroundColor: yellow,
                                         foregroundColor: Colors.black,
                                         padding: const EdgeInsets.symmetric(
                                             horizontal: 8),
@@ -525,7 +559,7 @@ class _ProductPageState extends State<ProductPageAdmin> with SingleTickerProvide
                                       child: Text(
                                         "Add to Cart",
                                         style: TextStyle(
-                                            fontSize: isMobile ? 10 : 12),
+                                            fontSize: isMobile ? 14 : 16),
                                         maxLines: 1,
                                       ),
                                     ),
@@ -549,29 +583,6 @@ class _ProductPageState extends State<ProductPageAdmin> with SingleTickerProvide
                                   onPressed: () =>
                                       _showDeleteConfirmationDialog(
                                           context, product),
-                                ),
-                                IconButton(
-                                  constraints: const BoxConstraints(
-                                    minWidth: 32,
-                                    maxWidth: 32,
-                                    minHeight: 32,
-                                    maxHeight: 32,
-                                  ),
-                                  padding: EdgeInsets.zero,
-                                  icon: Icon(
-                                    Icons.favorite_border,
-                                    size: isMobile ? 18 : 20,
-                                    color: Colors.pink.shade300,
-                                  ),
-                                  onPressed: () {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                        content: Text('Added ${product.fields
-                                            .name} to favorites'),
-                                        backgroundColor: Colors.pink,
-                                      ),
-                                    );
-                                  },
                                 ),
                                 IconButton(
                                   icon: const Icon(Icons.edit),

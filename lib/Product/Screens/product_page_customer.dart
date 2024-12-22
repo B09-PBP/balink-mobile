@@ -1,5 +1,4 @@
 import 'package:balink_mobile/Product/Screens/add_product_page.dart';
-import 'package:balink_mobile/Product/Screens/edit_product_page.dart';
 import 'package:balink_mobile/Product/Widgets/vehicle_carousel.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -10,14 +9,16 @@ import 'package:provider/provider.dart';
 import 'product_detail_page.dart';
 import 'package:balink_mobile/Product/Widgets/filter.dart';
 
-class ProductPageAdmin extends StatefulWidget {
-  const ProductPageAdmin({super.key});
+class ProductPageCustomer extends StatefulWidget {
+  const ProductPageCustomer({super.key});
 
   @override
-  State<ProductPageAdmin> createState() => _ProductPageState();
+  State<ProductPageCustomer> createState() => _ProductCustomerPageState();
 }
 
-class _ProductPageState extends State<ProductPageAdmin> with SingleTickerProviderStateMixin {
+class _ProductCustomerPageState extends State<ProductPageCustomer> with SingleTickerProviderStateMixin {
+  final Color blue400 = const Color.fromRGBO(32, 73, 255, 1); // Bright Blue
+  final Color yellow = const Color.fromRGBO(255, 203, 48, 1);  // Bright Yellow
   String _searchQuery = '';
   double _minPrice = 0;
   double _maxPrice = 1000000;
@@ -124,85 +125,18 @@ class _ProductPageState extends State<ProductPageAdmin> with SingleTickerProvide
     });
   }
 
-  void _showDeleteConfirmationDialog(BuildContext context, Product product) {
-    showDialog(
-      context: context,
-      builder: (BuildContext dialogContext) {
-        final request = context.read<CookieRequest>();
-        return AlertDialog(
-          title: const Text('Delete Product'),
-          content: Text(
-              'Are you sure you want to delete ${product.fields.name}?'),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(dialogContext).pop(),
-              child: const Text('Cancel'),
-            ),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-              onPressed: () async {
-                Navigator.of(dialogContext).pop(); // Close the dialog
-
-                try {
-                  // Perform delete request
-                  final response = await request.post(
-                      'http://127.0.0.1:8000/product/delete_product_flutter/${product
-                          .pk}/',
-                      {}
-                  );
-
-                  if (response['status'] == 'success') {
-                    // Refresh the product list
-                    await _refreshProducts(request);
-
-                    // Show success message
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                            '${product.fields.name} deleted successfully'),
-                        backgroundColor: Colors.green,
-                      ),
-                    );
-                  } else {
-                    // Show error message
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                            'Failed to delete product: ${response['message']}'),
-                        backgroundColor: Colors.red,
-                      ),
-                    );
-                  }
-                } catch (e) {
-                  // Show network or unexpected error
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('Error deleting product: $e'),
-                      backgroundColor: Colors.red,
-                    ),
-                  );
-                }
-              },
-              child: const Text('Delete'),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  // Instead of http.post, use the CookieRequest instance:
-  Future<void> _addToCart(String productId) async {
+  Future<void> _addToCart(BuildContext context, String productId) async {
     final request = context.read<CookieRequest>();
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
 
     try {
       final response = await request.post(
-          'http://127.0.0.1:8000/cart/add-to-cart-flutter/$productId/',
-          {}
+        'http://127.0.0.1:8000/cart/add-to-cart-flutter/$productId/',
+        {},
       );
 
       if (response['message'] != null) {
-        ScaffoldMessenger.of(context).showSnackBar(
+        scaffoldMessenger.showSnackBar(
           SnackBar(
             content: Text(response['message']),
             backgroundColor: Colors.green,
@@ -210,7 +144,7 @@ class _ProductPageState extends State<ProductPageAdmin> with SingleTickerProvide
         );
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
+      scaffoldMessenger.showSnackBar(
         SnackBar(
           content: Text('Error adding to cart: $e'),
           backgroundColor: Colors.red,
@@ -222,10 +156,6 @@ class _ProductPageState extends State<ProductPageAdmin> with SingleTickerProvide
   @override
   Widget build(BuildContext context) {
     final request = context.watch<CookieRequest>();
-    final colorScheme = Theme
-        .of(context)
-        .colorScheme;
-    // Get screen width to determine layout
     final screenWidth = MediaQuery
         .of(context)
         .size
@@ -248,15 +178,40 @@ class _ProductPageState extends State<ProductPageAdmin> with SingleTickerProvide
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Text(
-          'Our Products',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            color: colorScheme.onPrimary,
-          ),
+        leading: IconButton(
+          icon: const Icon(Icons.menu),
+          color: Colors.black, // Set the color to black
+          onPressed: () {
+            Scaffold.of(context).openDrawer();
+          },
         ),
-        backgroundColor: colorScheme.primary,
+        backgroundColor: Colors.white,
         elevation: 0,
+        title: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              "Our",
+              style: TextStyle(
+                color: yellow,
+                fontWeight: FontWeight.bold,
+                fontSize: 24,
+              ),
+            ),
+            Text(
+              " Products ",
+              style: TextStyle(
+                color: blue400,
+                fontWeight: FontWeight.bold,
+                fontSize: 24,
+              ),
+            ),
+            Icon(
+              Icons.directions_car_rounded,
+              color: blue400,
+            ),
+          ],
+        ),
         centerTitle: true,
         actions: [
           IconButton(
@@ -374,25 +329,11 @@ class _ProductPageState extends State<ProductPageAdmin> with SingleTickerProvide
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const AddProductPage(),
-            ),
-          ).then((_) => _refreshProducts(request));
-        },
-        backgroundColor: colorScheme.primary,
-        tooltip: 'Add New Product',
-        child: const Icon(Icons.add, color: Colors.white),
-      ),
     );
   }
 
   Widget _buildResponsiveProductCard(BuildContext context, Product product,
       bool isMobile) {
-    final request = context.watch<CookieRequest>();
     return LayoutBuilder(
       builder: (context, constraints) {
         return GestureDetector(
@@ -511,9 +452,9 @@ class _ProductPageState extends State<ProductPageAdmin> with SingleTickerProvide
                                   child: SizedBox(
                                     height: 32, // Fixed height
                                     child: ElevatedButton(
-                                      onPressed: () => _addToCart(product.pk),
+                                      onPressed: () => _addToCart(context,product.pk),
                                       style: ElevatedButton.styleFrom(
-                                        backgroundColor: Colors.yellow.shade700,
+                                        backgroundColor: yellow,
                                         foregroundColor: Colors.black,
                                         padding: const EdgeInsets.symmetric(
                                             horizontal: 8),
@@ -525,65 +466,11 @@ class _ProductPageState extends State<ProductPageAdmin> with SingleTickerProvide
                                       child: Text(
                                         "Add to Cart",
                                         style: TextStyle(
-                                            fontSize: isMobile ? 10 : 12),
+                                            fontSize: isMobile ? 14 : 16),
                                         maxLines: 1,
                                       ),
                                     ),
                                   ),
-                                ),
-
-                                // Action Icons
-                                IconButton(
-                                  constraints: const BoxConstraints(
-                                    minWidth: 32,
-                                    maxWidth: 32,
-                                    minHeight: 32,
-                                    maxHeight: 32,
-                                  ),
-                                  padding: EdgeInsets.zero,
-                                  icon: Icon(
-                                    Icons.delete,
-                                    color: Colors.red,
-                                    size: isMobile ? 18 : 20,
-                                  ),
-                                  onPressed: () =>
-                                      _showDeleteConfirmationDialog(
-                                          context, product),
-                                ),
-                                IconButton(
-                                  constraints: const BoxConstraints(
-                                    minWidth: 32,
-                                    maxWidth: 32,
-                                    minHeight: 32,
-                                    maxHeight: 32,
-                                  ),
-                                  padding: EdgeInsets.zero,
-                                  icon: Icon(
-                                    Icons.favorite_border,
-                                    size: isMobile ? 18 : 20,
-                                    color: Colors.pink.shade300,
-                                  ),
-                                  onPressed: () {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                        content: Text('Added ${product.fields
-                                            .name} to favorites'),
-                                        backgroundColor: Colors.pink,
-                                      ),
-                                    );
-                                  },
-                                ),
-                                IconButton(
-                                  icon: const Icon(Icons.edit),
-                                  onPressed: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => EditProductPage(product: product),
-                                      ),
-                                    ).then((_) => _refreshProducts(request));
-                                  },
-                                  tooltip: 'Edit Product',
                                 ),
                               ],
                             ),

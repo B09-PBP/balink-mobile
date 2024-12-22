@@ -55,6 +55,13 @@ class _ReviewProductAdminPageState extends State<ReviewProductAdminPage> {
 
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.menu),
+          color: Colors.black, // Set the color to black
+          onPressed: () {
+            Scaffold.of(context).openDrawer();
+          },
+        ),
         backgroundColor: Colors.white,
         elevation: 0,
         title: const Row(

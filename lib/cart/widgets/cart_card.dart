@@ -57,41 +57,59 @@ class _CartCardState extends State<CartCard> with SingleTickerProviderStateMixin
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+
+    // Menentukan lebar container berdasarkan ukuran layar
+    final double containerWidth = screenWidth > 600
+        ? screenWidth * 0.6 // Untuk layar lebar, gunakan 60% dari lebar layar
+        : screenWidth * 0.9; // Untuk layar kecil, gunakan 90% dari lebar layar
+    final double containerHeight = containerWidth / 2; // Tinggi proporsional
+
     return FadeTransition(
       opacity: _fadeAnimation,
       child: SizeTransition(
         sizeFactor: _fadeAnimation,
-        child: Container(
-          margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          child: Card(
-            elevation: 2,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
+        child: Align(
+          alignment: Alignment.center, // Memastikan card di tengah layar
+          child: Container(
+            width: containerWidth,
+            margin: const EdgeInsets.symmetric(vertical: 8), // Jarak antar card
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.1),
+                  spreadRadius: 1,
+                  blurRadius: 6,
+                  offset: const Offset(0, 2), // Shadow di bawah
+                ),
+              ],
             ),
             child: Stack(
               children: [
-                // Image
+                // Gambar Produk
                 ClipRRect(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
                   child: widget.cartEntry.fields.imageUrl.isNotEmpty
                       ? Image.network(
                           widget.cartEntry.fields.imageUrl,
-                          width: double.infinity,
-                          height: 150,
-                          fit: BoxFit.cover,
+                          width: containerWidth,
+                          height: containerHeight,
+                          fit: BoxFit.cover, // Menyesuaikan gambar
                         )
                       : Container(
-                          width: double.infinity,
-                          height: 150,
+                          width: containerWidth,
+                          height: containerHeight,
                           color: Colors.grey[200],
                           child: const Icon(Icons.car_rental),
                         ),
                 ),
-                // Product details
+                // Gradient Overlay
                 Positioned.fill(
                   child: Container(
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(16),
                       gradient: LinearGradient(
                         begin: Alignment.bottomCenter,
                         end: Alignment.topCenter,
@@ -103,6 +121,7 @@ class _CartCardState extends State<CartCard> with SingleTickerProviderStateMixin
                     ),
                   ),
                 ),
+                // Detail Produk
                 Positioned(
                   bottom: 16,
                   left: 16,
@@ -130,7 +149,7 @@ class _CartCardState extends State<CartCard> with SingleTickerProviderStateMixin
                     ],
                   ),
                 ),
-                // Delete icon
+                // Delete Icon
                 Positioned(
                   top: 8,
                   right: 8,
