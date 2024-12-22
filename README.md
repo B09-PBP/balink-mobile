@@ -13,8 +13,10 @@
 
 Saat ini, hanya tersedia versi Android (APK) untuk diunduh.
 
-- App center: https://install.appcenter.ms/orgs/balink-mobile/apps/balink/distribution_groups/public
-- GitHub Release: https://github.com/B09-PBP/balink-mobile/releases/tag/1.0.0%2B1
+App center: https://install.appcenter.ms/orgs/balink-mobile/apps/balink/distribution_groups/public
+GitHub Release: https://github.com/B09-PBP/balink-mobile/releases/tag/1.0.0%2B1
+Video Drive: https://drive.google.com/file/d/1cB2FrtqkG6pmOswMPfBZ3WhDpLMPNSMG/view
+Video Youtube: https://youtu.be/6PU9yjGotcA
 
 ## Anggota Kelompok
 
