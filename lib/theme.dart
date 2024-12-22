@@ -100,7 +100,7 @@ final ThemeData djangoTheme = ThemeData(
 
   appBarTheme: const AppBarTheme(
     backgroundColor: blue400,
-    foregroundColor: Colors.white,
+    foregroundColor: Colors.black,
     elevation: 0,
     centerTitle: true,
   ),

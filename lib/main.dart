@@ -54,6 +54,7 @@ class MyAppState extends State<MyApp> {
     return Provider(
       create: (_) => CookieRequest(),
       child: MaterialApp(
+        debugShowCheckedModeBanner: false,
         title: 'Balink',
         theme: djangoTheme,
         home: FutureBuilder<bool>(

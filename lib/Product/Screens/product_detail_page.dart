@@ -22,6 +22,7 @@ class ProductDetailPageState extends State<ProductDetailPage>
     with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   List<Product> _recommendations = [];
+  final Color blue400 = const Color.fromRGBO(32, 73, 255, 1); // Bright Blue
 
   @override
   void initState() {
@@ -203,7 +204,7 @@ class ProductDetailPageState extends State<ProductDetailPage>
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
         children: [
-          Icon(icon, size: 20, color: Colors.blue),
+          Icon(icon, size: 20, color: blue400),
           const SizedBox(width: 12),
           Text(
             label,
@@ -338,7 +339,7 @@ class ProductDetailPageState extends State<ProductDetailPage>
             child: ElevatedButton(
               onPressed: () => _addToCart(context,widget.product.pk),
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blue,
+                backgroundColor: blue400,
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),

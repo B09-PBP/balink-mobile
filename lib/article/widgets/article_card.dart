@@ -9,13 +9,13 @@ class ArticleCard extends StatelessWidget {
   final VoidCallback onTap;
 
   const ArticleCard({
-    Key? key,
+    super.key,
     required this.article,
     required this.onTap,
     this.isAdmin = true,
     this.onEdit,
     this.onDelete,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

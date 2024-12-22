@@ -231,12 +231,15 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  // Login Logic
   void _performLogin(CookieRequest request) async {
     // Validate form before attempting login
     if (!_formKey.currentState!.validate()) {
       return;
     }
+
+    // Capture BuildContext-dependent values early
+    final navigator = Navigator.of(context);
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
 
     // Set loading state
     setState(() {
@@ -255,6 +258,9 @@ class _LoginPageState extends State<LoginPage> {
         },
       );
 
+      // Check if widget is still mounted before updating state
+      if (!mounted) return;
+
       // Reset loading state
       setState(() {
         _isLoading = false;
@@ -267,26 +273,30 @@ class _LoginPageState extends State<LoginPage> {
         // Call optional login success callback
         widget.onLoginSuccess?.call();
 
-        if (context.mounted) {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const MainNavigationScaffold(isLoggedIn: true, startingPage: 0),
+        navigator.pushReplacement(
+          MaterialPageRoute(
+            builder: (context) => const MainNavigationScaffold(
+              isLoggedIn: true,
+              startingPage: 0,
+            ),
+          ),
+        );
+
+        scaffoldMessenger
+          ..hideCurrentSnackBar()
+          ..showSnackBar(
+            SnackBar(
+              content: Text("$message Welcome, $uname."),
+              backgroundColor: Colors.green,
             ),
           );
-          ScaffoldMessenger.of(context)
-            ..hideCurrentSnackBar()
-            ..showSnackBar(
-              SnackBar(
-                content: Text("$message Welcome, $uname."),
-                backgroundColor: Colors.green,
-              ),
-            );
-        }
       } else {
         _showLoginErrorDialog(response['message']);
       }
     } catch (e) {
+      // Check if widget is still mounted before updating state
+      if (!mounted) return;
+
       // Reset loading state
       setState(() {
         _isLoading = false;

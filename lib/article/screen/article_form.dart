@@ -3,17 +3,16 @@ import 'package:provider/provider.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
 import 'dart:convert';
 import '../models/article_model.dart';
-import 'article_page_admin.dart';
 
 class ArticleForm extends StatefulWidget {
   final Article? article;
   final bool isAdmin;
 
   const ArticleForm({
-    Key? key,
+    super.key,
     this.article,
     this.isAdmin = true,
-  }) : super(key: key);
+  });
 
   @override
   State<ArticleForm> createState() => _ArticleFormState();

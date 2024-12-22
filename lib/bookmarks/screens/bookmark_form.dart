@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
-import 'bookmark_page.dart';
 import 'package:balink_mobile/Product/Models/product_model.dart';
 import 'package:intl/intl.dart';
 import 'package:balink_mobile/bookmarks/widgets/search_product.dart'; 
@@ -107,17 +106,17 @@ class _BookmarkFormPageState extends State<BookmarkFormPage> {
       },
     );
 
-    // Jika berhasil, langsung kembali ke BookmarkPage
     if (response['status'] == 'success') {
-      ScaffoldMessenger.of(context).showSnackBar(    // ignore: use_build_context_synchronously
-
-        const SnackBar(content: Text('Bookmark added successfully!')),
-      );
-      Navigator.pushReplacement(
-        context,                                     // ignore: use_build_context_synchronously
-        MaterialPageRoute(builder: (context) => const BookmarkPage()),
-      );
-    } else {
+      // Check if the widget is still mounted
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Bookmark added successfully!')),
+        );
+        Navigator.pop(context);
+        Navigator.pop(context);
+      }
+    }
+    else {
       ScaffoldMessenger.of(context).showSnackBar(    // ignore: use_build_context_synchronously
 
         const SnackBar(content: Text('Failed to add bookmark. Please try again.')),

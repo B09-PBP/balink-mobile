@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:balink_mobile/left_drawer.dart';
 import 'package:flutter/material.dart';
 import 'package:balink_mobile/article/screen/article_detail_page.dart';
 import 'package:balink_mobile/article/screen/article_form.dart';
@@ -22,7 +23,8 @@ class _ArticleAdminPageState extends State<ArticleAdminPage> {
   List<Article>? articles;
   bool isLoading = true;
   final ScrollController _scrollController = ScrollController();
-
+  final Color blue400 = const Color.fromRGBO(32, 73, 255, 1); // Bright Blue
+  final Color yellow = const Color.fromRGBO(255, 203, 48, 1); // Bright Yellow
   @override
   void initState() {
     super.initState();
@@ -72,19 +74,36 @@ class _ArticleAdminPageState extends State<ArticleAdminPage> {
             Scaffold.of(context).openDrawer();
           },
         ),
-        centerTitle: true,
-        title: const Text(
-          "BaLink",
-          style: TextStyle(
-            fontWeight: FontWeight.w600,
-            fontSize: 22,
-            letterSpacing: 0.5,
-          ),
-        ),
         backgroundColor: Colors.white,
         elevation: 0,
-        foregroundColor: Colors.black87,
+        scrolledUnderElevation: 0,
+        title: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              "Place",
+              style: TextStyle(
+                color: yellow,
+                fontWeight: FontWeight.bold,
+                fontSize: 24,
+              ),
+            ),
+            Text(
+              " to Go ",
+              style: TextStyle(
+                color: blue400,
+                fontWeight: FontWeight.bold,
+                fontSize: 24,
+              ),
+            ),
+            Icon(
+              Icons.article_rounded,
+              color: blue400,
+            ),
+          ],
+        ),
       ),
+      drawer: const LeftDrawer(),
       body: RefreshIndicator(
         onRefresh: _handleRefresh,
         child: CustomScrollView(
@@ -262,69 +281,68 @@ class _ArticleAdminPageState extends State<ArticleAdminPage> {
                                             },
                                           ),
                                           IconButton(
-                                            icon: const Icon(
-                                                Icons.delete_outline),
+                                            icon: const Icon(Icons.delete_outline),
                                             color: Colors.red,
                                             onPressed: () async {
-                                              bool confirm = await showDialog(
-                                                    context: context,
-                                                    builder: (context) =>
-                                                        AlertDialog(
-                                                      title: const Text(
-                                                          'Delete Article'),
-                                                      content: const Text(
-                                                          'Are you sure you want to delete this article?'),
-                                                      actions: [
-                                                        TextButton(
-                                                          onPressed: () =>
-                                                              Navigator.pop(
-                                                                  context,
-                                                                  false),
-                                                          child: const Text(
-                                                              'Cancel'),
-                                                        ),
-                                                        TextButton(
-                                                          onPressed: () =>
-                                                              Navigator.pop(
-                                                                  context,
-                                                                  true),
-                                                          child: const Text(
-                                                            'Delete',
-                                                            style: TextStyle(
-                                                                color:
-                                                                    Colors.red),
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  ) ??
-                                                  false;
+                                              // Store BuildContext related values before the dialog
+                                              final request = context.read<CookieRequest>();
+                                              final scaffoldMessenger = ScaffoldMessenger.of(context);
 
-                                              if (confirm) {
-                                                final request = context
-                                                    .read<CookieRequest>();
+                                              // Show confirmation dialog
+                                              bool? confirm = await showDialog<bool>(
+                                                context: context,
+                                                builder: (context) => AlertDialog(
+                                                  title: const Text('Delete Article'),
+                                                  content: const Text('Are you sure you want to delete this article?'),
+                                                  actions: [
+                                                    TextButton(
+                                                      onPressed: () => Navigator.pop(context, false),
+                                                      child: const Text('Cancel'),
+                                                    ),
+                                                    TextButton(
+                                                      onPressed: () => Navigator.pop(context, true),
+                                                      child: const Text(
+                                                        'Delete',
+                                                        style: TextStyle(color: Colors.red),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              );
+
+                                              if (!mounted) return;
+
+                                              if (confirm == true) {
                                                 try {
+                                                  // Perform the delete operation
                                                   await request.post(
                                                     'http://127.0.0.1:8000/article/delete/${article.pk}/',
                                                     {},
                                                   );
+
+                                                  if (!mounted) return;
+
+                                                  // Show success message
+                                                  scaffoldMessenger.showSnackBar(
+                                                    const SnackBar(
+                                                      content: Text("Article deleted"),
+                                                      backgroundColor: Colors.green,
+                                                    ),
+                                                  );
+
+                                                  // Refresh the articles list
+                                                  fetchArticles();
+
                                                 } catch (e) {
-                                                  if (mounted) {
-                                                    ScaffoldMessenger.of(
-                                                            context)
-                                                        .showSnackBar(
-                                                      const SnackBar(
-                                                        content: Text(
-                                                            "Article deleted"),
-                                                        backgroundColor:
-                                                            Colors.green,
-                                                      ),
-                                                    );
-                                                  }
-                                                } finally {
-                                                  if (mounted) {
-                                                    fetchArticles();
-                                                  }
+                                                  if (!mounted) return;
+
+                                                  // Show error message
+                                                  scaffoldMessenger.showSnackBar(
+                                                    const SnackBar(
+                                                      content: Text("Failed to delete article"),
+                                                      backgroundColor: Colors.red,
+                                                    ),
+                                                  );
                                                 }
                                               }
                                             },
@@ -367,12 +385,12 @@ class _ArticleAdminPageState extends State<ArticleAdminPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
+                    Text(
                       'Quick Links',
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.w600,
-                        color: Colors.black87,
+                        color: yellow,
                       ),
                     ),
                     const SizedBox(height: 16),
@@ -417,7 +435,7 @@ class _ArticleAdminPageState extends State<ArticleAdminPage> {
                   fetchArticles();
                 }
               },
-              backgroundColor: Colors.black87,
+              backgroundColor: Colors.blue[400],
               child: const Icon(Icons.add),
             ).animate().fadeIn(delay: 1200.ms).scale()
           : null,

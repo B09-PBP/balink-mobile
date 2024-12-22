@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'package:balink_mobile/review/screens/review_customerpage.dart';
 import 'package:flutter/material.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
 import 'package:provider/provider.dart';
@@ -171,10 +170,8 @@ class _ReviewFormPageState extends State<ReviewFormPage> {
                                 content: Text("Review submitted successfully!"),
                               ),
                             );
-                            Navigator.push(
-                               context,
-                              MaterialPageRoute(builder: (context) => const ReviewProductPage()),
-                            );
+                            Navigator.pop(context);
+                            Navigator.pop(context);
                           }
                         }
                       }

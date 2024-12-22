@@ -1,13 +1,13 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:balink_mobile/article/screen/article_detail_page.dart';
-import 'package:balink_mobile/article/screen/article_form.dart';
 import 'package:balink_mobile/article/models/article_model.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:provider/provider.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
-import 'edit_form.dart';
 import 'package:url_launcher/url_launcher.dart';
+
+import '../../left_drawer.dart';
 
 class ArticleCustomerPage extends StatefulWidget {
   final bool isAdmin;
@@ -22,7 +22,8 @@ class _ArticleCustomerPageState extends State<ArticleCustomerPage> {
   List<Article>? articles;
   bool isLoading = true;
   final ScrollController _scrollController = ScrollController();
-
+  final Color blue400 = const Color.fromRGBO(32, 73, 255, 1); // Bright Blue
+  final Color yellow = const Color.fromRGBO(255, 203, 48, 1); // Bright Yellow
   @override
   void initState() {
     super.initState();
@@ -63,7 +64,6 @@ class _ArticleCustomerPageState extends State<ArticleCustomerPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[50],
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.menu),
@@ -72,19 +72,36 @@ class _ArticleCustomerPageState extends State<ArticleCustomerPage> {
             Scaffold.of(context).openDrawer();
           },
         ),
-        centerTitle: true,
-        title: const Text(
-          "BaLink",
-          style: TextStyle(
-            fontWeight: FontWeight.w600,
-            fontSize: 22,
-            letterSpacing: 0.5,
-          ),
-        ),
         backgroundColor: Colors.white,
         elevation: 0,
-        foregroundColor: Colors.black87,
+        scrolledUnderElevation: 0,
+        title: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              "Place",
+              style: TextStyle(
+                color: yellow,
+                fontWeight: FontWeight.bold,
+                fontSize: 24,
+              ),
+            ),
+            Text(
+              " to Go ",
+              style: TextStyle(
+                color: blue400,
+                fontWeight: FontWeight.bold,
+                fontSize: 24,
+              ),
+            ),
+            Icon(
+              Icons.article_rounded,
+              color: blue400,
+            ),
+          ],
+        ),
       ),
+      drawer: const LeftDrawer(),
       body: RefreshIndicator(
         onRefresh: _handleRefresh,
         child: CustomScrollView(

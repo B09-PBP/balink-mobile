@@ -8,9 +8,9 @@ class EditArticle extends StatefulWidget {
   final Article article;
 
   const EditArticle({
-    Key? key,
+    super.key,
     required this.article,
-  }) : super(key: key);
+  });
 
   @override
   State<EditArticle> createState() => _EditArticleState();
