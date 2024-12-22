@@ -65,6 +65,10 @@ class _EditReviewPageState extends State<EditReviewPage> {
                 fontSize: 24,
               ),
             ),
+            Icon(
+              Icons.star_rounded,
+              color: yellow,
+            ),
           ],
         ),
         centerTitle: true,

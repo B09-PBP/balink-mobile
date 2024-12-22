@@ -34,11 +34,13 @@ class _ReviewProductAdminPageState extends State<ReviewProductAdminPage> {
     );
 
     if (response['status'] == 'success') {
+      // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(response['message'])),
       );
       setState(() {}); // Refresh data
     } else {
+      // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(response['message'])),
       );
@@ -73,6 +75,10 @@ class _ReviewProductAdminPageState extends State<ReviewProductAdminPage> {
                 fontWeight: FontWeight.bold,
                 fontSize: 24,
               ),
+            ),
+            Icon(
+              Icons.star_rounded,
+              color: yellow,
             ),
           ],
         ),

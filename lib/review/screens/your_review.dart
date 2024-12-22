@@ -54,6 +54,10 @@ class _YourReviewPageState extends State<YourReviewPage> {
                 fontSize: 24,
               ),
             ),
+            Icon(
+              Icons.star_rounded,
+              color: yellow,
+            ),
           ],
         ),
         centerTitle: true,

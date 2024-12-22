@@ -54,6 +54,10 @@ class _ReviewFormPageState extends State<ReviewFormPage> {
                 fontSize: 24,
               ),
             ),
+            Icon(
+              Icons.star_rounded,
+              color: yellow,
+            ),
           ],
         ),
         centerTitle: true,

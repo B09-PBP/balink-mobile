@@ -2,7 +2,6 @@ import 'package:balink_mobile/review/screens/review_form.dart';
 import 'package:balink_mobile/review/widgets/search_ride_review.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:balink_mobile/left_drawer.dart';
 import 'package:balink_mobile/review/models/review_ride_models.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
 
@@ -73,6 +72,10 @@ class _ReviewRidePageState extends State<ReviewRidePage> {
                 fontWeight: FontWeight.bold,
                 fontSize: 24,
               ),
+            ),
+            Icon(
+              Icons.star_rounded,
+              color: yellow,
             ),
           ],
         ),
