@@ -15,7 +15,6 @@ class ReviewRidePage extends StatefulWidget {
 class _ReviewRidePageState extends State<ReviewRidePage> {
   Future<List<ReviewRideModels>> fetchRides(CookieRequest request) async {
     final response = await request.get('http://127.0.0.1:8000/review/all-rides-flutter/');
-    // final response = await request.get('http://nevin-thang-balink.pbp.cs.ui.ac.id/review/all-rides-flutter/');
     var data = response;
 
     List<ReviewRideModels> listRide = [];
@@ -52,11 +51,6 @@ class _ReviewRidePageState extends State<ReviewRidePage> {
 
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          color: Colors.black, // Set the back button color to black
-          onPressed: () => Navigator.of(context).pop(),
-        ),
         backgroundColor: Colors.white,
         elevation: 0,
         title: const Row(
@@ -115,29 +109,33 @@ class _ReviewRidePageState extends State<ReviewRidePage> {
                 Expanded(
                   child: LayoutBuilder(
                     builder: (context, constraints) {
-                      int crossAxisCount = constraints.maxWidth > 600
-                          ? 3
-                          : 2;
+                      // Set crossAxisCount based on screen width
+                      int crossAxisCount = 2;
+                      if (constraints.maxWidth > 600 && constraints.maxWidth <= 900) {
+                        crossAxisCount = 3;
+                      } else if (constraints.maxWidth > 900) {
+                        crossAxisCount = 4;
+                      }
 
                       return GridView.builder(
                         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                           crossAxisCount: crossAxisCount,
                           crossAxisSpacing: 16,
                           mainAxisSpacing: 16,
-                          childAspectRatio: 1.1,
+                          childAspectRatio: 0.75, // Adjust the aspect ratio
                         ),
                         itemCount: displayedRides.length,
                         itemBuilder: (context, index) {
-                          final product = displayedRides[index];
+                          final ride = displayedRides[index];
                           return GestureDetector(
                             onTap: () {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) => ReviewFormPage(
-                                    id: product.id,
-                                    rideName: product.rideName,
-                                    image: product.image,
+                                    id: ride.id,
+                                    rideName: ride.rideName,
+                                    image: ride.image,
                                   ),
                                 ),
                               );
@@ -153,7 +151,7 @@ class _ReviewRidePageState extends State<ReviewRidePage> {
                                   ClipRRect(
                                     borderRadius: const BorderRadius.vertical(top: Radius.circular(10)),
                                     child: Image.network(
-                                      product.image,
+                                      ride.image,
                                       height: 120,
                                       width: double.infinity,
                                       fit: BoxFit.cover,
@@ -171,7 +169,7 @@ class _ReviewRidePageState extends State<ReviewRidePage> {
                                   Padding(
                                     padding: const EdgeInsets.all(8.0),
                                     child: Text(
-                                      product.rideName,
+                                      ride.rideName,
                                       style: const TextStyle(
                                         color: Colors.black,
                                         fontSize: 14.0,

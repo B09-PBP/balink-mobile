@@ -113,7 +113,6 @@ class _BookmarkFormPageState extends State<BookmarkFormPage> {
           const SnackBar(content: Text('Bookmark added successfully!')),
         );
         Navigator.pop(context);
-        Navigator.pop(context);
       }
     }
     else {

@@ -36,7 +36,6 @@ class ProductDetailPageState extends State<ProductDetailPage>
   }
 
   void _loadRecommendations() {
-    // Filter products from the same dealer, excluding current product
     _recommendations = widget.allProducts
         .where((p) => p.fields.dealer == widget.product.fields.dealer &&
         p.pk != widget.product.pk)
@@ -72,7 +71,6 @@ class ProductDetailPageState extends State<ProductDetailPage>
     }
   }
 
-  // In the build method, modify the SliverToBoxAdapter section like this:
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -101,7 +99,6 @@ class ProductDetailPageState extends State<ProductDetailPage>
     );
   }
 
-  // Add this helper method to handle animations
   Widget _buildAnimatedSection(Widget child) {
     return AnimatedBuilder(
       animation: _animationController,

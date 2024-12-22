@@ -64,7 +64,7 @@ class _YourReviewPageState extends State<YourReviewPage> {
       ),
       body: SingleChildScrollView(
         child: Column(
-          children: [ 
+          children: [
             FutureBuilder<List<ReviewModels>>(
               future: fetchreviews(request),
               builder: (context, snapshot) {
@@ -173,7 +173,7 @@ class _YourReviewPageState extends State<YourReviewPage> {
                                               id: review.id, // Pass review id
                                               rideName: review.rideName,
                                               image: review.image,
-                                              currentRating: review.rating.toDouble(),
+                                              currentRating: review.rating,
                                               currentReviewMessage: review.reviewMessage,
                                             ),
                                           ),

@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'package:balink_mobile/left_drawer.dart';
 import 'package:flutter/material.dart';
 import 'package:balink_mobile/article/screen/article_detail_page.dart';
 import 'package:balink_mobile/article/screen/article_form.dart';
@@ -67,13 +66,6 @@ class _ArticleAdminPageState extends State<ArticleAdminPage> {
     return Scaffold(
       backgroundColor: Colors.grey[50],
       appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.menu),
-          color: Colors.black, // Set the color to black
-          onPressed: () {
-            Scaffold.of(context).openDrawer();
-          },
-        ),
         backgroundColor: Colors.white,
         elevation: 0,
         scrolledUnderElevation: 0,
@@ -103,7 +95,6 @@ class _ArticleAdminPageState extends State<ArticleAdminPage> {
           ],
         ),
       ),
-      drawer: const LeftDrawer(),
       body: RefreshIndicator(
         onRefresh: _handleRefresh,
         child: CustomScrollView(
@@ -170,7 +161,7 @@ class _ArticleAdminPageState extends State<ArticleAdminPage> {
                 padding: const EdgeInsets.symmetric(horizontal: 24),
                 sliver: SliverList(
                   delegate: SliverChildBuilderDelegate(
-                    (context, index) {
+                        (context, index) {
                       final article = articles![index];
                       return GestureDetector(
                         onTap: () => Navigator.push(
@@ -206,15 +197,15 @@ class _ArticleAdminPageState extends State<ArticleAdminPage> {
                                   fit: BoxFit.cover,
                                   errorBuilder: (context, error, stackTrace) =>
                                       Container(
-                                    color: Colors.grey[100],
-                                    child: const Center(
-                                      child: Icon(
-                                        Icons.image_not_supported_outlined,
-                                        size: 32,
-                                        color: Colors.black26,
+                                        color: Colors.grey[100],
+                                        child: const Center(
+                                          child: Icon(
+                                            Icons.image_not_supported_outlined,
+                                            size: 32,
+                                            color: Colors.black26,
+                                          ),
+                                        ),
                                       ),
-                                    ),
-                                  ),
                                 ),
                               ),
                               Padding(
@@ -263,11 +254,11 @@ class _ArticleAdminPageState extends State<ArticleAdminPage> {
                                         if (widget.isAdmin) ...[
                                           IconButton(
                                             icon:
-                                                const Icon(Icons.edit_outlined),
+                                            const Icon(Icons.edit_outlined),
                                             color: Colors.orange,
                                             onPressed: () async {
                                               final result =
-                                                  await Navigator.push(
+                                              await Navigator.push(
                                                 context,
                                                 MaterialPageRoute(
                                                   builder: (context) =>
@@ -281,68 +272,69 @@ class _ArticleAdminPageState extends State<ArticleAdminPage> {
                                             },
                                           ),
                                           IconButton(
-                                            icon: const Icon(Icons.delete_outline),
+                                            icon: const Icon(
+                                                Icons.delete_outline),
                                             color: Colors.red,
                                             onPressed: () async {
-                                              // Store BuildContext related values before the dialog
-                                              final request = context.read<CookieRequest>();
-                                              final scaffoldMessenger = ScaffoldMessenger.of(context);
-
-                                              // Show confirmation dialog
-                                              bool? confirm = await showDialog<bool>(
+                                              bool confirm = await showDialog(
                                                 context: context,
-                                                builder: (context) => AlertDialog(
-                                                  title: const Text('Delete Article'),
-                                                  content: const Text('Are you sure you want to delete this article?'),
-                                                  actions: [
-                                                    TextButton(
-                                                      onPressed: () => Navigator.pop(context, false),
-                                                      child: const Text('Cancel'),
+                                                builder: (context) =>
+                                                    AlertDialog(
+                                                      title: const Text(
+                                                          'Delete Article'),
+                                                      content: const Text(
+                                                          'Are you sure you want to delete this article?'),
+                                                      actions: [
+                                                        TextButton(
+                                                          onPressed: () =>
+                                                              Navigator.pop(
+                                                                  context,
+                                                                  false),
+                                                          child: const Text(
+                                                              'Cancel'),
+                                                        ),
+                                                        TextButton(
+                                                          onPressed: () =>
+                                                              Navigator.pop(
+                                                                  context,
+                                                                  true),
+                                                          child: const Text(
+                                                            'Delete',
+                                                            style: TextStyle(
+                                                                color:
+                                                                Colors.red),
+                                                          ),
+                                                        ),
+                                                      ],
                                                     ),
-                                                    TextButton(
-                                                      onPressed: () => Navigator.pop(context, true),
-                                                      child: const Text(
-                                                        'Delete',
-                                                        style: TextStyle(color: Colors.red),
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                              );
+                                              ) ??
+                                                  false;
 
-                                              if (!mounted) return;
-
-                                              if (confirm == true) {
+                                              if (confirm) {
+                                                final request = context // ignore: use_build_context_synchronously
+                                                    .read<CookieRequest>();
                                                 try {
-                                                  // Perform the delete operation
                                                   await request.post(
                                                     'http://127.0.0.1:8000/article/delete/${article.pk}/',
                                                     {},
                                                   );
-
-                                                  if (!mounted) return;
-
-                                                  // Show success message
-                                                  scaffoldMessenger.showSnackBar(
-                                                    const SnackBar(
-                                                      content: Text("Article deleted"),
-                                                      backgroundColor: Colors.green,
-                                                    ),
-                                                  );
-
-                                                  // Refresh the articles list
-                                                  fetchArticles();
-
                                                 } catch (e) {
-                                                  if (!mounted) return;
-
-                                                  // Show error message
-                                                  scaffoldMessenger.showSnackBar(
-                                                    const SnackBar(
-                                                      content: Text("Failed to delete article"),
-                                                      backgroundColor: Colors.red,
-                                                    ),
-                                                  );
+                                                  if (mounted) {
+                                                    ScaffoldMessenger.of(
+                                                        context) // ignore: use_build_context_synchronously
+                                                        .showSnackBar(
+                                                      const SnackBar(
+                                                        content: Text(
+                                                            "Article deleted"),
+                                                        backgroundColor:
+                                                        Colors.green,
+                                                      ),
+                                                    );
+                                                  }
+                                                } finally {
+                                                  if (mounted) {
+                                                    fetchArticles();
+                                                  }
                                                 }
                                               }
                                             },
@@ -424,20 +416,20 @@ class _ArticleAdminPageState extends State<ArticleAdminPage> {
       ),
       floatingActionButton: widget.isAdmin
           ? FloatingActionButton(
-              onPressed: () async {
-                final result = await Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const ArticleForm(isAdmin: true),
-                  ),
-                );
-                if (result != null) {
-                  fetchArticles();
-                }
-              },
-              backgroundColor: Colors.blue[400],
-              child: const Icon(Icons.add),
-            ).animate().fadeIn(delay: 1200.ms).scale()
+        onPressed: () async {
+          final result = await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const ArticleForm(isAdmin: true),
+            ),
+          );
+          if (result != null) {
+            fetchArticles();
+          }
+        },
+        backgroundColor: Colors.blue[400],
+        child: const Icon(Icons.add),
+      ).animate().fadeIn(delay: 1200.ms).scale()
           : null,
     );
   }

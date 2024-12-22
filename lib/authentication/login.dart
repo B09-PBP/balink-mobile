@@ -17,25 +17,20 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  // Form controllers
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-  // Form key for validation
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-  // Define BaLink's color palette
   final Color _primaryBlue = const Color.fromRGBO(32, 73, 255, 1);
   final Color _accentYellow =  const Color.fromRGBO(255, 203, 48, 1);
   final Color _backgroundBlue = const Color.fromRGBO(32, 73, 255, 1);
 
-  // Password visibility toggle
   bool _obscurePassword = true;
   bool _isLoading = false;
 
   @override
   void dispose() {
-    // Dispose controllers to prevent memory leaks
     _usernameController.dispose();
     _passwordController.dispose();
     super.dispose();
@@ -232,12 +227,10 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   void _performLogin(CookieRequest request) async {
-    // Validate form before attempting login
     if (!_formKey.currentState!.validate()) {
       return;
     }
 
-    // Capture BuildContext-dependent values early
     final navigator = Navigator.of(context);
     final scaffoldMessenger = ScaffoldMessenger.of(context);
 
@@ -258,10 +251,8 @@ class _LoginPageState extends State<LoginPage> {
         },
       );
 
-      // Check if widget is still mounted before updating state
       if (!mounted) return;
 
-      // Reset loading state
       setState(() {
         _isLoading = false;
       });
@@ -302,12 +293,10 @@ class _LoginPageState extends State<LoginPage> {
         _isLoading = false;
       });
 
-      // Generic error handling
       _showLoginErrorDialog('An unexpected error occurred. Please try again.');
     }
   }
 
-  // Error Dialog for Login Failures
   void _showLoginErrorDialog(String message) {
     showDialog(
       context: context,

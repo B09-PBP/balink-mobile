@@ -266,6 +266,7 @@ class _ProductAdminPageState extends State<ProductPageAdmin> with SingleTickerPr
         ),
         backgroundColor: Colors.white,
         elevation: 0,
+        scrolledUnderElevation: 0,
         title: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -292,20 +293,6 @@ class _ProductAdminPageState extends State<ProductPageAdmin> with SingleTickerPr
           ],
         ),
         centerTitle: true,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.add),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const AddProductPage(),
-                ),
-              ).then((_) => _refreshProducts(request));
-            },
-            tooltip: 'Add New Product',
-          ),
-        ],
       ),
       drawer: const LeftDrawer(),
       body: RefreshIndicator(

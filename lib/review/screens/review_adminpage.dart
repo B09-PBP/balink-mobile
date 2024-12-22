@@ -64,6 +64,7 @@ class _ReviewProductAdminPageState extends State<ReviewProductAdminPage> {
         ),
         backgroundColor: Colors.white,
         elevation: 0,
+        scrolledUnderElevation: 0,
         title: const Row(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -85,7 +86,7 @@ class _ReviewProductAdminPageState extends State<ReviewProductAdminPage> {
             ),
             Icon(
               Icons.star_rounded,
-              color: yellow,
+              color: blue400,
             ),
           ],
         ),

@@ -467,6 +467,9 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
     final images = _validImages;
     final screenWidth = MediaQuery.of(context).size.width;
 
+    // Calculate number of grid columns dynamically
+    final isSmallScreen = screenWidth < 600;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text(
@@ -481,30 +484,23 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Logo
-            Center(
-              child: Image.asset(
-                'assets/article.png',
-                height: 25,
-              ),
-            ),
-            const SizedBox(height: 16.0),
             _buildImageSlider(images, screenWidth),
             const SizedBox(height: 16.0),
             Center(
               child: Text(
                 widget.article.fields.title,
-                style: const TextStyle(
-                  fontSize: 24.0,
+                style: TextStyle(
+                  fontSize: isSmallScreen ? 20.0 : 24.0,
                   fontWeight: FontWeight.bold,
                 ),
+                textAlign: TextAlign.center,
               ),
             ),
             const SizedBox(height: 8.0),
             Text(
               widget.article.fields.content,
-              style: const TextStyle(
-                fontSize: 16.0,
+              style: TextStyle(
+                fontSize: isSmallScreen ? 14.0 : 16.0,
                 height: 1.5,
                 color: Colors.black87,
               ),
@@ -523,52 +519,53 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
             const SizedBox(height: 12.0),
             _isLoading
                 ? const Center(
-                    child: CircularProgressIndicator(),
-                  )
+              child: CircularProgressIndicator(),
+            )
                 : _comments.isEmpty
-                    ? const Center(
-                        child: Text(
-                          "No comments yet. Be the first to comment!",
-                          style: TextStyle(fontSize: 16.0, color: Colors.grey),
-                        ),
-                      )
-                    : ListView.separated(
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        itemCount: _comments.length,
-                        separatorBuilder: (context, index) =>
-                            const SizedBox(height: 6.0),
-                        itemBuilder: (context, index) {
-                          final comment = _comments[index];
-                          return Card(
-                            margin: const EdgeInsets.symmetric(vertical: 6.0),
-                            elevation: 2,
-                            child: ListTile(
-                              leading: const CircleAvatar(
-                                backgroundColor: Colors.blueAccent,
-                                child: Icon(Icons.person, color: Colors.white),
-                              ),
-                              title: Text(
-                                comment['text'] ?? 'No content',
-                                style: const TextStyle(fontSize: 16.0),
-                              ),
-                              subtitle: Text(
-                                'by ${comment['user'] ?? 'Unknown'}',
-                                style: const TextStyle(
-                                  fontSize: 12.0,
-                                  color: Colors.grey,
-                                ),
-                              ),
-                            ),
-                          );
-                        },
+                ? const Center(
+              child: Text(
+                "No comments yet. Be the first to comment!",
+                style: TextStyle(fontSize: 16.0, color: Colors.grey),
+              ),
+            )
+                : ListView.separated(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: _comments.length,
+              separatorBuilder: (context, index) =>
+              const SizedBox(height: 6.0),
+              itemBuilder: (context, index) {
+                final comment = _comments[index];
+                return Card(
+                  margin: const EdgeInsets.symmetric(vertical: 6.0),
+                  elevation: 2,
+                  child: ListTile(
+                    leading: const CircleAvatar(
+                      backgroundColor: Colors.blueAccent,
+                      child:
+                      Icon(Icons.person, color: Colors.white),
+                    ),
+                    title: Text(
+                      comment['text'] ?? 'No content',
+                      style: const TextStyle(fontSize: 16.0),
+                    ),
+                    subtitle: Text(
+                      'by ${comment['user'] ?? 'Unknown'}',
+                      style: const TextStyle(
+                        fontSize: 12.0,
+                        color: Colors.grey,
                       ),
+                    ),
+                  ),
+                );
+              },
+            ),
             const SizedBox(height: 12.0),
 
             // Comment Input Field
             Container(
               padding:
-                  const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
+              const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
               decoration: BoxDecoration(
                 color: Colors.white,
                 border: Border.all(color: Colors.grey.shade300),
@@ -595,7 +592,8 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
                     ),
                   ),
                   IconButton(
-                    icon: const Icon(Icons.send, color: Colors.blueAccent),
+                    icon:
+                    const Icon(Icons.send, color: Colors.blueAccent),
                     onPressed: _addComment,
                   ),
                 ],
@@ -626,8 +624,8 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
               GridView.builder(
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: isSmallScreen ? 1 : 2,
                   childAspectRatio: 0.8,
                   crossAxisSpacing: 16,
                   mainAxisSpacing: 16,

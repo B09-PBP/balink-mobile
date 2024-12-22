@@ -110,7 +110,7 @@ class _ReviewFormPageState extends State<ReviewFormPage> {
                     if (value == null || value.isEmpty) {
                       return "Rating must be filled!";
                     }
-                    final rating = double.tryParse(value);
+                    final rating = int.tryParse(value);
                     if (rating == null || rating < 1 || rating > 5) {
                       return "Rating must be between 1 and 5";
                     }
@@ -170,7 +170,6 @@ class _ReviewFormPageState extends State<ReviewFormPage> {
                                 content: Text("Review submitted successfully!"),
                               ),
                             );
-                            Navigator.pop(context);
                             Navigator.pop(context);
                           }
                         }

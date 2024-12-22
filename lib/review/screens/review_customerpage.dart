@@ -16,7 +16,6 @@ class ReviewProductPage extends StatefulWidget {
 class _ReviewProductPageState extends State<ReviewProductPage> {
   Future<List<ReviewModels>> fetchreviews(CookieRequest request) async {
     final response = await request.get('http://127.0.0.1:8000/review/all-reviews-flutter/');
-    // final response = await request.get('http://nevin-thang-balink.pbp.cs.ui.ac.id/review/all-reviews-flutter/');
     var data = response;
 
     List<ReviewModels> listReview = [];
@@ -35,15 +34,11 @@ class _ReviewProductPageState extends State<ReviewProductPage> {
     const Color blue400 = Color.fromRGBO(32, 73, 255, 1);
     const Color yellow = Color.fromRGBO(255, 203, 48, 1);
 
+    // Determine grid columns based on screen width
+    int crossAxisCount = screenWidth > 600 ? 3 : (screenWidth > 400 ? 2 : 1);
+
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.menu),
-          color: Colors.black, // Set the color to black
-          onPressed: () {
-            Scaffold.of(context).openDrawer();
-          },
-        ),
         backgroundColor: Colors.white,
         elevation: 0,
         title: const Row(
@@ -67,7 +62,7 @@ class _ReviewProductPageState extends State<ReviewProductPage> {
             ),
             Icon(
               Icons.star_rounded,
-              color: yellow,
+              color: blue400,
             ),
           ],
         ),
@@ -109,42 +104,45 @@ class _ReviewProductPageState extends State<ReviewProductPage> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text(
+                        Text(
                           'Share your Ride Experience!',
                           style: TextStyle(
-                            fontSize: 20,
+                            fontSize: screenWidth > 600 ? 24 : 20,
                             fontWeight: FontWeight.bold,
                             color: Colors.white,
                           ),
                         ),
                         const SizedBox(height: 8),
-                        const Text(
+                        Text(
                           'Share your driving experience in Denpasar! Let others know how BaLink made your trip to dream destinations easier.',
                           style: TextStyle(
-                            fontSize: 12,
+                            fontSize: screenWidth > 600 ? 16 : 12,
                             color: Colors.white70,
                           ),
                         ),
                         const SizedBox(height: 16),
                         ElevatedButton(
-                          onPressed: () {
-                            Navigator.push(
+                          onPressed: () async {
+                            // Wait for the navigation to return and refresh data
+                            await Navigator.push(
                               context,
                               MaterialPageRoute(builder: (context) => const ReviewRidePage()),
                             );
+                            setState(() {}); // Refresh data when returning from adding review
                           },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color.fromRGBO(255, 203, 48, 1),
+                            backgroundColor: yellow,
                             foregroundColor: Colors.black,
-                            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                            padding: EdgeInsets.symmetric(horizontal: screenWidth > 600 ? 32 : 24, vertical: 12),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8),
                             ),
                           ),
-                          child: const Text(
+                          child: Text(
                             'Add Review',
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
+                              fontSize: screenWidth > 600 ? 18 : 16,
                             ),
                           ),
                         ),
@@ -155,7 +153,6 @@ class _ReviewProductPageState extends State<ReviewProductPage> {
               ),
             ),
 
-            // Your Review Button
             Container(
               margin: const EdgeInsets.symmetric(horizontal: 16),
               child: ElevatedButton(
@@ -168,21 +165,22 @@ class _ReviewProductPageState extends State<ReviewProductPage> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.blue.shade200,
                   foregroundColor: Colors.black,
-                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                  padding: EdgeInsets.symmetric(horizontal: screenWidth > 600 ? 32 : 24, vertical: 12),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
                 ),
-                child: const Text(
+                child: Text(
                   'Your Review',
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
+                    fontSize: screenWidth > 600 ? 18 : 16,
                   ),
                 ),
               ),
             ),
 
-            // Review
+            // Review Display
             FutureBuilder<List<ReviewModels>>(
               future: fetchreviews(request),
               builder: (context, snapshot) {
@@ -197,97 +195,92 @@ class _ReviewProductPageState extends State<ReviewProductPage> {
                       ),
                     );
                   } else {
-                    return LayoutBuilder(
-                      builder: (context, constraints) {
-                        int crossAxisCount = constraints.maxWidth > 600 ? 3 : 2;
-                        return GridView.builder(
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          padding: const EdgeInsets.all(16),
-                          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: crossAxisCount,
-                            crossAxisSpacing: 16,
-                            mainAxisSpacing: 16,
-                            childAspectRatio: 0.7,
+                    return GridView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      padding: const EdgeInsets.all(16),
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: crossAxisCount,
+                        crossAxisSpacing: 16,
+                        mainAxisSpacing: 16,
+                        childAspectRatio: 0.7,
+                      ),
+                      itemCount: snapshot.data!.length,
+                      itemBuilder: (_, index) {
+                        final review = snapshot.data![index];
+                        return Container(
+                          padding: const EdgeInsets.all(12.0),
+                          decoration: BoxDecoration(
+                            border: Border.all(color: Colors.grey[300]!),
+                            borderRadius: BorderRadius.circular(10),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.grey.withOpacity(0.2),
+                                spreadRadius: 2,
+                                blurRadius: 5,
+                                offset: const Offset(0, 3),
+                              ),
+                            ],
+                            color: Colors.white,
                           ),
-                          itemCount: snapshot.data!.length,
-                          itemBuilder: (_, index) {
-                            final review = snapshot.data![index];
-                            return Container(
-                              padding: const EdgeInsets.all(12.0),
-                              decoration: BoxDecoration(
-                                border: Border.all(color: Colors.grey[300]!),
-                                borderRadius: BorderRadius.circular(10),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.grey.withOpacity(0.2),
-                                    spreadRadius: 2,
-                                    blurRadius: 5,
-                                    offset: const Offset(0, 3),
-                                  ),
-                                ],
-                                color: Colors.white,
-                              ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  ClipRRect(
-                                    borderRadius: const BorderRadius.vertical(top: Radius.circular(10)),
-                                    child: Image.network(
-                                      review.image,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              ClipRRect(
+                                borderRadius: const BorderRadius.vertical(top: Radius.circular(10)),
+                                child: Image.network(
+                                  review.image,
+                                  height: 120,
+                                  width: double.infinity,
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (context, error, stackTrace) {
+                                    return Container(
                                       height: 120,
-                                      width: double.infinity,
-                                      fit: BoxFit.cover,
-                                      errorBuilder: (context, error, stackTrace) {
-                                        return Container(
-                                          height: 120,
-                                          color: Colors.grey,
-                                          alignment: Alignment.center,
-                                          child: const Icon(Icons.error, color: Colors.red),
-                                        );
-                                      },
-                                    ),
-                                  ),
-                                  const SizedBox(height: 10),
-                                  Text(
-                                    review.rideName,
-                                    style: const TextStyle(
-                                      color: Colors.black,
-                                      fontSize: 14.0,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                    maxLines: 2,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                  const SizedBox(height: 6),
-                                  Text(
-                                    "⭐ ${review.rating}",
-                                    style: const TextStyle(
-                                      color: Color.fromRGBO(255, 203, 48, 1),
-                                      fontSize: 14.0,
-                                      fontWeight: FontWeight.w900,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 6),
-                                  Expanded(
-                                    child: Text(
-                                      review.reviewMessage,
-                                      maxLines: 3,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: const TextStyle(
-                                        color: Colors.black,
-                                      ),
-                                    ),
-                                  ),
-                                  const SizedBox(height: 6),
-                                  Text(
-                                    "Reviewed by ${review.username}",
-                                    style: const TextStyle(fontSize: 10.0, color: Colors.grey),
-                                  ),
-                                ],
+                                      color: Colors.grey,
+                                      alignment: Alignment.center,
+                                      child: const Icon(Icons.error, color: Colors.red),
+                                    );
+                                  },
+                                ),
                               ),
-                            );
-                          },
+                              const SizedBox(height: 10),
+                              Text(
+                                review.rideName,
+                                style: const TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 14.0,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              const SizedBox(height: 6),
+                              Text(
+                                "⭐ ${review.rating}",
+                                style: const TextStyle(
+                                  color: Color.fromRGBO(255, 203, 48, 1),
+                                  fontSize: 14.0,
+                                  fontWeight: FontWeight.w900,
+                                ),
+                              ),
+                              const SizedBox(height: 6),
+                              Expanded(
+                                child: Text(
+                                  review.reviewMessage,
+                                  maxLines: 3,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: const TextStyle(
+                                    color: Colors.black,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 6),
+                              Text(
+                                "Reviewed by ${review.username}",
+                                style: const TextStyle(fontSize: 10.0, color: Colors.grey),
+                              ),
+                            ],
+                          ),
                         );
                       },
                     );

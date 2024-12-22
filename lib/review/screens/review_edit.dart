@@ -8,7 +8,7 @@ class EditReviewPage extends StatefulWidget {
   final String id;
   final String rideName;
   final String image;
-  final double currentRating;
+  final int currentRating;
   final String currentReviewMessage;
 
   const EditReviewPage({
@@ -26,7 +26,7 @@ class EditReviewPage extends StatefulWidget {
 
 class _EditReviewPageState extends State<EditReviewPage> {
   final _formKey = GlobalKey<FormState>();
-  double _rating = 0;
+  int _rating = 0;
   String _reviewMessage = "";
 
   @override
@@ -137,14 +137,14 @@ class _EditReviewPageState extends State<EditReviewPage> {
                   keyboardType: TextInputType.number,
                   onChanged: (String? value) {
                     setState(() {
-                      _rating = double.tryParse(value!) ?? 0;
+                      _rating = int.tryParse(value!) ?? 0;
                     });
                   },
                   validator: (String? value) {
                     if (value == null || value.isEmpty) {
                       return "Rating must be filled!";
                     }
-                    final rating = double.tryParse(value);
+                    final rating = int.tryParse(value);
                     if (rating == null || rating < 1 || rating > 5) {
                       return "Rating must be between 1 and 5";
                     }
