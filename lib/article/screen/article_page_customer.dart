@@ -65,6 +65,13 @@ class _ArticleCustomerPageState extends State<ArticleCustomerPage> {
     return Scaffold(
       backgroundColor: Colors.grey[50],
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.menu),
+          color: Colors.black, // Set the color to black
+          onPressed: () {
+            Scaffold.of(context).openDrawer();
+          },
+        ),
         centerTitle: true,
         title: const Text(
           "BaLink",

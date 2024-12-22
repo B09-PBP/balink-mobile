@@ -178,6 +178,13 @@ class _ProductCustomerPageState extends State<ProductPageCustomer> with SingleTi
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.menu),
+          color: Colors.black, // Set the color to black
+          onPressed: () {
+            Scaffold.of(context).openDrawer();
+          },
+        ),
         backgroundColor: Colors.white,
         elevation: 0,
         title: Row(
