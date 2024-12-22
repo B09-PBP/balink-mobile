@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:carousel_slider/carousel_slider.dart';
 import '../models/article_model.dart';
-import 'article_form.dart';
 import '../../Product/Models/product_model.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
 import 'package:provider/provider.dart';
@@ -13,10 +11,10 @@ class ArticleDetailPage extends StatefulWidget {
   final bool isAdmin;
 
   const ArticleDetailPage({
-    Key? key,
+    super.key,
     required this.article,
     this.isAdmin = true,
-  }) : super(key: key);
+  });
 
   @override
   State<ArticleDetailPage> createState() => _ArticleDetailPageState();
@@ -24,10 +22,12 @@ class ArticleDetailPage extends StatefulWidget {
 
 class _ArticleDetailPageState extends State<ArticleDetailPage> {
   final TextEditingController _commentController = TextEditingController();
+  final PageController _pageController = PageController();
   List<Map<String, String>> _comments = [];
   List<Product> _products = [];
   bool _isLoadingProducts = true;
   bool _isLoading = true;
+  int _currentPage = 0;
 
   @override
   void initState() {
@@ -48,6 +48,102 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
       images.add(widget.article.fields.image3!);
     }
     return images;
+  }
+
+  // Custom Image Slider Widget
+  Widget _buildImageSlider(List<String> images, double screenWidth) {
+    return Stack(
+      children: [
+        Container(
+          height: screenWidth * 9 / 16,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(24.0),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1),
+                blurRadius: 10,
+                spreadRadius: 2,
+              ),
+            ],
+          ),
+          child: PageView.builder(
+            controller: _pageController,
+            onPageChanged: (index) {
+              setState(() {
+                _currentPage = index;
+              });
+            },
+            itemCount: images.length,
+            itemBuilder: (context, index) {
+              return Container(
+                margin: const EdgeInsets.symmetric(horizontal: 4),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(24.0),
+                  child: Stack(
+                    fit: StackFit.expand,
+                    children: [
+                      Image.network(
+                        images[index],
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) => Container(
+                          color: Colors.grey[200],
+                          child: const Center(
+                            child: Icon(
+                              Icons.broken_image,
+                              size: 50,
+                              color: Colors.grey,
+                            ),
+                          ),
+                        ),
+                      ),
+                      // Gradient overlay
+                      Positioned.fill(
+                        child: DecoratedBox(
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              begin: Alignment.topCenter,
+                              end: Alignment.bottomCenter,
+                              colors: [
+                                Colors.transparent,
+                                Colors.black.withOpacity(0.3),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+        // Modern page indicators
+        Positioned(
+          bottom: 16,
+          left: 0,
+          right: 0,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: List.generate(
+              images.length,
+                  (index) => AnimatedContainer(
+                duration: const Duration(milliseconds: 300),
+                margin: const EdgeInsets.symmetric(horizontal: 4),
+                width: _currentPage == index ? 24 : 8,
+                height: 8,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(4),
+                  color: _currentPage == index
+                      ? Colors.white
+                      : Colors.white.withOpacity(0.5),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
   }
 
   void _fetchComments() async {
@@ -84,7 +180,6 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
     }
   }
 
-
   void _addComment() async {
     final request = context.read<CookieRequest>();
 
@@ -112,7 +207,6 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
       _showErrorDialog("Comment text cannot be empty.");
     }
   }
-
 
   void _showErrorDialog(String message) {
     showDialog(
@@ -166,6 +260,7 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
   @override
   void dispose() {
     _commentController.dispose();
+    _pageController.dispose();
     super.dispose();
   }
 
@@ -178,7 +273,7 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => ProductDetailPage(product: product),
+                builder: (context) => ProductDetailPage(product: product, allProducts: const [],),
               ),
             );
           },
@@ -385,42 +480,7 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
               ),
             ),
             const SizedBox(height: 16.0),
-            // Carousel Slider for images
-            Center(
-              child: SizedBox(
-                width: screenWidth,
-                child: CarouselSlider.builder(
-                  itemCount: images.length,
-                  itemBuilder: (context, index, realIndex) {
-                    return ClipRRect(
-                      borderRadius: BorderRadius.circular(18.0),
-                      child: Image.network(
-                        images[index],
-                        width: screenWidth,
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) => Container(
-                          color: Colors.grey[300],
-                          child: const Center(
-                            child: Icon(
-                              Icons.broken_image,
-                              size: 50,
-                              color: Colors.grey,
-                            ),
-                          ),
-                        ),
-                      ),
-                    );
-                  },
-                  options: CarouselOptions(
-                    autoPlay: true,
-                    autoPlayInterval: const Duration(seconds: 3),
-                    enlargeCenterPage: false,
-                    viewportFraction: 1.0,
-                    aspectRatio: 16 / 9,
-                  ),
-                ),
-              ),
-            ),
+            _buildImageSlider(images, screenWidth),
             const SizedBox(height: 16.0),
             Center(
               child: Text(
