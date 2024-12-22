@@ -204,6 +204,7 @@ class _EditReviewPageState extends State<EditReviewPage> {
                               ),
                             );
                             Navigator.pop(context);
+                            Navigator.pop(context);
                           }
                         }
                       }
