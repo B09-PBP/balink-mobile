@@ -15,7 +15,7 @@ class BookmarkPage extends StatefulWidget {
 }
 
 class _BookmarkPageState extends State<BookmarkPage> {
-  // Fetch bookmarks from the server
+  // Fetch user's bookmarks from the server
   Future<List<BookmarkModel>> fetchBookmarks(CookieRequest request) async {
     final response = await request.get('http://127.0.0.1:8000/bookmarks/json/');
 
@@ -34,8 +34,7 @@ class _BookmarkPageState extends State<BookmarkPage> {
       context,
       MaterialPageRoute(builder: (context) => const BookmarkFormPage()),
     ).then((_) {
-      // Refresh tampilan ketika kembali dari form
-      setState(() {});
+      setState(() {}); // Refresh tampilan ketika kembali dari form
     });
   }
 
@@ -84,18 +83,18 @@ class _BookmarkPageState extends State<BookmarkPage> {
     try {
       final response = await request.post(url, {});
       if (response['status'] == 'success') {
-        ScaffoldMessenger.of(context).showSnackBar(    // ignore: use_build_context_synchronously
+        ScaffoldMessenger.of(context).showSnackBar(   // ignore: use_build_context_synchronously
 
           const SnackBar(content: Text('Bookmark deleted successfully')),
         );
         setState(() {});
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(    // ignore: use_build_context_synchronously
+        ScaffoldMessenger.of(context).showSnackBar(   // ignore: use_build_context_synchronously
           SnackBar(content: Text('Failed to delete bookmark: ${response['message'] ?? ''}')),
         );
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(    // ignore: use_build_context_synchronously
+      ScaffoldMessenger.of(context).showSnackBar(     // ignore: use_build_context_synchronously
 
         SnackBar(content: Text('Error deleting bookmark: $e')),
       );
@@ -181,7 +180,7 @@ class _BookmarkPageState extends State<BookmarkPage> {
                   ],
                 ),
                 const SizedBox(height: 8),
-                // Gambar product
+
                 Image.network(
                   bookmark.product.imageUrl,
                   height: 200,
@@ -189,7 +188,7 @@ class _BookmarkPageState extends State<BookmarkPage> {
                   fit: BoxFit.cover,
                 ),
                 const SizedBox(height: 8),
-                // Priority, Note, Reminder
+
                 Text(
                   'Priority: ${bookmark.priority}',
                   style: const TextStyle(color: Colors.black),
@@ -251,7 +250,6 @@ class _BookmarkPageState extends State<BookmarkPage> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            // Bagian HEADER
             Container(
               margin: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
               padding: const EdgeInsets.all(16),
@@ -285,7 +283,6 @@ class _BookmarkPageState extends State<BookmarkPage> {
                       ),
                     ),
                   ),
-                  // Teks di sisi kanan
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -331,7 +328,7 @@ class _BookmarkPageState extends State<BookmarkPage> {
               ),
             ),
             
-            // FutureBuilder menampilkan bookmark
+            // FutureBuilder to show all user's bookmark
             FutureBuilder<List<BookmarkModel>>(
               future: fetchBookmarks(request),
               builder: (context, AsyncSnapshot<List<BookmarkModel>> snapshot) {

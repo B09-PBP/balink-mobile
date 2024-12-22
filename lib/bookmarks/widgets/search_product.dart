@@ -27,8 +27,6 @@ class SearchProductWidget extends StatelessWidget {
           ),
         ),
         const SizedBox(width: 8),
-
-        // Tombol Search
         ElevatedButton(
           onPressed: onSearch,
           style: ElevatedButton.styleFrom(

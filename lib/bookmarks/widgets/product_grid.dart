@@ -15,8 +15,7 @@ class ProductGridWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        // 3 kolom jika lebar layar > 600, jika tidak 2 kolom
-        int crossAxisCount = constraints.maxWidth > 600 ? 3 : 2;
+        int crossAxisCount = constraints.maxWidth > 600 ? 3 : 2; // 3 kolom jika lebar layar > 600, jika tidak 2 kolom
 
         return GridView.builder(
           itemCount: products.length,
@@ -24,7 +23,6 @@ class ProductGridWidget extends StatelessWidget {
             crossAxisCount: crossAxisCount,
             crossAxisSpacing: 16,
             mainAxisSpacing: 16,
-            // Anda bisa menyesuaikan childAspectRatio sesuai kebutuhan
             childAspectRatio: 1.15,
           ),
           itemBuilder: (context, index) {
@@ -39,7 +37,6 @@ class ProductGridWidget extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Bagian gambar
                     ClipRRect(
                       borderRadius: const BorderRadius.vertical(top: Radius.circular(10)),
                       child: Image.network(
@@ -58,7 +55,6 @@ class ProductGridWidget extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 8),
-                    // Nama produk
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 8.0),
                       child: Text(
@@ -73,8 +69,6 @@ class ProductGridWidget extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 8),
-                    // Tidak ada tombol "Select" di sini
-                    // Sehingga user menekan card untuk memilih
                   ],
                 ),
               ),
