@@ -64,7 +64,7 @@ class _MyAppState extends State<MyApp> {
             }
 
             return snapshot.data == true
-                ? MainNavigationScaffold(isLoggedIn: _isLoggedIn)
+                ? MainNavigationScaffold(isLoggedIn: _isLoggedIn, startingPage: 0,)
                 : LoginPage(
                     onLoginSuccess: () {
                       setState(() {

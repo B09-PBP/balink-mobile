@@ -9,16 +9,16 @@ import 'package:pbp_django_auth/pbp_django_auth.dart';
 import 'edit_form.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class ArticleAdminPage extends StatefulWidget {
+class ArticleCustomerPage extends StatefulWidget {
   final bool isAdmin;
 
-  const ArticleAdminPage({super.key, this.isAdmin = true});
+  const ArticleCustomerPage({super.key, this.isAdmin = true});
 
   @override
-  State<ArticleAdminPage> createState() => _ArticleAdminPageState();
+  State<ArticleCustomerPage> createState() => _ArticleCustomerPageState();
 }
 
-class _ArticleAdminPageState extends State<ArticleAdminPage> {
+class _ArticleCustomerPageState extends State<ArticleCustomerPage> {
   List<Article>? articles;
   bool isLoading = true;
   final ScrollController _scrollController = ScrollController();
