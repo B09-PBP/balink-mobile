@@ -78,23 +78,25 @@ class _BookmarkPageState extends State<BookmarkPage> {
 
     if (confirmed == null || !confirmed) return;
 
-    final request = context.read<CookieRequest>();
+    final request = context.read<CookieRequest>();    // ignore: use_build_context_synchronously
     final url = 'http://127.0.0.1:8000/bookmarks/delete-bookmark-flutter/${bookmark.id}/';
 
     try {
       final response = await request.post(url, {});
       if (response['status'] == 'success') {
-        ScaffoldMessenger.of(context).showSnackBar(
+        ScaffoldMessenger.of(context).showSnackBar(    // ignore: use_build_context_synchronously
+
           const SnackBar(content: Text('Bookmark deleted successfully')),
         );
         setState(() {});
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
+        ScaffoldMessenger.of(context).showSnackBar(    // ignore: use_build_context_synchronously
           SnackBar(content: Text('Failed to delete bookmark: ${response['message'] ?? ''}')),
         );
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(    // ignore: use_build_context_synchronously
+
         SnackBar(content: Text('Error deleting bookmark: $e')),
       );
     }

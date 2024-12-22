@@ -109,18 +109,17 @@ class _BookmarkFormPageState extends State<BookmarkFormPage> {
 
     // Jika berhasil, langsung kembali ke BookmarkPage
     if (response['status'] == 'success') {
-      // ignore: use_build_context_synchronously
-      ScaffoldMessenger.of(context).showSnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(    // ignore: use_build_context_synchronously
+
         const SnackBar(content: Text('Bookmark added successfully!')),
       );
       Navigator.pushReplacement(
-        // ignore: use_build_context_synchronously
-        context,
+        context,                                     // ignore: use_build_context_synchronously
         MaterialPageRoute(builder: (context) => const BookmarkPage()),
       );
     } else {
-      // ignore: use_build_context_synchronously
-      ScaffoldMessenger.of(context).showSnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(    // ignore: use_build_context_synchronously
+
         const SnackBar(content: Text('Failed to add bookmark. Please try again.')),
       );
     }
