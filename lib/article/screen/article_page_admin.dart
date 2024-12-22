@@ -74,9 +74,9 @@ class _ArticleAdminPageState extends State<ArticleAdminPage> {
             letterSpacing: 0.5,
           ),
         ),
-        backgroundColor: Colors.white,
+        backgroundColor: Colors.blue[400],
         elevation: 0,
-        foregroundColor: Colors.black87,
+        foregroundColor: Colors.white,
       ),
       body: RefreshIndicator(
         onRefresh: _handleRefresh,
@@ -410,7 +410,7 @@ class _ArticleAdminPageState extends State<ArticleAdminPage> {
                   fetchArticles();
                 }
               },
-              backgroundColor: Colors.black87,
+              backgroundColor: Colors.blue[400],
               child: const Icon(Icons.add),
             ).animate().fadeIn(delay: 1200.ms).scale()
           : null,

@@ -84,7 +84,6 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
     }
   }
 
-
   void _addComment() async {
     final request = context.read<CookieRequest>();
 
@@ -112,7 +111,6 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
       _showErrorDialog("Comment text cannot be empty.");
     }
   }
-
 
   void _showErrorDialog(String message) {
     showDialog(
@@ -144,7 +142,7 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
     }
   }
 
-    Future<void> _loadProducts() async {
+  Future<void> _loadProducts() async {
     final request = context.read<CookieRequest>();
     try {
       final products = await fetchProducts(request);
@@ -206,7 +204,8 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
                         return Center(
                           child: CircularProgressIndicator(
                             value: loadingProgress.expectedTotalBytes != null
-                                ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
+                                ? loadingProgress.cumulativeBytesLoaded /
+                                    loadingProgress.expectedTotalBytes!
                                 : null,
                           ),
                         );
@@ -259,7 +258,8 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
                                 ),
                                 _buildDetailChip(
                                   icon: Icons.speed,
-                                  text: "${product.fields.kmDriven.toStringAsFixed(0)} km",
+                                  text:
+                                      "${product.fields.kmDriven.toStringAsFixed(0)} km",
                                 ),
                               ],
                             ),
@@ -285,7 +285,8 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
                               onPressed: () {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(
-                                    content: Text('Added ${product.fields.name} to cart'),
+                                    content: Text(
+                                        'Added ${product.fields.name} to cart'),
                                     backgroundColor: Colors.green,
                                   ),
                                 );
@@ -296,7 +297,8 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(10),
                                 ),
-                                padding: const EdgeInsets.symmetric(vertical: 8),
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 8),
                               ),
                               child: const FittedBox(
                                 child: Text(
@@ -317,7 +319,8 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
                             onPressed: () {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
-                                  content: Text('Added ${product.fields.name} to favorites'),
+                                  content: Text(
+                                      'Added ${product.fields.name} to favorites'),
                                   backgroundColor: Colors.pink,
                                 ),
                               );
@@ -369,8 +372,12 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Article Detail"),
-        backgroundColor: Colors.blueAccent,
+        title: const Text(
+          "Article Detail",
+          style: TextStyle(color: Colors.white),
+        ),
+        iconTheme: const IconThemeData(color: Colors.white),
+        backgroundColor: Colors.blue[400],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
@@ -441,7 +448,7 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
               ),
             ),
             const SizedBox(height: 24.0),
-            
+
             // Comments Section
             const SizedBox(height: 12.0),
             const Text(
@@ -467,7 +474,8 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
                         shrinkWrap: true,
                         physics: const NeverScrollableScrollPhysics(),
                         itemCount: _comments.length,
-                        separatorBuilder: (context, index) => const SizedBox(height: 6.0),
+                        separatorBuilder: (context, index) =>
+                            const SizedBox(height: 6.0),
                         itemBuilder: (context, index) {
                           final comment = _comments[index];
                           return Card(
@@ -497,7 +505,8 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
 
             // Comment Input Field
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
               decoration: BoxDecoration(
                 color: Colors.white,
                 border: Border.all(color: Colors.grey.shade300),
@@ -532,7 +541,7 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
             ),
 
             const Divider(),
-            
+
             // Related Products Section
             const SizedBox(height: 12.0),
             const Text(
