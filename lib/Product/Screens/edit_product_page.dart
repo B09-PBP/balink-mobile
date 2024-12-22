@@ -104,11 +104,15 @@ class _EditProductPageState extends State<EditProductPage> with SingleTickerProv
       );
 
       if (response.statusCode == 200) {
-        _showSnackBar('Product updated successfully', isSuccess: true);
-        Navigator.pop(context);
+        if (mounted) {
+          _showSnackBar('Product updated successfully', isSuccess: true);
+          Navigator.pop(context);
+        }
       } else {
         final error = jsonDecode(response.body)['message'] ?? 'Failed to update product';
-        _showSnackBar(error);
+        if (mounted) {
+          _showSnackBar(error);
+        }
       }
     } catch (e) {
       _showSnackBar('An error occurred: $e');

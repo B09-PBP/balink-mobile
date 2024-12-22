@@ -14,10 +14,10 @@ class ProductPageAdmin extends StatefulWidget {
   const ProductPageAdmin({super.key});
 
   @override
-  State<ProductPageAdmin> createState() => _ProductPageState();
+  State<ProductPageAdmin> createState() => _ProductAdminPageState();
 }
 
-class _ProductPageState extends State<ProductPageAdmin> with SingleTickerProviderStateMixin {
+class _ProductAdminPageState extends State<ProductPageAdmin> with SingleTickerProviderStateMixin {
   final Color blue400 = const Color.fromRGBO(32, 73, 255, 1); // Bright Blue
   final Color yellow = const Color.fromRGBO(255, 203, 48, 1);  // Bright Yellow
   String _searchQuery = '';
@@ -263,7 +263,7 @@ class _ProductPageState extends State<ProductPageAdmin> with SingleTickerProvide
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              "Ba",
+              "Our",
               style: TextStyle(
                 color: yellow,
                 fontWeight: FontWeight.bold,
@@ -271,12 +271,16 @@ class _ProductPageState extends State<ProductPageAdmin> with SingleTickerProvide
               ),
             ),
             Text(
-              "Link",
+              " Products ",
               style: TextStyle(
                 color: blue400,
                 fontWeight: FontWeight.bold,
                 fontSize: 24,
               ),
+            ),
+            Icon(
+              Icons.directions_car_rounded,
+              color: blue400,
             ),
           ],
         ),
@@ -548,7 +552,7 @@ class _ProductPageState extends State<ProductPageAdmin> with SingleTickerProvide
                                       child: Text(
                                         "Add to Cart",
                                         style: TextStyle(
-                                            fontSize: isMobile ? 10 : 12),
+                                            fontSize: isMobile ? 14 : 16),
                                         maxLines: 1,
                                       ),
                                     ),
