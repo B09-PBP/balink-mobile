@@ -170,6 +170,7 @@ class _ReviewFormPageState extends State<ReviewFormPage> {
                               ),
                             );
                             Navigator.pop(context);
+                            Navigator.pop(context);
                           }
                         }
                       }
