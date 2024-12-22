@@ -1,12 +1,11 @@
 import 'dart:convert';
+import 'package:balink_mobile/left_drawer.dart';
 import 'package:flutter/material.dart';
 import 'package:balink_mobile/article/screen/article_detail_page.dart';
-import 'package:balink_mobile/article/screen/article_form.dart';
 import 'package:balink_mobile/article/models/article_model.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:provider/provider.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
-import 'edit_form.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class ArticleCustomerPage extends StatefulWidget {
@@ -64,6 +63,8 @@ class _ArticleCustomerPageState extends State<ArticleCustomerPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.grey[50],
+      drawer: const LeftDrawer(),
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,

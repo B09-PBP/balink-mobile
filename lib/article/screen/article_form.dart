@@ -3,7 +3,6 @@ import 'package:provider/provider.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
 import 'dart:convert';
 import '../models/article_model.dart';
-import 'article_page_admin.dart';
 
 class ArticleForm extends StatefulWidget {
   final Article? article;
@@ -79,7 +78,8 @@ class _ArticleFormState extends State<ArticleForm> {
                 labelText: 'Content',
                 prefixIcon: Icon(
                   Icons.text_fields,
-                  color: Color.fromARGB(255, 142, 204, 255), // Light blue for content
+                  color: Color.fromARGB(
+                      255, 142, 204, 255), // Light blue for content
                 ),
                 border: OutlineInputBorder(),
               ),
@@ -108,7 +108,8 @@ class _ArticleFormState extends State<ArticleForm> {
                 labelText: 'Additional Image 1 URL',
                 prefixIcon: Icon(
                   Icons.image,
-                  color: Color.fromARGB(255, 142, 204, 255), // Light blue for additional image 1
+                  color: Color.fromARGB(
+                      255, 142, 204, 255), // Light blue for additional image 1
                 ),
                 border: OutlineInputBorder(),
               ),
@@ -120,7 +121,8 @@ class _ArticleFormState extends State<ArticleForm> {
                 labelText: 'Additional Image 2 URL',
                 prefixIcon: Icon(
                   Icons.image,
-                  color: Color.fromARGB(255, 142, 204, 255), // Light blue for additional image 2
+                  color: Color.fromARGB(
+                      255, 142, 204, 255), // Light blue for additional image 2
                 ),
                 border: OutlineInputBorder(),
               ),
@@ -132,7 +134,8 @@ class _ArticleFormState extends State<ArticleForm> {
                 labelText: 'Additional Image 3 URL',
                 prefixIcon: Icon(
                   Icons.image,
-                  color: Color.fromARGB(255, 142, 204, 255), // Light blue for additional image 3
+                  color: Color.fromARGB(
+                      255, 142, 204, 255), // Light blue for additional image 3
                 ),
                 border: OutlineInputBorder(),
               ),
@@ -144,7 +147,7 @@ class _ArticleFormState extends State<ArticleForm> {
                   final response = await request.postJson(
                     "http://127.0.0.1:8000/article/create-flutter/",
                     jsonEncode({
-                      'user': 1, 
+                      'user': 1,
                       'title': _titleController.text,
                       'content': _contentController.text,
                       'image': _imageController.text,
@@ -158,9 +161,10 @@ class _ArticleFormState extends State<ArticleForm> {
                     try {
                       if (response['status'] == 'success') {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text("Article updated successfully!")),
+                          const SnackBar(
+                              content: Text("Article updated successfully!")),
                         );
-                        Navigator.pop(context, true); 
+                        Navigator.pop(context, true);
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(

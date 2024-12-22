@@ -127,7 +127,7 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: List.generate(
               images.length,
-                  (index) => AnimatedContainer(
+              (index) => AnimatedContainer(
                 duration: const Duration(milliseconds: 300),
                 margin: const EdgeInsets.symmetric(horizontal: 4),
                 width: _currentPage == index ? 24 : 8,
@@ -273,7 +273,10 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => ProductDetailPage(product: product, allProducts: const [],),
+                builder: (context) => ProductDetailPage(
+                  product: product,
+                  allProducts: const [],
+                ),
               ),
             );
           },

@@ -8,6 +8,7 @@ import 'package:provider/provider.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
 import 'edit_form.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:balink_mobile/left_drawer.dart';
 
 class ArticleAdminPage extends StatefulWidget {
   final bool isAdmin;
@@ -65,6 +66,7 @@ class _ArticleAdminPageState extends State<ArticleAdminPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[50],
+      drawer: const LeftDrawer(),
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
@@ -212,14 +214,19 @@ class _ArticleAdminPageState extends State<ArticleAdminPage> {
                                 padding: const EdgeInsets.all(20),
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisSize: MainAxisSize.min,
                                   children: [
-                                    Text(
-                                      article.fields.title,
-                                      style: const TextStyle(
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.w600,
-                                        color: Colors.black87,
-                                        height: 1.4,
+                                    Flexible(
+                                      child: Text(
+                                        article.fields.title,
+                                        style: const TextStyle(
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.w600,
+                                          color: Colors.black87,
+                                          height: 1.4,
+                                        ),
+                                        maxLines: 2,
+                                        overflow: TextOverflow.ellipsis,
                                       ),
                                     ),
                                     const SizedBox(height: 8),
@@ -235,6 +242,8 @@ class _ArticleAdminPageState extends State<ArticleAdminPage> {
                                     ),
                                     const SizedBox(height: 16),
                                     Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
                                       children: [
                                         const Text(
                                           'Read article',
@@ -319,7 +328,7 @@ class _ArticleAdminPageState extends State<ArticleAdminPage> {
                                                     {},
                                                   );
                                                 } catch (e) {
-                                                  if (mounted) {
+                                                  if (!mounted) {
                                                     ScaffoldMessenger.of(
                                                             context)
                                                         .showSnackBar(
