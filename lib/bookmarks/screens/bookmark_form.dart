@@ -124,8 +124,8 @@ class _BookmarkFormPageState extends State<BookmarkFormPage> {
     }
   }
 
-  // Build Product Grid
-  Widget _buildProductGrid() {
+  // Build product grid area
+  Widget _buildProductGridSection() {
     return Column(
       children: [
         SearchProductWidget(
@@ -133,28 +133,31 @@ class _BookmarkFormPageState extends State<BookmarkFormPage> {
           onSearch: _searchProducts,
         ),
         const SizedBox(height: 16),
-        Expanded(
-          child: ProductGridWidget(
-            products: _displayedProducts,
-            onProductSelect: (product) {
-              setState(() {
-                _selectedProduct = product;
-              });
-            },
-          ),
+        LayoutBuilder(
+          builder: (context, constraints) {
+            return ProductGridWidget(
+              products: _displayedProducts,
+              onProductSelect: (product) {
+                setState(() {
+                  _selectedProduct = product;
+                });
+              },
+              // Send constraints supaya grid bisa menyesuaikan
+              maxWidth: constraints.maxWidth,
+            );
+          },
         ),
       ],
     );
   }
 
-  // Build Form after product is selected
+  // Build form after product is selected
   Widget _buildSelectedProductForm() {
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            // Display selected product image
             ClipRRect(
               borderRadius: BorderRadius.circular(12),
               child: Image.network(
@@ -165,21 +168,16 @@ class _BookmarkFormPageState extends State<BookmarkFormPage> {
               ),
             ),
             const SizedBox(height: 16),
-
-            // Display selected product name
             Text(
               'Selected Product: ${_selectedProduct!.fields.name}',
               style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
-
-            // Bookmark Form
             Form(
               key: _formKey,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Note Field
                   TextFormField(
                     controller: _noteController,
                     decoration: const InputDecoration(
@@ -194,8 +192,6 @@ class _BookmarkFormPageState extends State<BookmarkFormPage> {
                     },
                   ),
                   const SizedBox(height: 16),
-
-                  // Priority Dropdown
                   DropdownButtonFormField<String>(
                     value: _selectedPriority,
                     decoration: const InputDecoration(
@@ -220,8 +216,6 @@ class _BookmarkFormPageState extends State<BookmarkFormPage> {
                     },
                   ),
                   const SizedBox(height: 16),
-
-                  // Reminder Date Picker
                   InkWell(
                     onTap: () => _selectReminderDate(context),
                     child: InputDecorator(
@@ -294,7 +288,7 @@ class _BookmarkFormPageState extends State<BookmarkFormPage> {
             Text(
               "Add ",
               style: TextStyle(
-                color:  Color.fromRGBO(255, 203, 48, 1),
+                color: Color.fromRGBO(255, 203, 48, 1),
                 fontWeight: FontWeight.bold,
                 fontSize: 24,
               ),
@@ -302,7 +296,7 @@ class _BookmarkFormPageState extends State<BookmarkFormPage> {
             Text(
               "Bookmark",
               style: TextStyle(
-                color:  Color.fromRGBO(32, 73, 255, 1),
+                color: Color.fromRGBO(32, 73, 255, 1),
                 fontWeight: FontWeight.bold,
                 fontSize: 24,
               ),
@@ -310,21 +304,19 @@ class _BookmarkFormPageState extends State<BookmarkFormPage> {
             SizedBox(width: 8),
             Icon(
               Icons.bookmark_rounded,
-              color:  Color.fromRGBO(32, 73, 255, 1),
+              color: Color.fromRGBO(32, 73, 255, 1),
             ),
           ],
         ),
       ),
       body: _isLoadingProducts
           ? const Center(child: CircularProgressIndicator())
-          : (_selectedProduct == null
-              // Jika belum pilih product, tampilkan grid
-              ? Padding(
+          : _selectedProduct == null
+              ? SingleChildScrollView(
                   padding: const EdgeInsets.all(16.0),
-                  child: _buildProductGrid(),
+                  child: _buildProductGridSection(),
                 )
-              // Jika sudah pilih product, tampilkan form
-              : _buildSelectedProductForm()),
+              : _buildSelectedProductForm(),
     );
   }
 }
