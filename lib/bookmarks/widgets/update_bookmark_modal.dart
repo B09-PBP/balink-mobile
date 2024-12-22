@@ -45,18 +45,18 @@ class _UpdateBookmarkModalState extends State<UpdateBookmarkModal> {
       final response = await request.post(url, data);
 
       if (response['status'] == 'success') {
-        ScaffoldMessenger.of(context).showSnackBar(
+        ScaffoldMessenger.of(context).showSnackBar(    // ignore: use_build_context_synchronously
           const SnackBar(content: Text('Bookmark updated successfully')),
         );
         widget.onUpdate();
-        Navigator.pop(context);
+        Navigator.pop(context);                        // ignore: use_build_context_synchronously
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
+        ScaffoldMessenger.of(context).showSnackBar(    // ignore: use_build_context_synchronously
           SnackBar(content: Text('Failed to update bookmark: ${response['message'] ?? ''}')),
         );
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(    // ignore: use_build_context_synchronously
         SnackBar(content: Text('Error updating bookmark: $e')),
       );
     }

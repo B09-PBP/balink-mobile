@@ -16,8 +16,8 @@ class _RegisterPageState extends State<RegisterPage> {
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController = TextEditingController();
 
-  final Color _primaryBlue = const Color(0xFF1E88E5);
-  final Color _accentYellow = const Color(0xFFFFC107);
+  final Color _primaryBlue = const Color.fromRGBO(32, 73, 255, 1);
+  final Color _accentYellow =  const Color.fromRGBO(255, 203, 48, 1);
 
   String _selectedPrivilege = "customer";
 

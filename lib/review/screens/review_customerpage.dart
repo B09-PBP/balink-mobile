@@ -65,6 +65,10 @@ class _ReviewProductPageState extends State<ReviewProductPage> {
                 fontSize: 24,
               ),
             ),
+            Icon(
+              Icons.star_rounded,
+              color: yellow,
+            ),
           ],
         ),
         centerTitle: true,
@@ -130,7 +134,7 @@ class _ReviewProductPageState extends State<ReviewProductPage> {
                             );
                           },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Color.fromRGBO(255, 203, 48, 1),
+                            backgroundColor: const Color.fromRGBO(255, 203, 48, 1),
                             foregroundColor: Colors.black,
                             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                             shape: RoundedRectangleBorder(

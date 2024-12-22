@@ -25,9 +25,9 @@ class _LoginPageState extends State<LoginPage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   // Define BaLink's color palette
-  final Color _primaryBlue = const Color(0xFF1E88E5);
-  final Color _accentYellow = const Color(0xFFFFC107);
-  final Color _backgroundBlue = const Color(0xFF1565C0);
+  final Color _primaryBlue = const Color.fromRGBO(32, 73, 255, 1);
+  final Color _accentYellow =  const Color.fromRGBO(255, 203, 48, 1);
+  final Color _backgroundBlue = const Color.fromRGBO(32, 73, 255, 1);
 
   // Password visibility toggle
   bool _obscurePassword = true;

@@ -15,7 +15,7 @@ class BookmarkPage extends StatefulWidget {
 }
 
 class _BookmarkPageState extends State<BookmarkPage> {
-  // Fetch bookmarks from the server
+  // Fetch user's bookmarks from the server
   Future<List<BookmarkModel>> fetchBookmarks(CookieRequest request) async {
     final response = await request.get('http://127.0.0.1:8000/bookmarks/json/');
 
@@ -29,14 +29,12 @@ class _BookmarkPageState extends State<BookmarkPage> {
     return listBookmark;
   }
 
-  // Arahkan user ke halaman form untuk buat bookmark baru
   void _navigateToFormPage() {
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => const BookmarkFormPage()),
     ).then((_) {
-      // Refresh tampilan ketika kembali dari form
-      setState(() {});
+      setState(() {}); // Refresh tampilan ketika kembali dari form
     });
   }
 
@@ -59,7 +57,6 @@ class _BookmarkPageState extends State<BookmarkPage> {
 
   // Hapus bookmark di Django
   Future<void> _deleteBookmark(BookmarkModel bookmark) async {
-    // Tanyakan dulu ke user untuk konfirmasi
     bool? confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -78,114 +75,58 @@ class _BookmarkPageState extends State<BookmarkPage> {
       ),
     );
 
-    // Jika user tidak jadi menghapus, hentikan proses
     if (confirmed == null || !confirmed) return;
 
-    // Lanjutkan hapus bookmark
-    final request = context.read<CookieRequest>();
+    final request = context.read<CookieRequest>();    // ignore: use_build_context_synchronously
     final url = 'http://127.0.0.1:8000/bookmarks/delete-bookmark-flutter/${bookmark.id}/';
 
     try {
-      // Tergantung implementasi di Django:
-      // - Kalau view hapus pakai method POST, gunakan request.post(url, {});
-      // - Kalau pakai method DELETE, maka gunakan request.delete(url);
-      //   (pastikan CookieRequest / library yang Anda pakai mendukung .delete)
       final response = await request.post(url, {});
-
       if (response['status'] == 'success') {
-        ScaffoldMessenger.of(context).showSnackBar(
+        ScaffoldMessenger.of(context).showSnackBar(   // ignore: use_build_context_synchronously
+
           const SnackBar(content: Text('Bookmark deleted successfully')),
         );
-        // Refresh tampilan
         setState(() {});
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
+        ScaffoldMessenger.of(context).showSnackBar(   // ignore: use_build_context_synchronously
           SnackBar(content: Text('Failed to delete bookmark: ${response['message'] ?? ''}')),
         );
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(     // ignore: use_build_context_synchronously
+
         SnackBar(content: Text('Error deleting bookmark: $e')),
       );
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    final request = context.watch<CookieRequest>();
-
-    return Scaffold(
-      drawer: const LeftDrawer(),
-      appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.menu),
-          color: Colors.black, // Set the color to black
-          onPressed: () {
-            Scaffold.of(context).openDrawer();
-          },
-        ),
-        title: const Text(
-          'Bookmarks',
-          style: TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ),
-        ),
-        backgroundColor: const Color.fromRGBO(32, 73, 255, 1),
-        centerTitle: true,
-      ),
-      body: FutureBuilder<List<BookmarkModel>>(
-        future: fetchBookmarks(request),
-        builder: (context, AsyncSnapshot<List<BookmarkModel>> snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(
-              child: Text(
-                'Error: ${snapshot.error}',
-                style: const TextStyle(color: Colors.red),
-              ),
-            );
-          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return _buildEmptyState();
-          }
-
-          final bookmarks = snapshot.data!;
-          return _buildBookmarkList(bookmarks);
-        },
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _navigateToFormPage,
-        backgroundColor: const Color.fromRGBO(32, 73, 255, 1),
-        child: const Icon(Icons.add),
-      ),
-    );
-  }
-
-  // Display when no bookmarks are available
+  // Display saat tidak ada bookmarks
   Widget _buildEmptyState() {
     return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const Text(
-            'No bookmarks available',
-            style: TextStyle(fontSize: 16, color: Colors.grey),
-          ),
-          const SizedBox(height: 16),
-          ElevatedButton(
-            onPressed: _navigateToFormPage,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color.fromRGBO(32, 73, 255, 1),
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+      child: Padding(
+        padding: const EdgeInsets.only(bottom: 24),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Text(
+              'No bookmarks available',
+              style: TextStyle(fontSize: 16, color: Colors.grey),
             ),
-            child: const Text(
-              'Add New Bookmark',
-              style: TextStyle(color: Colors.white),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: _navigateToFormPage,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color.fromRGBO(32, 73, 255, 1),
+                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+              ),
+              child: const Text(
+                'Add New Bookmark',
+                style: TextStyle(color: Colors.white),
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -193,6 +134,8 @@ class _BookmarkPageState extends State<BookmarkPage> {
   // Build the bookmark list view
   Widget _buildBookmarkList(List<BookmarkModel> bookmarks) {
     return ListView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
       itemCount: bookmarks.length,
       padding: const EdgeInsets.all(8),
       itemBuilder: (context, index) {
@@ -207,15 +150,16 @@ class _BookmarkPageState extends State<BookmarkPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Title + Edit/Delete Buttons
+                // Nama product + ikon Edit/Delete
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      bookmark.product.name, 
+                      bookmark.product.name,
                       style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
+                        color: Colors.black, 
                       ),
                     ),
                     Row(
@@ -223,17 +167,13 @@ class _BookmarkPageState extends State<BookmarkPage> {
                         IconButton(
                           icon: const Icon(
                             Icons.edit, 
-                            color: Color.fromRGBO(32, 73, 255, 1),
+                            color:  Color.fromRGBO(32, 73, 255, 1),
                           ),
-                          onPressed: () {
-                            _showUpdateModal(bookmark);
-                          },
+                          onPressed: () => _showUpdateModal(bookmark),
                         ),
                         IconButton(
                           icon: const Icon(Icons.delete, color: Colors.red),
-                          onPressed: () {
-                            _deleteBookmark(bookmark);
-                          },
+                          onPressed: () => _deleteBookmark(bookmark),
                         ),
                       ],
                     ),
@@ -241,7 +181,6 @@ class _BookmarkPageState extends State<BookmarkPage> {
                 ),
                 const SizedBox(height: 8),
 
-                // Gambar
                 Image.network(
                   bookmark.product.imageUrl,
                   height: 200,
@@ -250,19 +189,181 @@ class _BookmarkPageState extends State<BookmarkPage> {
                 ),
                 const SizedBox(height: 8),
 
-                // Priority
-                Text('Priority: ${bookmark.priority}'),
-
-                // Note
-                Text('Note: ${bookmark.note}'),
-
-                // Reminder
-                Text('Reminder: $reminderFormat'),
+                Text(
+                  'Priority: ${bookmark.priority}',
+                  style: const TextStyle(color: Colors.black),
+                ),
+                Text(
+                  'Note: ${bookmark.note}',
+                  style: const TextStyle(color: Colors.black),
+                ),
+                Text(
+                  'Reminder: $reminderFormat',
+                  style: const TextStyle(color: Colors.black),
+                ),
               ],
             ),
           ),
         );
       },
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final request = context.watch<CookieRequest>();
+    final screenWidth = MediaQuery.of(context).size.width;
+
+    return Scaffold(
+      drawer: const LeftDrawer(),
+      appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.menu),
+          color: Colors.black, // Set the color to black
+          onPressed: () {
+            Scaffold.of(context).openDrawer();
+          },
+        ),
+        backgroundColor: Colors.white,
+        elevation: 0,
+        centerTitle: true,
+        title: const Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              "My ",
+              style: TextStyle(
+                color: Color.fromRGBO(255, 203, 48, 1),
+                fontWeight: FontWeight.bold,
+                fontSize: 24,
+              ),
+            ),
+            Text(
+              "Bookmark",
+              style: TextStyle(
+                color: Color.fromRGBO(32, 73, 255, 1),
+                fontWeight: FontWeight.bold,
+                fontSize: 24,
+              ),
+            ),
+            SizedBox(width: 8),
+            Icon(
+              Icons.bookmark_rounded,
+              color: Color.fromRGBO(32, 73, 255, 1),
+            ),
+          ],
+        ),
+      ),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            Container(
+              margin: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    const Color.fromRGBO(32, 73, 255, 1),
+                    Colors.blue.shade700,
+                  ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Container(
+                    margin: const EdgeInsets.only(right: 16),
+                    width: screenWidth * 0.25,
+                    height: screenWidth * 0.25,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Image.asset(
+                        'assets/bookmark.jpg',
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Add your Bookmark!',
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        const Text(
+                          'Keep track of your favorite items here. Quickly find them whenever you need!',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.white70,
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        ElevatedButton(
+                          onPressed: _navigateToFormPage,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color.fromRGBO(255, 203, 48, 1),
+                            foregroundColor: Colors.black,
+                            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                          child: const Text(
+                            'Add Bookmark',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            
+            // FutureBuilder to show all user's bookmark
+            FutureBuilder<List<BookmarkModel>>(
+              future: fetchBookmarks(request),
+              builder: (context, AsyncSnapshot<List<BookmarkModel>> snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                } else if (snapshot.hasError) {
+                  return Center(
+                    child: Text(
+                      'Error: ${snapshot.error}',
+                      style: const TextStyle(color: Colors.red),
+                    ),
+                  );
+                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                  return _buildEmptyState();
+                }
+
+                final bookmarks = snapshot.data!;
+                return _buildBookmarkList(bookmarks);
+              },
+            ),
+          ],
+        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _navigateToFormPage,
+        backgroundColor: const Color.fromRGBO(32, 73, 255, 1),
+        child: const Icon(Icons.add),
+      ),
     );
   }
 }
