@@ -9,21 +9,25 @@ import 'package:provider/provider.dart';
 import 'product_detail_page.dart';
 import 'package:balink_mobile/Product/Widgets/filter.dart';
 
-class ProductPageAdmin extends StatefulWidget {
-  const ProductPageAdmin({super.key});
+class ProductPageCustomer extends StatefulWidget {
+  const ProductPageCustomer({super.key});
 
   @override
-  State<ProductPageAdmin> createState() => _ProductPageState();
+  State<ProductPageCustomer> createState() => _ProductCustomerPageState();
 }
 
-class _ProductPageState extends State<ProductPageAdmin> with SingleTickerProviderStateMixin {
+class _ProductCustomerPageState extends State<ProductPageCustomer> with SingleTickerProviderStateMixin {
+  final Color blue400 = const Color.fromRGBO(32, 73, 255, 1); // Bright Blue
+  final Color yellow = const Color.fromRGBO(255, 203, 48, 1);  // Bright Yellow
   String _searchQuery = '';
   double _minPrice = 0;
   double _maxPrice = 1000000;
   int _minKm = 0;
   int _maxKm = 1000000;
   int _minYear = 2000;
-  int _maxYear = DateTime.now().year;
+  int _maxYear = DateTime
+      .now()
+      .year;
 
   late AnimationController _animationController;
   late Animation<double> _animation;
@@ -84,15 +88,16 @@ class _ProductPageState extends State<ProductPageAdmin> with SingleTickerProvide
     });
   }
 
-  void _updateFilter(String query, double minPrice, double maxPrice, int minKm, int maxKm, int minYear, int maxYear) {
+  void _updateFilter(String query, double minPrice, double maxPrice, int minKm,
+      int maxKm, int minYear, int maxYear) {
     setState(() {
       _searchQuery = query;
       _minPrice = minPrice;
       _maxPrice = maxPrice;
-      _minKm =  minKm;
+      _minKm = minKm;
       _maxKm = maxKm;
       _minYear = minYear;
-      _maxYear= maxYear;
+      _maxYear = maxYear;
       _filterProducts();
     });
   }
@@ -105,7 +110,9 @@ class _ProductPageState extends State<ProductPageAdmin> with SingleTickerProvide
       _minKm = 0;
       _maxKm = 1000000;
       _minYear = 2000;
-      _maxYear = DateTime.now().year;
+      _maxYear = DateTime
+          .now()
+          .year;
       _filteredProducts = _allProducts;
     });
   }
@@ -118,95 +125,95 @@ class _ProductPageState extends State<ProductPageAdmin> with SingleTickerProvide
     });
   }
 
-  void _showDeleteConfirmationDialog(BuildContext context, Product product) {
-    showDialog(
-      context: context,
-      builder: (BuildContext dialogContext) {
-        final request = context.read<CookieRequest>();
-        return AlertDialog(
-          title: const Text('Delete Product'),
-          content: Text(
-              'Are you sure you want to delete ${product.fields.name}?'),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(dialogContext).pop(),
-              child: const Text('Cancel'),
-            ),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-              onPressed: () async {
-                Navigator.of(dialogContext).pop(); // Close the dialog
+  Future<void> _addToCart(BuildContext context, String productId) async {
+    final request = context.read<CookieRequest>();
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
 
-                try {
-                  // Perform delete request
-                  final response = await request.post(
-                      'http://127.0.0.1:8000/product/delete_product_flutter/${product
-                          .pk}/',
-                      {}
-                  );
+    try {
+      final response = await request.post(
+        'http://127.0.0.1:8000/cart/add-to-cart-flutter/$productId/',
+        {},
+      );
 
-                  if (response['status'] == 'success') {
-                    // Refresh the product list
-                    await _refreshProducts(request);
-
-                    // Show success message
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                            '${product.fields.name} deleted successfully'),
-                        backgroundColor: Colors.green,
-                      ),
-                    );
-                  } else {
-                    // Show error message
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                            'Failed to delete product: ${response['message']}'),
-                        backgroundColor: Colors.red,
-                      ),
-                    );
-                  }
-                } catch (e) {
-                  // Show network or unexpected error
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('Error deleting product: $e'),
-                      backgroundColor: Colors.red,
-                    ),
-                  );
-                }
-              },
-              child: const Text('Delete'),
-            ),
-          ],
+      if (response['message'] != null) {
+        scaffoldMessenger.showSnackBar(
+          SnackBar(
+            content: Text(response['message']),
+            backgroundColor: Colors.green,
+          ),
         );
-      },
-    );
+      }
+    } catch (e) {
+      scaffoldMessenger.showSnackBar(
+        SnackBar(
+          content: Text('Error adding to cart: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     final request = context.watch<CookieRequest>();
-    final colorScheme = Theme
+    final screenWidth = MediaQuery
         .of(context)
-        .colorScheme;
+        .size
+        .width;
+
+    // Calculate number of grid columns based on screen width
+    int getCrossAxisCount(double width) {
+      if (width < 600) return 1; // Mobile phones
+      if (width < 900) return 2; // Tablets
+      if (width < 1200) return 3; // Small desktops
+      return 4; // Large desktops
+    }
+
+    // Calculate child aspect ratio based on screen width
+    double getChildAspectRatio(double width) {
+      if (width < 600) return 1.1; // Taller cards on mobile
+      return 0.9; // Wider cards on larger screens
+    }
 
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Text(
-          'Our Products',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            color: colorScheme.onPrimary,
-          ),
+        leading: IconButton(
+          icon: const Icon(Icons.menu),
+          color: Colors.black, // Set the color to black
+          onPressed: () {
+            Scaffold.of(context).openDrawer();
+          },
         ),
-        backgroundColor: colorScheme.primary,
+        backgroundColor: Colors.white,
         elevation: 0,
+        title: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              "Our",
+              style: TextStyle(
+                color: yellow,
+                fontWeight: FontWeight.bold,
+                fontSize: 24,
+              ),
+            ),
+            Text(
+              " Products ",
+              style: TextStyle(
+                color: blue400,
+                fontWeight: FontWeight.bold,
+                fontSize: 24,
+              ),
+            ),
+            Icon(
+              Icons.directions_car_rounded,
+              color: blue400,
+            ),
+          ],
+        ),
         centerTitle: true,
         actions: [
-          // Add Product Button in the AppBar
           IconButton(
             icon: const Icon(Icons.add),
             onPressed: () {
@@ -215,10 +222,7 @@ class _ProductPageState extends State<ProductPageAdmin> with SingleTickerProvide
                 MaterialPageRoute(
                   builder: (context) => const AddProductPage(),
                 ),
-              ).then((_) {
-                // Refresh products after returning from AddProductPage
-                _refreshProducts(request);
-              });
+              ).then((_) => _refreshProducts(request));
             },
             tooltip: 'Add New Product',
           ),
@@ -230,6 +234,7 @@ class _ProductPageState extends State<ProductPageAdmin> with SingleTickerProvide
         child: CustomScrollView(
           physics: const BouncingScrollPhysics(),
           slivers: [
+            // Carousel Section
             const SliverToBoxAdapter(
               child: Padding(
                 padding: EdgeInsets.symmetric(vertical: 10),
@@ -237,73 +242,51 @@ class _ProductPageState extends State<ProductPageAdmin> with SingleTickerProvide
               ),
             ),
 
+            // Filter Section
             SliverToBoxAdapter(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  const SizedBox(height: 16),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                    child: FilterWidget(
-                      onApply: _updateFilter,
-                      onReset: _resetFilter,
-                    ),
-                  ),
-                ],
+              child: Padding(
+                padding: EdgeInsets.symmetric(
+                  horizontal: screenWidth < 600 ? 8.0 : 16.0,
+                  vertical: 8.0,
+                ),
+                child: FilterWidget(
+                  onApply: _updateFilter,
+                  onReset: _resetFilter,
+                ),
               ),
             ),
 
+            // Products Grid
             FutureBuilder<List<Product>>(
               future: fetchProducts(request),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return SliverToBoxAdapter(
-                    child: Center(
-                      child: CircularProgressIndicator(
-                        color: colorScheme.primary,
-                      ),
-                    ),
+                  return const SliverToBoxAdapter(
+                    child: Center(child: CircularProgressIndicator()),
                   );
                 }
 
                 if (snapshot.hasError) {
                   return SliverToBoxAdapter(
                     child: Center(
-                      child: Text(
-                        'Error: ${snapshot.error}',
-                        style: TextStyle(
-                          color: colorScheme.error,
-                          fontSize: 16,
-                        ),
-                      ),
+                      child: Text('Error: ${snapshot.error}'),
                     ),
                   );
                 }
 
-                // Initialize products on first load
                 if (_allProducts.isEmpty) {
                   _allProducts = snapshot.data!;
                   _filteredProducts = _allProducts;
                 }
 
                 if (_filteredProducts.isEmpty) {
-                  return SliverToBoxAdapter(
+                  return const SliverToBoxAdapter(
                     child: Center(
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(
-                            Icons.search_off,
-                            size: 100,
-                            color: colorScheme.secondary,
-                          ),
-                          Text(
-                            'No products found',
-                            style: TextStyle(
-                              color: colorScheme.secondary,
-                              fontSize: 18,
-                            ),
-                          ),
+                          Icon(Icons.search_off, size: 100),
+                          Text('No products found'),
                         ],
                       ),
                     ),
@@ -313,13 +296,13 @@ class _ProductPageState extends State<ProductPageAdmin> with SingleTickerProvide
                 _animationController.forward(from: 0);
 
                 return SliverPadding(
-                  padding: const EdgeInsets.all(8.0),
+                  padding: EdgeInsets.all(screenWidth < 600 ? 8.0 : 16.0),
                   sliver: SliverGrid(
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      childAspectRatio: 0.8,
-                      crossAxisSpacing: 16,
-                      mainAxisSpacing: 16,
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: getCrossAxisCount(screenWidth),
+                      childAspectRatio: getChildAspectRatio(screenWidth),
+                      crossAxisSpacing: screenWidth < 600 ? 8 : 16,
+                      mainAxisSpacing: screenWidth < 600 ? 8 : 16,
                     ),
                     delegate: SliverChildBuilderDelegate(
                           (context, index) {
@@ -327,9 +310,13 @@ class _ProductPageState extends State<ProductPageAdmin> with SingleTickerProvide
                         return FadeTransition(
                           opacity: _animation,
                           child: ScaleTransition(
-                            scale: Tween<double>(begin: 0.9, end: 1.0).animate(
-                                _animation),
-                            child: _buildProductCard(context, product),
+                            scale: Tween<double>(begin: 0.9, end: 1.0)
+                                .animate(_animation),
+                            child: _buildResponsiveProductCard(
+                              context,
+                              product,
+                              screenWidth < 600,
+                            ),
                           ),
                         );
                       },
@@ -342,35 +329,23 @@ class _ProductPageState extends State<ProductPageAdmin> with SingleTickerProvide
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const AddProductPage(),
-            ),
-          ).then((_) {
-            // Refresh products after returning from AddProductPage
-            _refreshProducts(request);
-          });
-        },
-        backgroundColor: colorScheme.primary,
-        tooltip: 'Add New Product',
-        child: const Icon(Icons.add, color: Colors.white),
-      ),
     );
   }
 
-  Widget _buildProductCard(BuildContext context, Product product) {
+  Widget _buildResponsiveProductCard(BuildContext context, Product product,
+      bool isMobile) {
     return LayoutBuilder(
       builder: (context, constraints) {
         return GestureDetector(
           onTap: () {
-            // Navigate to the ProductDetailPage when the card is tapped
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => ProductDetailPage(product: product, allProducts: _allProducts),
+                builder: (context) =>
+                    ProductDetailPage(
+                      product: product,
+                      allProducts: _allProducts,
+                    ),
               ),
             );
           },
@@ -379,160 +354,133 @@ class _ProductPageState extends State<ProductPageAdmin> with SingleTickerProvide
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(15),
             ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                // Image Section
-                ClipRRect(
-                  borderRadius: const BorderRadius.vertical(
-                    top: Radius.circular(15),
-                  ),
-                  child: AspectRatio(
-                    aspectRatio: 16 / 9,
-                    child: Image.network(
-                      product.fields.imageUrl,
-                      fit: BoxFit.cover,
-                      loadingBuilder: (context, child, loadingProgress) {
-                        if (loadingProgress == null) return child;
-                        return Center(
-                          child: CircularProgressIndicator(
-                            value: loadingProgress.expectedTotalBytes != null
-                                ? loadingProgress.cumulativeBytesLoaded /
-                                loadingProgress.expectedTotalBytes!
-                                : null,
-                          ),
-                        );
-                      },
-                      errorBuilder: (context, error, stackTrace) {
-                        return const Center(
-                          child: Icon(
-                            Icons.broken_image,
-                            size: 50,
-                            color: Colors.grey,
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                ),
-
-                // Product Details
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      // Product Name
-                      Text(
-                        product.fields.name,
-                        style: const TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.black87,
-                        ),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
+            child: LayoutBuilder(
+              builder: (context, cardConstraints) {
+                return Column(
+                  mainAxisSize: MainAxisSize.min,
+                  // Important to prevent expansion
+                  children: [
+                    // Image Section
+                    ClipRRect(
+                      borderRadius: const BorderRadius.vertical(
+                        top: Radius.circular(15),
                       ),
-                      const SizedBox(height: 8),
+                      child: AspectRatio(
+                        aspectRatio: 16 / 9,
+                        child: Image.network(
+                          product.fields.imageUrl,
+                          fit: BoxFit.cover,
+                          loadingBuilder: (context, child, loadingProgress) {
+                            if (loadingProgress == null) return child;
+                            return const Center(
+                              child: CircularProgressIndicator(),
+                            );
+                          },
+                          errorBuilder: (context, error, stackTrace) {
+                            return const Center(
+                              child: Icon(
+                                Icons.broken_image,
+                                size: 50,
+                                color: Colors.grey,
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    ),
 
-                      // Vehicle Details and Price
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Expanded(
-                            child: Wrap(
-                              spacing: 4,
-                              runSpacing: 4,
+                    // Content Section
+                    Flexible(
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min, // Prevent expansion
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // Product Name
+                            Text(
+                              product.fields.name,
+                              style: TextStyle(
+                                fontSize: isMobile ? 12 : 14,
+                                fontWeight: FontWeight.w600,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            const SizedBox(height: 4),
+
+                            // Price
+                            Text(
+                              "Rp. ${product.fields.price.toStringAsFixed(
+                                  2)}/day",
+                              style: TextStyle(
+                                fontSize: isMobile ? 11 : 12,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.green.shade700,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+
+                            // Vehicle Details
+                            SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  _buildDetailChip(
+                                    icon: Icons.calendar_month,
+                                    text: product.fields.year.toStringAsFixed(
+                                        0),
+                                  ),
+                                  const SizedBox(width: 4),
+                                  _buildDetailChip(
+                                    icon: Icons.speed,
+                                    text: "${product.fields.kmDriven
+                                        .toStringAsFixed(0)} km",
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+
+                            // Action Buttons
+                            Row(
+                              mainAxisSize: MainAxisSize.max,
                               children: [
-                                _buildDetailChip(
-                                  icon: Icons.calendar_month,
-                                  text: product.fields.year.toStringAsFixed(0),
-                                ),
-                                _buildDetailChip(
-                                  icon: Icons.speed,
-                                  text: "${product.fields.kmDriven
-                                      .toStringAsFixed(0)} km",
+                                // Add to Cart Button
+                                Expanded(
+                                  child: SizedBox(
+                                    height: 32, // Fixed height
+                                    child: ElevatedButton(
+                                      onPressed: () => _addToCart(context,product.pk),
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: yellow,
+                                        foregroundColor: Colors.black,
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 8),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(
+                                              8),
+                                        ),
+                                      ),
+                                      child: Text(
+                                        "Add to Cart",
+                                        style: TextStyle(
+                                            fontSize: isMobile ? 14 : 16),
+                                        maxLines: 1,
+                                      ),
+                                    ),
+                                  ),
                                 ),
                               ],
                             ),
-                          ),
-                          Text(
-                            "Rp. ${product.fields.price.toStringAsFixed(
-                                2)}/day",
-                            style: TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.green.shade700,
-                            ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
-
-                      const SizedBox(height: 8),
-
-                      // Action Buttons
-                      Row(
-                        children: [
-                          Expanded(
-                            child: ElevatedButton(
-                              onPressed: () {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text(
-                                        'Added ${product.fields.name} to cart'),
-                                    backgroundColor: Colors.green,
-                                  ),
-                                );
-                              },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.yellow.shade700,
-                                foregroundColor: Colors.black,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                                padding: const EdgeInsets.symmetric(
-                                    vertical: 8),
-                              ),
-                              child: const FittedBox(
-                                child: Text(
-                                  "Add to Cart",
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 12,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                          // Delete Button
-                          IconButton(
-                            icon: const Icon(Icons.delete, color: Colors.red),
-                            onPressed: () =>
-                                _showDeleteConfirmationDialog(context, product),
-                          ),
-                          IconButton(
-                            constraints: const BoxConstraints(),
-                            padding: EdgeInsets.zero,
-                            icon: const Icon(Icons.favorite_border, size: 20),
-                            onPressed: () {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text('Added ${product.fields
-                                      .name} to favorites'),
-                                  backgroundColor: Colors.pink,
-                                ),
-                              );
-                            },
-                            color: Colors.pink.shade300,
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ],
+                    ),
+                  ],
+                );
+              },
             ),
           ),
         );
@@ -540,23 +488,22 @@ class _ProductPageState extends State<ProductPageAdmin> with SingleTickerProvide
     );
   }
 
-// Helper method for creating detail chips
   Widget _buildDetailChip({required IconData icon, required String text}) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
       decoration: BoxDecoration(
         color: Colors.grey.shade200,
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(4),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 12, color: Colors.grey.shade600),
+          Icon(icon, size: 10, color: Colors.grey.shade600),
           const SizedBox(width: 2),
           Text(
             text,
             style: TextStyle(
-              fontSize: 10,
+              fontSize: 9,
               color: Colors.grey.shade800,
             ),
           ),

@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:balink_mobile/Product/Models/product_model.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:pbp_django_auth/pbp_django_auth.dart';
+import 'package:provider/provider.dart';
 
 class ProductDetailPage extends StatefulWidget {
   final Product product;
-  final List<Product> allProducts; // For recommendations
+  final List<Product> allProducts;
 
   const ProductDetailPage({
     super.key,
@@ -13,13 +15,12 @@ class ProductDetailPage extends StatefulWidget {
   });
 
   @override
-  _ProductDetailPageState createState() => _ProductDetailPageState();
+  ProductDetailPageState createState() => ProductDetailPageState();
 }
 
-class _ProductDetailPageState extends State<ProductDetailPage>
+class ProductDetailPageState extends State<ProductDetailPage>
     with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
-  bool _isFavorite = false;
   List<Product> _recommendations = [];
 
   @override
@@ -40,6 +41,34 @@ class _ProductDetailPageState extends State<ProductDetailPage>
         p.pk != widget.product.pk)
         .take(5)
         .toList();
+  }
+
+  Future<void> _addToCart(BuildContext context, String productId) async {
+    final request = context.read<CookieRequest>();
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
+
+    try {
+      final response = await request.post(
+        'http://127.0.0.1:8000/cart/add-to-cart-flutter/$productId/',
+        {},
+      );
+
+      if (response['message'] != null) {
+        scaffoldMessenger.showSnackBar(
+          SnackBar(
+            content: Text(response['message']),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
+    } catch (e) {
+      scaffoldMessenger.showSnackBar(
+        SnackBar(
+          content: Text('Error adding to cart: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
 
   // In the build method, modify the SliverToBoxAdapter section like this:
@@ -307,9 +336,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
         children: [
           Expanded(
             child: ElevatedButton(
-              onPressed: () {
-                // Implement booking logic
-              },
+              onPressed: () => _addToCart(context,widget.product.pk),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.blue,
                 padding: const EdgeInsets.symmetric(vertical: 16),
@@ -318,7 +345,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                 ),
               ),
               child: const Text(
-                'Book Now',
+                'Add To Cart',
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
@@ -327,19 +354,6 @@ class _ProductDetailPageState extends State<ProductDetailPage>
             ),
           ),
           const SizedBox(width: 16),
-          Container(
-            decoration: BoxDecoration(
-              color: _isFavorite ? Colors.pink.shade50 : Colors.grey.shade100,
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: IconButton(
-              icon: Icon(
-                _isFavorite ? Icons.favorite : Icons.favorite_border,
-                color: _isFavorite ? Colors.pink : Colors.grey,
-              ),
-              onPressed: () => setState(() => _isFavorite = !_isFavorite),
-            ),
-          ),
         ],
       ),
     );

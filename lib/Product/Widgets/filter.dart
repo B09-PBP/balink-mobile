@@ -12,10 +12,10 @@ class FilterWidget extends StatefulWidget {
   });
 
   @override
-  _FilterWidgetState createState() => _FilterWidgetState();
+  FilterWidgetState createState() => FilterWidgetState();
 }
 
-class _FilterWidgetState extends State<FilterWidget> {
+class FilterWidgetState extends State<FilterWidget> {
   final TextEditingController _searchController = TextEditingController();
   final TextEditingController _minPriceController = TextEditingController();
   final TextEditingController _maxPriceController = TextEditingController();
