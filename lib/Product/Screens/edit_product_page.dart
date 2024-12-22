@@ -18,7 +18,7 @@ class EditProductPage extends StatefulWidget {
 class _EditProductPageState extends State<EditProductPage> with SingleTickerProviderStateMixin {
   final _formKey = GlobalKey<FormState>();
   bool _isLoading = false;
-  final String _baseUrl = 'http://127.0.0.1:8000';
+  final String _baseUrl = 'https://nevin-thang-balink.pbp.cs.ui.ac.id';
 
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;

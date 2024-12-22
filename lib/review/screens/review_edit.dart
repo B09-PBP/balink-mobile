@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
 import 'package:provider/provider.dart';
-import 'package:balink_mobile/review/screens/review_customerpage.dart';
 
 class EditReviewPage extends StatefulWidget {
   final String id;
@@ -204,10 +203,7 @@ class _EditReviewPageState extends State<EditReviewPage> {
                                 content: Text("Review updated successfully!"),
                               ),
                             );
-                            Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(builder: (context) => const ReviewProductPage()),
-                            );
+                            Navigator.pop(context);
                           }
                         }
                       }

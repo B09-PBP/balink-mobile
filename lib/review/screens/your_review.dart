@@ -31,11 +31,26 @@ class _YourReviewPageState extends State<YourReviewPage> {
     const Color blue400 = Color.fromRGBO(32, 73, 255, 1);
     const Color yellow = Color.fromRGBO(255, 203, 48, 1);
 
+    // Get screen size
+    final screenSize = MediaQuery.of(context).size;
+    final isTablet = screenSize.width >= 600;
+    final isDesktop = screenSize.width >= 1024;
+
+    // Responsive font sizes
+    final titleFontSize = isDesktop ? 28.0 : (isTablet ? 26.0 : 24.0);
+    final cardTitleSize = isDesktop ? 16.0 : (isTablet ? 15.0 : 14.0);
+    final bodyTextSize = isDesktop ? 15.0 : (isTablet ? 14.0 : 13.0);
+
+    // Responsive padding
+    final mainPadding = isDesktop ? 24.0 : (isTablet ? 20.0 : 16.0);
+    final cardPadding = isDesktop ? 16.0 : (isTablet ? 14.0 : 12.0);
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
-        title: const Row(
+        toolbarHeight: isDesktop ? 70 : (isTablet ? 60 : 56),
+        title: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
@@ -43,7 +58,7 @@ class _YourReviewPageState extends State<YourReviewPage> {
               style: TextStyle(
                 color: yellow,
                 fontWeight: FontWeight.bold,
-                fontSize: 24,
+                fontSize: titleFontSize,
               ),
             ),
             Text(
@@ -51,12 +66,13 @@ class _YourReviewPageState extends State<YourReviewPage> {
               style: TextStyle(
                 color: blue400,
                 fontWeight: FontWeight.bold,
-                fontSize: 24,
+                fontSize: titleFontSize,
               ),
             ),
             Icon(
               Icons.star_rounded,
               color: yellow,
+              size: titleFontSize + 4,
             ),
           ],
         ),
@@ -72,34 +88,48 @@ class _YourReviewPageState extends State<YourReviewPage> {
                   return const Center(child: CircularProgressIndicator());
                 } else {
                   if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                    return const Center(
+                    return Center(
                       child: Text(
                         'You haven\'t reviewed yet',
-                        style: TextStyle(fontSize: 18, color: Colors.black),
+                        style: TextStyle(
+                          fontSize: titleFontSize,
+                          color: Colors.black,
+                        ),
                       ),
                     );
                   } else {
                     return LayoutBuilder(
                       builder: (context, constraints) {
-                        int crossAxisCount = constraints.maxWidth > 600 ? 3 : 2;
+                        // Responsive grid layout
+                        int crossAxisCount;
+                        if (constraints.maxWidth > 1200) {
+                          crossAxisCount = 4;
+                        } else if (constraints.maxWidth > 900) {
+                          crossAxisCount = 3;
+                        } else if (constraints.maxWidth > 600) {
+                          crossAxisCount = 2;
+                        } else {
+                          crossAxisCount = 1;
+                        }
+
                         return GridView.builder(
                           shrinkWrap: true,
                           physics: const NeverScrollableScrollPhysics(),
-                          padding: const EdgeInsets.all(16),
+                          padding: EdgeInsets.all(mainPadding),
                           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                             crossAxisCount: crossAxisCount,
-                            crossAxisSpacing: 16,
-                            mainAxisSpacing: 16,
-                            childAspectRatio: 0.7,
+                            crossAxisSpacing: mainPadding,
+                            mainAxisSpacing: mainPadding,
+                            childAspectRatio: isDesktop ? 0.8 : (isTablet ? 0.75 : 0.7),
                           ),
                           itemCount: snapshot.data!.length,
                           itemBuilder: (_, index) {
                             final review = snapshot.data![index];
                             return Container(
-                              padding: const EdgeInsets.all(12.0),
+                              padding: EdgeInsets.all(cardPadding),
                               decoration: BoxDecoration(
                                 border: Border.all(color: Colors.grey[300]!),
-                                borderRadius: BorderRadius.circular(10),
+                                borderRadius: BorderRadius.circular(12),
                                 boxShadow: [
                                   BoxShadow(
                                     color: Colors.grey.withOpacity(0.2),
@@ -114,15 +144,15 @@ class _YourReviewPageState extends State<YourReviewPage> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   ClipRRect(
-                                    borderRadius: const BorderRadius.vertical(top: Radius.circular(10)),
+                                    borderRadius: BorderRadius.circular(10),
                                     child: Image.network(
                                       review.image,
-                                      height: 120,
+                                      height: isDesktop ? 160 : (isTablet ? 140 : 120),
                                       width: double.infinity,
                                       fit: BoxFit.cover,
                                       errorBuilder: (context, error, stackTrace) {
                                         return Container(
-                                          height: 120,
+                                          height: isDesktop ? 160 : (isTablet ? 140 : 120),
                                           color: Colors.grey,
                                           alignment: Alignment.center,
                                           child: const Icon(Icons.error, color: Colors.red),
@@ -130,47 +160,49 @@ class _YourReviewPageState extends State<YourReviewPage> {
                                       },
                                     ),
                                   ),
-                                  const SizedBox(height: 10),
+                                  SizedBox(height: cardPadding),
                                   Text(
                                     review.rideName,
-                                    style: const TextStyle(
+                                    style: TextStyle(
                                       color: Colors.black,
-                                      fontSize: 14.0,
+                                      fontSize: cardTitleSize,
                                       fontWeight: FontWeight.bold,
                                     ),
                                     maxLines: 2,
                                     overflow: TextOverflow.ellipsis,
                                   ),
-                                  const SizedBox(height: 6),
+                                  SizedBox(height: cardPadding * 0.5),
                                   Text(
                                     "⭐ ${review.rating}",
-                                    style: const TextStyle(
-                                      color: Color.fromRGBO(255, 203, 48, 1),
-                                      fontSize: 14.0,
+                                    style: TextStyle(
+                                      color: yellow,
+                                      fontSize: bodyTextSize,
                                       fontWeight: FontWeight.w900,
                                     ),
                                   ),
-                                  const SizedBox(height: 6),
+                                  SizedBox(height: cardPadding * 0.5),
                                   Expanded(
                                     child: Text(
                                       review.reviewMessage,
-                                      maxLines: 3,
+                                      maxLines: isDesktop ? 4 : 3,
                                       overflow: TextOverflow.ellipsis,
-                                      style: const TextStyle(
+                                      style: TextStyle(
                                         color: Colors.black,
+                                        fontSize: bodyTextSize,
                                       ),
                                     ),
                                   ),
-                                  const SizedBox(height: 6),
+                                  SizedBox(height: cardPadding * 0.5),
                                   Container(
-                                    alignment: Alignment.center,
+                                    width: double.infinity,
+                                    padding: EdgeInsets.symmetric(horizontal: cardPadding),
                                     child: ElevatedButton(
                                       onPressed: () {
                                         Navigator.push(
                                           context,
                                           MaterialPageRoute(
                                             builder: (context) => EditReviewPage(
-                                              id: review.id, // Pass review id
+                                              id: review.id,
                                               rideName: review.rideName,
                                               image: review.image,
                                               currentRating: review.rating,
@@ -181,8 +213,16 @@ class _YourReviewPageState extends State<YourReviewPage> {
                                       },
                                       style: ButtonStyle(
                                         foregroundColor: WidgetStateProperty.all(Colors.white),
+                                        padding: WidgetStateProperty.all(
+                                          EdgeInsets.symmetric(
+                                            vertical: isDesktop ? 16 : (isTablet ? 14 : 12),
+                                          ),
+                                        ),
                                       ),
-                                      child: const Text('Edit'),
+                                      child: Text(
+                                        'Edit',
+                                        style: TextStyle(fontSize: bodyTextSize),
+                                      ),
                                     ),
                                   )
                                 ],

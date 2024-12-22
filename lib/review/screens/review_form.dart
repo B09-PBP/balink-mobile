@@ -155,7 +155,6 @@ class _ReviewFormPageState extends State<ReviewFormPage> {
                       if (_formKey.currentState!.validate()) {
                         final response = await request.postJson(
                           "https://nevin-thang-balink.pbp.cs.ui.ac.id/review/add-review-flutter/",
-                          // "http://nevin-thang-balink.pbp.cs.ui.ac.id/review/add-review-flutter/",
                           jsonEncode(<String, String>{
                             'id': widget.id.toString(),
                             'rating': _rating.toString(),
